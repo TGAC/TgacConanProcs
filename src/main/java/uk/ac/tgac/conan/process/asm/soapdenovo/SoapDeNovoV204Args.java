@@ -17,14 +17,18 @@
  **/
 package uk.ac.tgac.conan.process.asm.soapdenovo;
 
+import org.apache.commons.io.FileUtils;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.util.StringJoiner;
+import uk.ac.tgac.conan.core.data.Library;
+import uk.ac.tgac.conan.core.data.SeqFile;
 import uk.ac.tgac.conan.process.asm.AssemblerArgs;
-import uk.ac.tgac.conan.process.asm.abyss.AbyssV134InputLibsArg;
-import uk.ac.tgac.conan.process.asm.abyss.AbyssV134Params;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -190,4 +194,36 @@ public class SoapDeNovoV204Args extends AssemblerArgs {
             }
         }
     }
+
+    public void createLibraryConfigFile(List<Library> libraries, File configFile) throws IOException {
+
+        List<String> lines = new ArrayList<String>();
+
+        for (Library lib : libraries) {
+
+            if (lib.testUsage(Library.Usage.GAP_CLOSING)) {
+
+                StringJoiner sj = new StringJoiner("\n");
+
+                sj.add("[LIB]");
+                sj.add(lib.getReadLength() != null, "max_rd_len=", Integer.toString(lib.getReadLength()));
+                sj.add(lib.getAverageInsertSize() != null, "avg_ins=", Integer.toString(lib.getAverageInsertSize()));
+                sj.add(lib.getSeqOrientation() != null, "reverse_seq=", lib.getSeqOrientation() == Library.SeqOrientation.FORWARD_REVERSE ? "0" : "1");
+                sj.add("asm_flags=3");
+                sj.add(lib.getIndex() != null, "rank=", Integer.toString(lib.getIndex()));
+                sj.add(lib.getFilePaired1() != null && lib.getFilePaired1().getFileType() == SeqFile.FileType.FASTQ, "q1=", lib.getFilePaired1().getFilePath());
+                sj.add(lib.getFilePaired2() != null && lib.getFilePaired2().getFileType() == SeqFile.FileType.FASTQ, "q2=", lib.getFilePaired2().getFilePath());
+                //sj.add(lib.getSeFile() != null && lib.getSeFile().getFileType() == SeqFile.FileType.FASTQ, "q=", lib.getSeFile().getFilePath());
+                sj.add(lib.getFilePaired1() != null && lib.getFilePaired1().getFileType() == SeqFile.FileType.FASTA, "f1=", lib.getFilePaired1().getFilePath());
+                sj.add(lib.getFilePaired2() != null && lib.getFilePaired2().getFileType() == SeqFile.FileType.FASTA, "f2=", lib.getFilePaired2().getFilePath());
+                //sj.add(lib.getSeFile() != null && lib.getSeFile().getFileType() == SeqFile.FileType.FASTA, "f=", lib.getSeFile().getFilePath());
+
+                lines.add(sj.toString() + "\n");
+            }
+
+        }
+
+        FileUtils.writeLines(configFile, lines);
+    }
+
 }

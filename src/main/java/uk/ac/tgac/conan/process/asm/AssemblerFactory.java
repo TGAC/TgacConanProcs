@@ -20,6 +20,8 @@ package uk.ac.tgac.conan.process.asm;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asm.abyss.AbyssV134Args;
 import uk.ac.tgac.conan.process.asm.abyss.AbyssV134Process;
+import uk.ac.tgac.conan.process.asm.soapdenovo.SoapDeNovoV204Args;
+import uk.ac.tgac.conan.process.asm.soapdenovo.SoapDeNovoV204Process;
 
 import java.io.File;
 import java.util.List;
@@ -50,6 +52,33 @@ public enum AssemblerFactory {
         @Override
         public AssemblerArgs createArgs(int kmer, List<Library> libs, File outputDir) {
             AbyssV134Args args = new AbyssV134Args();
+            args.setKmer(kmer);
+            args.setOutputDir(outputDir);
+            args.setLibraries(libs);
+
+            return args;
+        }
+    },
+    SOAPDENOVO_V2_04 {
+        @Override
+        public String getToolName() {
+            return "SOAPdenovo";
+        }
+
+        @Override
+        public Assembler create() {
+            return new SoapDeNovoV204Process();
+        }
+
+        @Override
+        public Assembler create(AssemblerArgs args) {
+            return new SoapDeNovoV204Process(args);
+        }
+
+        @Override
+        public AssemblerArgs createArgs(int kmer, List<Library> libs, File outputDir) {
+
+            SoapDeNovoV204Args args = new SoapDeNovoV204Args();
             args.setKmer(kmer);
             args.setOutputDir(outputDir);
             args.setLibraries(libs);

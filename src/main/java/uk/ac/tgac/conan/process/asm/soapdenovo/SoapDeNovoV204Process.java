@@ -23,7 +23,6 @@ import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.tgac.conan.process.asm.Assembler;
 import uk.ac.tgac.conan.process.asm.AssemblerArgs;
 import uk.ac.tgac.conan.process.scaffold.sspace.SSpaceBasicV2Args;
-import uk.ac.tgac.conan.process.scaffold.sspace.SSpaceBasicV2Params;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +40,7 @@ public class SoapDeNovoV204Process extends AbstractConanProcess implements Assem
         this(new SoapDeNovoV204Args());
     }
 
-    public SoapDeNovoV204Process(SoapDeNovoV204Args args) {
+    public SoapDeNovoV204Process(AssemblerArgs args) {
         super(EXE, args, new SoapDeNovoV204Params());
 
         String pwdFull = new File(".").getAbsolutePath();
@@ -109,16 +108,16 @@ public class SoapDeNovoV204Process extends AbstractConanProcess implements Assem
     @Override
     public boolean execute(ExecutionContext executionContext) throws ProcessExecutionException, InterruptedException {
 
-        SSpaceBasicV2Args args = (SSpaceBasicV2Args)this.getProcessArgs();
+        SoapDeNovoV204Args args = this.getSoapDeNovoArgs();
 
-        // Create the SSPACE lib configuration file from the library list
+        // Create the SOAP lib configuration file from the library list
         try {
-            if (args.getLibraryConfigFile() == null) {
+            if (args.getConfigFile() == null) {
 
-                args.setLibraryConfigFile(new File(args.getOutputDir(), "soap.libs"));
+                args.setConfigFile(new File(args.getOutputDir(), "soap.libs"));
             }
 
-            args.createLibraryConfigFile(args.getLibraries(), args.getLibraryConfigFile());
+            args.createLibraryConfigFile(args.getLibraries(), args.getConfigFile());
         }
         catch(IOException ioe) {
             throw new ProcessExecutionException(-1, ioe);
@@ -127,7 +126,7 @@ public class SoapDeNovoV204Process extends AbstractConanProcess implements Assem
         ExecutionContext executionContextCopy = executionContext.copy();
 
         if (executionContextCopy.usingScheduler()) {
-            executionContextCopy.getScheduler().getArgs().setMonitorFile(new File(args.getOutputDir(), args.getOutputFile().getName() + ".scheduler.log"));
+            executionContextCopy.getScheduler().getArgs().setMonitorFile(new File(args.getOutputDir(), args.getOutputPrefix() + ".scheduler.log"));
         }
 
         return super.execute(executionContextCopy);
