@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package uk.ac.tgac.conan.process.qt.sickle;
+package uk.ac.tgac.conan.process.ec.sickle;
 
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
-import uk.ac.tgac.conan.process.qt.QualityTrimmer;
-import uk.ac.tgac.conan.process.qt.QualityTrimmerArgs;
+import uk.ac.tgac.conan.process.ec.ErrorCorrector;
+import uk.ac.tgac.conan.process.ec.ErrorCorrectorArgs;
 
 /**
  * User: maplesod
@@ -30,7 +30,7 @@ import uk.ac.tgac.conan.process.qt.QualityTrimmerArgs;
  * Time: 14:36
  */
 @Component
-public class SickleV11Process extends AbstractConanProcess implements QualityTrimmer {
+public class SickleV11Process extends AbstractConanProcess implements ErrorCorrector {
 
 
     public enum JobType {
@@ -39,6 +39,11 @@ public class SickleV11Process extends AbstractConanProcess implements QualityTri
             @Override
             public ProcessParams getParameters() {
                 return new SickleSeV11Params();
+            }
+
+            @Override
+            public ErrorCorrectorArgs createArgs() {
+                return new SickleSeV11Args();
             }
 
             @Override
@@ -53,6 +58,11 @@ public class SickleV11Process extends AbstractConanProcess implements QualityTri
             }
 
             @Override
+            public ErrorCorrectorArgs createArgs() {
+                return new SicklePeV11Args();
+            }
+
+            @Override
             public String getExe() {
                 return "sickle pe";
             }
@@ -61,6 +71,7 @@ public class SickleV11Process extends AbstractConanProcess implements QualityTri
         public abstract String getExe();
 
         public abstract ProcessParams getParameters();
+        public abstract ErrorCorrectorArgs createArgs();
     }
 
     private JobType jobType;
@@ -69,14 +80,19 @@ public class SickleV11Process extends AbstractConanProcess implements QualityTri
         this(JobType.PAIRED_END, new SicklePeV11Args());
     }
 
-    public SickleV11Process(JobType jobType, QualityTrimmerArgs args) {
+    public SickleV11Process(JobType jobType) {
+        this(jobType, jobType.createArgs());
+    }
+
+
+    public SickleV11Process(JobType jobType, ErrorCorrectorArgs args) {
         super(jobType.getExe(), args, jobType.getParameters());
         this.jobType = jobType;
     }
 
     @Override
-    public QualityTrimmerArgs getArgs() {
-        return (QualityTrimmerArgs) this.getProcessArgs();
+    public ErrorCorrectorArgs getArgs() {
+        return (ErrorCorrectorArgs) this.getProcessArgs();
     }
 
     @Override

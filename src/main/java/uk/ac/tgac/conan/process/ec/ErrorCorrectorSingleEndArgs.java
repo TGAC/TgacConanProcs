@@ -15,38 +15,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package uk.ac.tgac.conan.process.qt;
+package uk.ac.tgac.conan.process.ec;
 
-import uk.ac.ebi.fgpt.conan.core.param.FilePair;
-import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
+import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
 
-public interface QualityTrimmerArgs extends ProcessArgs {
+public abstract class ErrorCorrectorSingleEndArgs extends ErrorCorrectorArgs {
 
-    boolean isSingleEndArgs();
+    private File singleEndInputFile;
 
-    FilePair getPairedEndInputFiles();
+    public ErrorCorrectorSingleEndArgs() {
+        this.singleEndInputFile = null;
+    }
 
-    void setPairedEndInputFiles(FilePair pairedEndInputFiles);
+    public File getSingleEndInputFile() {
+        return singleEndInputFile;
+    }
 
-    FilePair getPairedEndOutputFiles();
+    public void setSingleEndInputFile(File singleEndInputFile) {
+        this.singleEndInputFile = singleEndInputFile;
+    }
 
-    void setPairedEndOutputFiles(FilePair pairedEndOutputFiles);
+    @Override
+    public boolean isSingleEndOnly() {
+        return true;
+    }
 
-    File getSingleEndInputFile();
+    public abstract void setFromLibrary(Library lib);
+    public abstract Library createOutputLibrary();
 
-    void setSingleEndInputFile(File singleEndInputFile);
-
-    File getSingleEndOutputFile();
-
-    void setSingleEndOutputFile(File singleEndOutputFile);
-
-    int getQualityThreshold();
-
-    void setQualityThreshold(int qualityThreshold);
-
-    int getMinLength();
-
-    void setMinLength(int minLength);
+    public abstract File getCorrectedFile();
+    public abstract File getErrorFile();
 }

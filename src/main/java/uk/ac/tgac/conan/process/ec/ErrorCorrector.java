@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package uk.ac.tgac.conan.process.qt;
+package uk.ac.tgac.conan.process.ec;
 
 import uk.ac.ebi.fgpt.conan.model.ConanProcess;
 import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
@@ -25,9 +25,9 @@ import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
  * Date: 23/01/13
  * Time: 13:48
  */
-public interface QualityTrimmer extends ConanProcess {
+public interface ErrorCorrector extends ConanProcess {
 
-    QualityTrimmerArgs getArgs();
+    ErrorCorrectorArgs getArgs();
 
     void configure(ConanProcessService conanProcessService);
 }
