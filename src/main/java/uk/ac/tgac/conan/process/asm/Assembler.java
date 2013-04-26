@@ -3,6 +3,7 @@ package uk.ac.tgac.conan.process.asm;
 import uk.ac.ebi.fgpt.conan.model.ConanProcess;
 
 import java.io.File;
+import java.io.IOException;
 
 public interface Assembler extends ConanProcess {
 
@@ -21,4 +22,6 @@ public interface Assembler extends ConanProcess {
     File getScaffoldsFile();
 
     boolean usesOpenMpi();
+
+    void initialise() throws IOException;
 }

@@ -95,8 +95,8 @@ public class QuakeV034Args extends ErrorCorrectorPairedEndArgs {
             String corOut1FileName = base1 + ".cor." + ext1;
             String corOut2FileName = base2 + ".cor." + ext1;
 
-            File corOut1 = new File(inputFiles.getFile1().getParent(), corOut1FileName);
-            File corOut2 = new File(inputFiles.getFile2().getParent(), corOut2FileName);
+            File corOut1 = new File(this.getOutputDir(), corOut1FileName);
+            File corOut2 = new File(this.getOutputDir(), corOut2FileName);
 
             return new FilePair(corOut1, corOut2);
         }
@@ -119,8 +119,8 @@ public class QuakeV034Args extends ErrorCorrectorPairedEndArgs {
             String seCorOut1FileName = base1 + ".cor_single." + ext1;
             String seCorOut2FileName = base2 + ".cor_single." + ext1;
 
-            File seCorOut1 = new File(inputFiles.getFile1().getParent(), seCorOut1FileName);
-            File seCorOut2 = new File(inputFiles.getFile2().getParent(), seCorOut2FileName);
+            File seCorOut1 = new File(this.getOutputDir(), seCorOut1FileName);
+            File seCorOut2 = new File(this.getOutputDir(), seCorOut2FileName);
 
             List<File> seCorfiles = new ArrayList<File>();
             seCorfiles.add(seCorOut1);

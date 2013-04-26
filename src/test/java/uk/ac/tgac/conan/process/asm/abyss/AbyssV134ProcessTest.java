@@ -125,6 +125,7 @@ public class AbyssV134ProcessTest {
     public void testAbyssV134FullCommand() throws InterruptedException, ProcessExecutionException, IOException, CommandExecutionException {
 
         AbyssV134Process abyss = createProcess();
+        abyss.initialise();
 
         String fullCommand = abyss.getFullCommand();
 

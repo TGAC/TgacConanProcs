@@ -73,6 +73,7 @@ public class QuakeV034ProcessTest {
     public void testQuakeFullCommand() {
 
         QuakeV034Process quake = new QuakeV034Process(createQuakeArgs());
+        quake.initialise();
 
         String command = quake.getFullCommand();
 

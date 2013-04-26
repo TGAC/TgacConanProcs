@@ -93,6 +93,7 @@ public class SoapDeNovoV204ProcessTest {
     public void testSoapFullCommand() throws InterruptedException, ProcessExecutionException, IOException, CommandExecutionException {
 
         SoapDeNovoV204Process soap = createProcess();
+        soap.initialise();
 
         String fullCommand = soap.getFullCommand();
 

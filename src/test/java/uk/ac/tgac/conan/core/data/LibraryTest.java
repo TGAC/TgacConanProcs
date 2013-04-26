@@ -15,21 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package uk.ac.tgac.conan.process.ec;
+package uk.ac.tgac.conan.core.data;
 
-import uk.ac.ebi.fgpt.conan.model.ConanProcess;
-import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * User: maplesod
- * Date: 23/01/13
- * Time: 13:48
+ * Date: 26/04/13
+ * Time: 20:02
  */
-public interface ErrorCorrector extends ConanProcess {
+public class LibraryTest {
 
-    ErrorCorrectorArgs getArgs();
+    @Test
+    public void testUsage() {
 
-    void configure(ConanProcessService conanProcessService);
+        Library lib = new Library();
+        lib.setUsage("ASM");
 
-    void initialise();
+        boolean result = lib.testUsage(Library.Usage.ASSEMBLING);
+
+        assertTrue(result);
+
+    }
 }

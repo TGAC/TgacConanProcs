@@ -18,6 +18,8 @@
 package uk.ac.tgac.conan.process.asm.soapdenovo;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.util.StringJoiner;
 import uk.ac.tgac.conan.core.data.Library;
@@ -38,6 +40,8 @@ import java.util.Map;
  */
 public class SoapDeNovoV204Args extends AssemblerArgs {
 
+    private static Logger log = LoggerFactory.getLogger(SoapDeNovoV204Process.class);
+
     private SoapDeNovoV204Params params = new SoapDeNovoV204Params();
 
     private int memory;
@@ -56,7 +60,7 @@ public class SoapDeNovoV204Args extends AssemblerArgs {
         this.configFile = null;
 
         StringJoiner nameJoiner = new StringJoiner("-");
-        nameJoiner.add("abyss_1.3.4");
+        nameJoiner.add("soap-2.0.4");
         nameJoiner.add(this.getKmer() != 0 && this.getKmer() != DEFAULT_KMER, "", "k" + Integer.toString(this.getKmer()));
         nameJoiner.add(this.getCoverageCutoff() != 0, "", "cc" + Integer.toString(this.getCoverageCutoff()));
 
@@ -197,13 +201,18 @@ public class SoapDeNovoV204Args extends AssemblerArgs {
 
     public void createLibraryConfigFile(List<Library> libraries, File configFile) throws IOException {
 
-        List<String> lines = new ArrayList<String>();
+        StringJoiner sj = new StringJoiner("\n");
+
+        log.debug("Creating SOAP config file from " + libraries.size() + " libraries.  Writing config file to: " + configFile.getAbsolutePath() + ". Note that not all libraries maybe used, depending on library 'usage' paramter.");
 
         for (Library lib : libraries) {
 
-            if (lib.testUsage(Library.Usage.GAP_CLOSING)) {
+            // Will need to do something a little cleverer here eventually
+            if (lib.testUsage(Library.Usage.ASSEMBLING) ||
+                    lib.testUsage(Library.Usage.SCAFFOLDING) ||
+                    lib.testUsage(Library.Usage.GAP_CLOSING)) {
 
-                StringJoiner sj = new StringJoiner("\n");
+                log.debug("Adding library " + lib.getName() + "to config file");
 
                 sj.add("[LIB]");
                 sj.add(lib.getReadLength() != null, "max_rd_len=", Integer.toString(lib.getReadLength()));
@@ -218,12 +227,15 @@ public class SoapDeNovoV204Args extends AssemblerArgs {
                 sj.add(lib.getFilePaired2() != null && lib.getFilePaired2().getFileType() == SeqFile.FileType.FASTA, "f2=", lib.getFilePaired2().getFilePath());
                 //sj.add(lib.getSeFile() != null && lib.getSeFile().getFileType() == SeqFile.FileType.FASTA, "f=", lib.getSeFile().getFilePath());
 
-                lines.add(sj.toString() + "\n");
             }
 
         }
 
-        FileUtils.writeLines(configFile, lines);
+        String fileContents = sj.toString();
+
+        log.debug("Writing " + fileContents.length() + " bytes to " + configFile.getAbsolutePath());
+
+        FileUtils.writeStringToFile(configFile, fileContents);
     }
 
 }

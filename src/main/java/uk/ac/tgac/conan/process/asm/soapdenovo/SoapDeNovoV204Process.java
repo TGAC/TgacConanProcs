@@ -17,6 +17,8 @@
  **/
 package uk.ac.tgac.conan.process.asm.soapdenovo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
@@ -33,6 +35,9 @@ import java.io.IOException;
  */
 public class SoapDeNovoV204Process extends AbstractConanProcess implements Assembler {
 
+    private static Logger log = LoggerFactory.getLogger(SoapDeNovoV204Process.class);
+
+
     public static final String EXE = "soap all";
 
     public SoapDeNovoV204Process() {
@@ -41,12 +46,6 @@ public class SoapDeNovoV204Process extends AbstractConanProcess implements Assem
 
     public SoapDeNovoV204Process(AssemblerArgs args) {
         super(EXE, args, new SoapDeNovoV204Params());
-
-        String pwdFull = new File(".").getAbsolutePath();
-        String pwd = pwdFull.substring(0, pwdFull.length() - 1);
-
-        this.addPreCommand("cd " + ((SoapDeNovoV204Args)this.getProcessArgs()).getOutputDir().getAbsolutePath());
-        this.addPostCommand("cd " + pwd);
     }
 
     protected SoapDeNovoV204Args getSoapDeNovoArgs() {
@@ -56,7 +55,7 @@ public class SoapDeNovoV204Process extends AbstractConanProcess implements Assem
 
     @Override
     public AssemblerArgs getArgs() {
-        return null;
+        return (AssemblerArgs) this.getProcessArgs();
     }
 
     @Override
@@ -95,6 +94,32 @@ public class SoapDeNovoV204Process extends AbstractConanProcess implements Assem
     }
 
     @Override
+    public void initialise() throws IOException {
+
+        String pwdFull = new File(".").getAbsolutePath();
+        String pwd = pwdFull.substring(0, pwdFull.length() - 1);
+
+        this.addPreCommand("cd " + ((SoapDeNovoV204Args)this.getProcessArgs()).getOutputDir().getAbsolutePath());
+        this.addPostCommand("cd " + pwd);
+
+        // Create the SOAP lib configuration file from the library list
+        SoapDeNovoV204Args args = this.getSoapDeNovoArgs();
+
+        if (args.getConfigFile() == null && args.getLibraries() != null) {
+
+            log.debug("Config file not defined but libraries available.  Creating config file from libraries.");
+            args.setConfigFile(new File(args.getOutputDir(), "soap.libs"));
+            args.createLibraryConfigFile(args.getLibraries(), args.getConfigFile());
+        }
+        else if (args.getConfigFile() == null && args.getLibraries() == null) {
+            throw new IOException("Cannot run SOAP without libraries or config file");
+        }
+        else if (args.getConfigFile() != null && args.getLibraries() != null) {
+            log.warn("SOAP denovo found both a config file and libraries.  Assuming config file was intended to be used.");
+        }
+    }
+
+    @Override
     public String getCommand() {
         return this.getCommand(this.getProcessArgs(), true, "-", " ");
     }
@@ -102,32 +127,5 @@ public class SoapDeNovoV204Process extends AbstractConanProcess implements Assem
     @Override
     public String getName() {
         return "SoapDeNovo_V2.04";
-    }
-
-    @Override
-    public boolean execute(ExecutionContext executionContext) throws ProcessExecutionException, InterruptedException {
-
-        SoapDeNovoV204Args args = this.getSoapDeNovoArgs();
-
-        // Create the SOAP lib configuration file from the library list
-        try {
-            if (args.getConfigFile() == null) {
-
-                args.setConfigFile(new File(args.getOutputDir(), "soap.libs"));
-            }
-
-            args.createLibraryConfigFile(args.getLibraries(), args.getConfigFile());
-        }
-        catch(IOException ioe) {
-            throw new ProcessExecutionException(-1, ioe);
-        }
-
-        ExecutionContext executionContextCopy = executionContext.copy();
-
-        if (executionContextCopy.usingScheduler()) {
-            executionContextCopy.getScheduler().getArgs().setMonitorFile(new File(args.getOutputDir(), args.getOutputPrefix() + ".scheduler.log"));
-        }
-
-        return super.execute(executionContextCopy);
     }
 }

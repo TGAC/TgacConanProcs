@@ -37,12 +37,6 @@ public class QuakeV034Process extends AbstractConanProcess implements ErrorCorre
 
     public QuakeV034Process(ErrorCorrectorArgs args) {
         super("quake.py", args, new QuakeV034Params());
-
-        String pwdFull = new File(".").getAbsolutePath();
-        String pwd = pwdFull.substring(0, pwdFull.length() - 1);
-
-        this.addPreCommand("cd " + args.getOutputDir().getAbsolutePath());
-        this.addPostCommand("cd " + pwd);
     }
 
     @Override
@@ -53,6 +47,15 @@ public class QuakeV034Process extends AbstractConanProcess implements ErrorCorre
     @Override
     public void configure(ConanProcessService conanProcessService) {
         this.conanProcessService = conanProcessService;
+    }
+
+    @Override
+    public void initialise() {
+        String pwdFull = new File(".").getAbsolutePath();
+        String pwd = pwdFull.substring(0, pwdFull.length() - 1);
+
+        this.addPreCommand("cd " + this.getArgs().getOutputDir().getAbsolutePath());
+        this.addPostCommand("cd " + pwd);
     }
 
     @Override

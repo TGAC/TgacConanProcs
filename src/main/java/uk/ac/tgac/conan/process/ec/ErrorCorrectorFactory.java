@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.ec;
 
+import uk.ac.tgac.conan.process.ec.quake.QuakeV034Process;
 import uk.ac.tgac.conan.process.ec.sickle.SickleV11Process;
 
 /**
@@ -67,6 +68,27 @@ public enum ErrorCorrectorFactory {
         @Override
         public ErrorCorrector create(ErrorCorrectorArgs args) {
             return new SickleV11Process(SickleV11Process.JobType.PAIRED_END, args);
+        }
+    },
+    QUAKE_V0_3_4 {
+        @Override
+        public String getToolName() {
+            return "QUAKE";
+        }
+
+        @Override
+        public boolean isPairedEnd() {
+            return true;
+        }
+
+        @Override
+        public ErrorCorrector create() {
+            return new QuakeV034Process();
+        }
+
+        @Override
+        public ErrorCorrector create(ErrorCorrectorArgs args) {
+            return new QuakeV034Process(args);
         }
     };
 

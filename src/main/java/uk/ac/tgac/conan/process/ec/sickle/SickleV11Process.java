@@ -101,6 +101,11 @@ public class SickleV11Process extends AbstractConanProcess implements ErrorCorre
     }
 
     @Override
+    public void initialise() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public String getCommand() {
         return this.getCommand(this.getProcessArgs(), false);
     }

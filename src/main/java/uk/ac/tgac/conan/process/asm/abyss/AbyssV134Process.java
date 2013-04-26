@@ -25,6 +25,7 @@ import uk.ac.tgac.conan.process.asm.AssemblerArgs;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 
 /**
  * User: maplesod
@@ -43,12 +44,6 @@ public class AbyssV134Process extends AbstractConanProcess implements Assembler 
 
     public AbyssV134Process(AssemblerArgs args) {
         super(EXE, args, new AbyssV134Params());
-
-        String pwdFull = new File(".").getAbsolutePath();
-        String pwd = pwdFull.substring(0, pwdFull.length() - 1);
-
-        this.addPreCommand("cd " + args.getOutputDir().getAbsolutePath());
-        this.addPostCommand("cd " + pwd);
     }
 
     @Override
@@ -136,6 +131,15 @@ public class AbyssV134Process extends AbstractConanProcess implements Assembler 
     @Override
     public boolean usesOpenMpi() {
         return true;
+    }
+
+    @Override
+    public void initialise() throws IOException {
+        String pwdFull = new File(".").getAbsolutePath();
+        String pwd = pwdFull.substring(0, pwdFull.length() - 1);
+
+        this.addPreCommand("cd " + this.getArgs().getOutputDir().getAbsolutePath());
+        this.addPostCommand("cd " + pwd);
     }
 
     @Override
