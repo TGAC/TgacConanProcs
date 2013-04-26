@@ -18,13 +18,10 @@
 package uk.ac.tgac.conan.core.service.impl;
 
 import org.springframework.stereotype.Service;
-import uk.ac.tgac.conan.core.data.AssemblyStats;
 import uk.ac.tgac.conan.core.data.SeqFile;
 import uk.ac.tgac.conan.core.service.SequenceStatisticsService;
-import uk.ac.tgac.conan.core.stats.AssemblyLengthAnalyser;
 import uk.ac.tgac.conan.core.stats.ReadAnalyser;
 
-import java.io.File;
 import java.io.IOException;
 
 @Service
@@ -45,11 +42,6 @@ public class SequenceStatisticsServiceImpl implements SequenceStatisticsService 
 		ReadAnalyser sfa = ReadAnalyser.valueOf(in.getFileType().name());
 		sfa.analyse(in);
 	}
-
-    @Override
-    public AssemblyStats analyseAssembly(File in) throws IOException {
-        return new AssemblyLengthAnalyser().analyse(in);
-    }
 
 
 }

@@ -18,8 +18,7 @@
 package uk.ac.tgac.conan.process.asm.stats;
 
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
-
-import java.io.File;
+import uk.ac.tgac.conan.TgacConanConfigure;
 
 /**
  * User: maplesod
@@ -28,9 +27,7 @@ import java.io.File;
  */
 public class AscV10Process extends AbstractConanProcess {
 
-
-    private static File jarDir = new File(AscV10Process.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile();
-    public static final String EXE = "java -jar " + jarDir.getAbsolutePath() + "/scripts/java/asc-1.0-SNAPSHOT.jar";
+    public static final String EXE = "java -jar " + TgacConanConfigure.SETTINGS_DIR.getAbsolutePath() + "/tools/java/asc-1.0-SNAPSHOT.jar";
 
     public AscV10Process() {
         this(new AscV10Args());

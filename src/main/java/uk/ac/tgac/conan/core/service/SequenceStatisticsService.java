@@ -17,10 +17,8 @@
  **/
 package uk.ac.tgac.conan.core.service;
 
-import uk.ac.tgac.conan.core.data.AssemblyStats;
 import uk.ac.tgac.conan.core.data.SeqFile;
 
-import java.io.File;
 import java.io.IOException;
 
 public interface SequenceStatisticsService {
@@ -35,12 +33,4 @@ public interface SequenceStatisticsService {
      * @throws java.io.IOException
      */
 	void analyseReads(SeqFile in) throws IOException;
-
-    /**
-     * Processes a FastA assembly file and produces size and composition metrics
-     * @param in The FastA sequence file to analyse
-     * @return The assembly statistics for the FastA file.
-     * @throws java.io.IOException
-     */
-    AssemblyStats analyseAssembly(File in) throws IOException;
 }

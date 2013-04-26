@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fgpt.conan.core.param.FilePair;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.asm.abyss.AbyssV134InputLibsArg;
 import uk.ac.tgac.conan.process.ec.ErrorCorrectorArgs;
 import uk.ac.tgac.conan.process.ec.ErrorCorrectorPairedEndArgs;
 

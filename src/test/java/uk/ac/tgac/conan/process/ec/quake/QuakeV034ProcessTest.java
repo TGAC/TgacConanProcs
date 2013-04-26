@@ -22,12 +22,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import uk.ac.ebi.fgpt.conan.core.param.FilePair;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
-import uk.ac.tgac.conan.process.ec.sickle.SicklePeV11Args;
-import uk.ac.tgac.conan.process.ec.sickle.SickleV11Process;
-import uk.ac.tgac.conan.process.ec.sickle.SickleV11QualityTypeParameter;
 
 import java.io.File;
 import java.io.IOException;

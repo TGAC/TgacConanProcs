@@ -22,7 +22,6 @@ import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.tgac.conan.process.asm.Assembler;
 import uk.ac.tgac.conan.process.asm.AssemblerArgs;
-import uk.ac.tgac.conan.process.scaffold.sspace.SSpaceBasicV2Args;
 
 import java.io.File;
 import java.io.IOException;

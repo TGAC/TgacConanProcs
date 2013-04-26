@@ -21,7 +21,6 @@ import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 import uk.ac.tgac.conan.process.ec.ErrorCorrector;
 import uk.ac.tgac.conan.process.ec.ErrorCorrectorArgs;
-import uk.ac.tgac.conan.process.ec.sickle.SicklePeV11Args;
 
 import java.io.File;
 
