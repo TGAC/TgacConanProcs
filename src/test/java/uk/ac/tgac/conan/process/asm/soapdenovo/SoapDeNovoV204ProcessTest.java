@@ -18,7 +18,9 @@
 package uk.ac.tgac.conan.process.asm.soapdenovo;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -41,6 +43,10 @@ import static org.junit.Assert.assertTrue;
 public class SoapDeNovoV204ProcessTest {
 
 
+    @Rule
+    public TemporaryFolder temp = new TemporaryFolder();
+
+
     private String pwd;
 
     @Mock
@@ -55,12 +61,13 @@ public class SoapDeNovoV204ProcessTest {
     @Before
     public void setup() {
 
+        String testDir = temp.getRoot().getAbsolutePath();
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 1);
 
-        correctCommand = "soap all -o OUTPUT_FILE -K 63 -p 32 -s " + pwd + "testlib.libs";
+        correctCommand = "SOAPdenovo-127mer all -o OUTPUT_FILE -K 63 -p 32 -s " + pwd + "testlib.libs";
 
-        correctFullCommand = "cd " + pwd + ".; " + correctCommand + " 2>&1; cd " + pwd;
+        correctFullCommand = "cd " + testDir + "; " + correctCommand + " 2>&1; cd " + pwd;
     }
 
     private SoapDeNovoV204Process createProcess() {
@@ -72,6 +79,7 @@ public class SoapDeNovoV204ProcessTest {
         args.setKmer(63);
         args.setOutputPrefix("OUTPUT_FILE");
         args.setThreads(32);
+        args.setOutputDir(temp.getRoot());
 
         return new SoapDeNovoV204Process(args);
     }

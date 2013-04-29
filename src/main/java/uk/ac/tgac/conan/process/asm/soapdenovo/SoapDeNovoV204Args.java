@@ -26,7 +26,9 @@ import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
 import uk.ac.tgac.conan.process.asm.AssemblerArgs;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -60,7 +62,7 @@ public class SoapDeNovoV204Args extends AssemblerArgs {
         this.configFile = null;
 
         StringJoiner nameJoiner = new StringJoiner("-");
-        nameJoiner.add("soap-2.0.4");
+        nameJoiner.add("soap-2.04");
         nameJoiner.add(this.getKmer() != 0 && this.getKmer() != DEFAULT_KMER, "", "k" + Integer.toString(this.getKmer()));
         nameJoiner.add(this.getCoverageCutoff() != 0, "", "cc" + Integer.toString(this.getCoverageCutoff()));
 
@@ -212,7 +214,7 @@ public class SoapDeNovoV204Args extends AssemblerArgs {
                     lib.testUsage(Library.Usage.SCAFFOLDING) ||
                     lib.testUsage(Library.Usage.GAP_CLOSING)) {
 
-                log.debug("Adding library " + lib.getName() + "to config file");
+                log.debug("Adding library " + lib.getName() + " to config file");
 
                 sj.add("[LIB]");
                 sj.add(lib.getReadLength() != null, "max_rd_len=", Integer.toString(lib.getReadLength()));
@@ -233,9 +235,9 @@ public class SoapDeNovoV204Args extends AssemblerArgs {
 
         String fileContents = sj.toString();
 
-        log.debug("Writing " + fileContents.length() + " bytes to " + configFile.getAbsolutePath());
-
         FileUtils.writeStringToFile(configFile, fileContents);
+
+        log.debug("Config file created: " + (configFile.exists() ? "true" : "false"));
     }
 
 }

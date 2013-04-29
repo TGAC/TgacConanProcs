@@ -38,7 +38,7 @@ public class SoapDeNovoV204Process extends AbstractConanProcess implements Assem
     private static Logger log = LoggerFactory.getLogger(SoapDeNovoV204Process.class);
 
 
-    public static final String EXE = "soap all";
+    public static final String EXE = "SOAPdenovo-127mer all";
 
     public SoapDeNovoV204Process() {
         this(new SoapDeNovoV204Args());
@@ -99,17 +99,19 @@ public class SoapDeNovoV204Process extends AbstractConanProcess implements Assem
         String pwdFull = new File(".").getAbsolutePath();
         String pwd = pwdFull.substring(0, pwdFull.length() - 1);
 
-        this.addPreCommand("cd " + ((SoapDeNovoV204Args)this.getProcessArgs()).getOutputDir().getAbsolutePath());
-        this.addPostCommand("cd " + pwd);
-
         // Create the SOAP lib configuration file from the library list
         SoapDeNovoV204Args args = this.getSoapDeNovoArgs();
 
+        this.addPreCommand("cd " + args.getOutputDir().getAbsolutePath());
+        this.addPostCommand("cd " + pwd);
+
+
         if (args.getConfigFile() == null && args.getLibraries() != null) {
 
-            log.debug("Config file not defined but libraries available.  Creating config file from libraries.");
-            args.setConfigFile(new File(args.getOutputDir(), "soap.libs"));
-            args.createLibraryConfigFile(args.getLibraries(), args.getConfigFile());
+            File configFile = new File(args.getOutputDir(), "soap.libs");
+            log.debug("Config file not defined but libraries available.  Creating config file from libraries at " + configFile.getAbsolutePath());
+            args.setConfigFile(configFile);
+            args.createLibraryConfigFile(args.getLibraries(), configFile);
         }
         else if (args.getConfigFile() == null && args.getLibraries() == null) {
             throw new IOException("Cannot run SOAP without libraries or config file");
