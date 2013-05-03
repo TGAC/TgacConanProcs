@@ -24,6 +24,8 @@ import java.io.File;
 
 public abstract class ErrorCorrectorArgs implements ProcessArgs {
 
+    public static final int DEFAULT_MIN_LENGTH = 60;
+
     private int minLength;
     private int qualityThreshold;
     private int kmer;
@@ -34,7 +36,7 @@ public abstract class ErrorCorrectorArgs implements ProcessArgs {
 
     public ErrorCorrectorArgs() {
 
-        this.minLength = 60;
+        this.minLength = DEFAULT_MIN_LENGTH;
         this.qualityThreshold = 30;
         this.kmer = 17;
         this.threads = 8;

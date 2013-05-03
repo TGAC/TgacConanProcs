@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.ec;
 
+import uk.ac.tgac.conan.process.ec.musket.MusketV106Process;
 import uk.ac.tgac.conan.process.ec.quake.QuakeV034Process;
 import uk.ac.tgac.conan.process.ec.sickle.SickleV11Process;
 
@@ -89,6 +90,27 @@ public enum ErrorCorrectorFactory {
         @Override
         public ErrorCorrector create(ErrorCorrectorArgs args) {
             return new QuakeV034Process(args);
+        }
+    },
+    MUSKET_V1_0_6 {
+        @Override
+        public String getToolName() {
+            return "MUSKET";
+        }
+
+        @Override
+        public boolean isPairedEnd() {
+            return true;
+        }
+
+        @Override
+        public ErrorCorrector create() {
+            return new MusketV106Process();
+        }
+
+        @Override
+        public ErrorCorrector create(ErrorCorrectorArgs args) {
+            return new MusketV106Process(args);
         }
     };
 
