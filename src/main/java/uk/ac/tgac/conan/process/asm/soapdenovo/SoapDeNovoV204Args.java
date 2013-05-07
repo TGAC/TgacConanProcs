@@ -222,8 +222,14 @@ public class SoapDeNovoV204Args extends AssemblerArgs {
                 sj.add(lib.getSeqOrientation() != null, "reverse_seq=", lib.getSeqOrientation() == Library.SeqOrientation.FORWARD_REVERSE ? "0" : "1");
                 sj.add("asm_flags=3");
                 sj.add(lib.getIndex() != null, "rank=", Integer.toString(lib.getIndex()));
-                sj.add(lib.getFilePaired1() != null && lib.getFilePaired1().getFileType() == SeqFile.FileType.FASTQ, "q1=", lib.getFilePaired1().getFilePath());
-                sj.add(lib.getFilePaired2() != null && lib.getFilePaired2().getFileType() == SeqFile.FileType.FASTQ, "q2=", lib.getFilePaired2().getFilePath());
+                sj.add( lib.getFilePaired1() != null &&
+                        (lib.getFilePaired1().getFileType() == SeqFile.FileType.FASTQ ||
+                         lib.getFilePaired1().getFileType() == SeqFile.FileType.UNKNOWN),
+                        "q1=", lib.getFilePaired1().getFilePath());
+                sj.add(lib.getFilePaired2() != null &&
+                        (lib.getFilePaired2().getFileType() == SeqFile.FileType.FASTQ ||
+                         lib.getFilePaired2().getFileType() == SeqFile.FileType.UNKNOWN),
+                        "q2=", lib.getFilePaired2().getFilePath());
                 //sj.add(lib.getSeFile() != null && lib.getSeFile().getFileType() == SeqFile.FileType.FASTQ, "q=", lib.getSeFile().getFilePath());
                 sj.add(lib.getFilePaired1() != null && lib.getFilePaired1().getFileType() == SeqFile.FileType.FASTA, "f1=", lib.getFilePaired1().getFilePath());
                 sj.add(lib.getFilePaired2() != null && lib.getFilePaired2().getFileType() == SeqFile.FileType.FASTA, "f2=", lib.getFilePaired2().getFilePath());
