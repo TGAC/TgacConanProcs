@@ -63,9 +63,9 @@ public class SoapDeNovoV204ProcessTest {
 
         String testDir = temp.getRoot().getAbsolutePath();
         String pwdFull = new File(".").getAbsolutePath();
-        this.pwd = pwdFull.substring(0, pwdFull.length() - 1);
+        this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "SOAPdenovo-127mer all -o OUTPUT_FILE -K 63 -p 32 -s " + pwd + "testlib.libs";
+        correctCommand = "SOAPdenovo-127mer all -o OUTPUT_FILE -K 63 -p 32 -s " + pwd + "/testlib.libs";
 
         correctFullCommand = "cd " + testDir + "; " + correctCommand + " 2>&1; cd " + pwd;
     }

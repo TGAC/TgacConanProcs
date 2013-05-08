@@ -97,7 +97,7 @@ public class SoapDeNovoV204Process extends AbstractConanProcess implements Assem
     public void initialise() throws IOException {
 
         String pwdFull = new File(".").getAbsolutePath();
-        String pwd = pwdFull.substring(0, pwdFull.length() - 1);
+        String pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
         // Create the SOAP lib configuration file from the library list
         SoapDeNovoV204Args args = this.getSoapDeNovoArgs();

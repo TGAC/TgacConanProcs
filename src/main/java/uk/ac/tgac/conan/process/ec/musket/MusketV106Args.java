@@ -76,8 +76,11 @@ public class MusketV106Args extends ErrorCorrectorPairedEndArgs {
 
     public long getTotalKmers() {
 
+        // This is a bit of a fudge.  Dividing by 20 is just a arbitrary number used to move the theoretical number of
+        // kmers closer to something that might be seen in reality.  This number isn't critical however, but if it is
+        // wildly wrong it might effect Musket's memory usage and runtime performance.
         return this.totalKmers == 0 ?
-                (long)Math.pow(4, this.getKmer()) :
+                (long)Math.pow(4, this.getKmer()) / 20 :
                 totalKmers;
     }
 
@@ -179,8 +182,12 @@ public class MusketV106Args extends ErrorCorrectorPairedEndArgs {
     }
 
     @Override
-    public void setFromLibrary(Library lib) {
-        this.setPairedEndInputFiles(new FilePair(lib.getFilePaired1().getFile(), lib.getFilePaired2().getFile()));
+    public void setFromLibrary(Library lib, File f1, File f2) {
+
+        this.setPairedEndInputFiles(new FilePair(
+                f1 != null ? f1 : lib.getFilePaired1().getFile(),
+                f2 != null ? f2 : lib.getFilePaired2().getFile()));
+
         this.readLength = lib.getReadLength();
 
         // If we have read length set, then try to get the maxtrim and min length vars set correctly too.

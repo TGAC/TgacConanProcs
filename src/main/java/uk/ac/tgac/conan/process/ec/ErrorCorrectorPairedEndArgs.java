@@ -18,6 +18,7 @@
 package uk.ac.tgac.conan.process.ec;
 
 import uk.ac.ebi.fgpt.conan.core.param.FilePair;
+import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
 import java.util.List;
@@ -44,6 +45,7 @@ public abstract class ErrorCorrectorPairedEndArgs extends ErrorCorrectorArgs {
         return false;
     }
 
+    public abstract void setFromLibrary(Library lib, File f1, File f2);
     public abstract FilePair getPairedEndCorrectedFiles();
     public abstract List<File> getSingleEndCorrectedFiles();
     public abstract FilePair getPairedEndErrorFiles();

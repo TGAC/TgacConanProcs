@@ -52,11 +52,11 @@ public class QuakeV034ProcessTest {
     public void setup() {
 
         String pwdFull = new File(".").getAbsolutePath();
-        this.pwd = pwdFull.substring(0, pwdFull.length() - 1);
+        this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "quake.py -q 50 -l 50 -k 18 -p 32 -f " + readsListFile.getAbsolutePath();
+        correctCommand = "quake.py -l 50 -k 18 -p 32 -f " + readsListFile.getAbsolutePath();
 
-        correctFullCommand = "cd " + pwd + "quake" + "; " + correctCommand + " 2>&1; cd " + pwd;
+        correctFullCommand = "cd " + pwd + "/quake" + "; " + correctCommand + " 2>&1; cd " + pwd;
     }
 
     @Test
@@ -93,7 +93,7 @@ public class QuakeV034ProcessTest {
         lib.setFilePaired1(new SeqFile("file1.fastq"));
         lib.setFilePaired2(new SeqFile("file2.fastq"));
 
-        args.setFromLibrary(lib);
+        args.setFromLibrary(lib, null, null);
 
         File readsFile = args.getReadsListFile();
 

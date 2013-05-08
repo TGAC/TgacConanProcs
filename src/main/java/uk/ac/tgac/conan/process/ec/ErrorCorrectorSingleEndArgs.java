@@ -42,7 +42,7 @@ public abstract class ErrorCorrectorSingleEndArgs extends ErrorCorrectorArgs {
         return true;
     }
 
-    public abstract void setFromLibrary(Library lib);
+    public abstract void setFromLibrary(Library lib, File f);
     public abstract Library createOutputLibrary();
 
     public abstract File getCorrectedFile();

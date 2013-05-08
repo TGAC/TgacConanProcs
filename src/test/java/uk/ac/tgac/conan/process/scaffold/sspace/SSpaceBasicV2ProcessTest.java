@@ -48,9 +48,9 @@ public class SSpaceBasicV2ProcessTest {
         outputDir = temp.newFolder("sspaceTest");
 
         String pwdFull = new File(".").getAbsolutePath();
-        this.pwd = pwdFull.substring(0, pwdFull.length() - 1);
+        this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "SSPACE_Basic_v2.0.pl -l " + pwd + "testlib.lib -s " + pwd + "contigs.fa -x 0 -T 8 -b Output";
+        correctCommand = "SSPACE_Basic_v2.0.pl -l " + pwd + "/testlib.lib -s " + pwd + "/contigs.fa -x 0 -T 8 -b Output";
 
         correctFullCommand = "cd " + outputDir.getAbsolutePath() + "; " + correctCommand + " 2>&1; cd " + pwd;
     }

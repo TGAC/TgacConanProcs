@@ -97,5 +97,5 @@ public abstract class ErrorCorrectorArgs implements ProcessArgs {
 
     public abstract boolean isSingleEndOnly();
 
-    public abstract void setFromLibrary(Library lib);
+
 }

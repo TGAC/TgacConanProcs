@@ -50,8 +50,8 @@ public class SickleSeV11Args extends ErrorCorrectorSingleEndArgs {
     }
 
     @Override
-    public void setFromLibrary(Library library) {
-        this.setSingleEndInputFile(library.getSeFile().getFile());
+    public void setFromLibrary(Library library, File f) {
+        this.setSingleEndInputFile(f != null ? f : library.getSeFile().getFile());
         this.outputFile = new File(this.getOutputDir(), library.getName() + ".qt.fastq");
     }
 

@@ -54,7 +54,7 @@ public class MusketV106Process extends AbstractConanProcess implements ErrorCorr
     @Override
     public void initialise() {
         String pwdFull = new File(".").getAbsolutePath();
-        String pwd = pwdFull.substring(0, pwdFull.length() - 1);
+        String pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
         this.addPreCommand("cd " + this.getArgs().getOutputDir().getAbsolutePath());
         this.addPostCommand("cd " + pwd);

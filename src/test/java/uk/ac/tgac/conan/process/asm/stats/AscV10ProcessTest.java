@@ -35,7 +35,7 @@ public class AscV10ProcessTest {
     @Before
     public void setup() {
         String pwdFull = new File(".").getAbsolutePath();
-        this.pwd = pwdFull.substring(0, pwdFull.length() - 1);
+        this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
         this.jarPath = new File(AscV10ProcessTest.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile().getAbsolutePath();
     }

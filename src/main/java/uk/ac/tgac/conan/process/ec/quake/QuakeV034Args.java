@@ -149,10 +149,10 @@ public class QuakeV034Args extends ErrorCorrectorPairedEndArgs {
     }
 
     @Override
-    public void setFromLibrary(Library lib) {
+    public void setFromLibrary(Library lib, File f1, File f2) {
 
-        String fp1 = lib.getFilePaired1().getFilePath();
-        String fp2 = lib.getFilePaired2().getFilePath();
+        String fp1 = f1 != null ? f1.getAbsolutePath() : lib.getFilePaired1().getFilePath();
+        String fp2 = f2 != null ? f2.getAbsolutePath() : lib.getFilePaired2().getFilePath();
 
         String outLine = fp1 + " " + fp2;
 
@@ -179,10 +179,6 @@ public class QuakeV034Args extends ErrorCorrectorPairedEndArgs {
     public Map<ConanParameter, String> getArgMap() {
         Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
 
-
-        if (this.getQualityThreshold() != -1) {
-            pvp.put(params.getQualityValue(), String.valueOf(this.getQualityThreshold()));
-        }
 
         if (this.getMinLength() != -1) {
             pvp.put(params.getMinLength(), String.valueOf(this.getMinLength()));
@@ -218,9 +214,6 @@ public class QuakeV034Args extends ErrorCorrectorPairedEndArgs {
             }
             else if (param.equals(this.params.getMinLength().getName())) {
                 this.setMinLength(Integer.parseInt(val));
-            }
-            else if (param.equals(this.params.getQualityValue().getName())) {
-                this.setQualityThreshold(Integer.parseInt(val));
             }
             else if (param.equals(this.params.getProcesses().getName())) {
                 this.setThreads(Integer.parseInt(val));

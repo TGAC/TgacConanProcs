@@ -18,7 +18,9 @@
 package uk.ac.tgac.conan.process.asm.abyss;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -46,6 +48,9 @@ public class AbyssV134ProcessTest {
 
     private String pwd;
 
+    @Rule
+    public TemporaryFolder temp = new TemporaryFolder();
+
     @Mock
     private ExecutionContext ec;
 
@@ -59,13 +64,14 @@ public class AbyssV134ProcessTest {
     @Before
     public void setup() {
 
+        String testDir = temp.getRoot().getAbsolutePath();
         String pwdFull = new File(".").getAbsolutePath();
-        this.pwd = pwdFull.substring(0, pwdFull.length() - 1);
+        this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
         correctCommand = "abyss-pe  name=OUTPUT_FILE  k=61  np=16  lib='peLib1' " +
-                "peLib1='" + pwd + "tools/mass/LIB1896_R1.r95.fastq " + pwd + "tools/mass/LIB1896_R2.r95.fastq'";
+                "peLib1='" + pwd + "/tools/mass/LIB1896_R1.r95.fastq " + pwd + "/tools/mass/LIB1896_R2.r95.fastq'";
 
-        correctFullCommand = "cd " + pwd + ".; " + correctCommand + " 2>&1; cd " + pwd;
+        correctFullCommand = "cd " + testDir + "; " + correctCommand + " 2>&1; cd " + pwd;
 
         correctLsfScheduledCommand = "bsub -aopenmpi \"" + correctFullCommand + "\"";
     }
@@ -75,11 +81,11 @@ public class AbyssV134ProcessTest {
     private List<Library> createLocalPETestLibrary() {
         SeqFile peFile1 = new SeqFile();
         peFile1.setFileType(SeqFile.FileType.FASTQ);
-        peFile1.setFilePath(pwd + "tools/mass/LIB1896_R1.r95.fastq");
+        peFile1.setFilePath(pwd + "/tools/mass/LIB1896_R1.r95.fastq");
 
         SeqFile peFile2 = new SeqFile();
         peFile2.setFileType(SeqFile.FileType.FASTQ);
-        peFile2.setFilePath(pwd + "tools/mass/LIB1896_R2.r95.fastq");
+        peFile2.setFilePath(pwd + "/tools/mass/LIB1896_R2.r95.fastq");
 
         Library peLib = new Library();
         peLib.setDataset(Library.Dataset.RAW);
@@ -104,6 +110,7 @@ public class AbyssV134ProcessTest {
         args.setKmer(61);
         args.setName("OUTPUT_FILE");
         args.setThreads(16);
+        args.setOutputDir(temp.getRoot());
 
         return new AbyssV134Process(args);
     }

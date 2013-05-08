@@ -47,7 +47,7 @@ public class SSpaceBasicV2Process extends AbstractScaffolderProcess {
     public void initialise() {
 
         String pwdFull = new File(".").getAbsolutePath();
-        String pwd = pwdFull.substring(0, pwdFull.length() - 1);
+        String pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
         this.addPreCommand("cd " + ((SSpaceBasicV2Args)this.getProcessArgs()).getOutputDir().getAbsolutePath());
         this.addPostCommand("cd " + pwd);

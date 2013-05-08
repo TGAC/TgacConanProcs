@@ -54,14 +54,14 @@ public class MusketV106ProcessTest {
     public void setup() {
 
         String pwdFull = new File(".").getAbsolutePath();
-        this.pwd = pwdFull.substring(0, pwdFull.length() - 1);
+        this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "musket -k 15 1073741824 -omulti output -p 32 -maxtrim 51 -inorder  " + pwd + "file1.fastq " + pwd + "file2.fastq";
-        correctFullCommand = "cd " + pwd + "musket" + "; " + correctCommand + " 2>&1; cd " + pwd;
+        correctCommand = "musket -k 15 53687091 -omulti output -p 32 -maxtrim 51 -inorder  " + pwd + "/file1.fastq " + pwd + "/file2.fastq";
+        correctFullCommand = "cd " + pwd + "/musket" + "; " + correctCommand + " 2>&1; cd " + pwd;
     }
 
     @Test
-    public void testQuakeCommand() {
+    public void testMusketCommand() {
 
         MusketV106Process musket = new MusketV106Process(createMusketArgs());
 
@@ -71,7 +71,7 @@ public class MusketV106ProcessTest {
     }
 
     @Test
-    public void testQuakeFullCommand() {
+    public void testMusketFullCommand() {
 
         MusketV106Process musket = new MusketV106Process(createMusketArgs());
         musket.initialise();
@@ -95,7 +95,7 @@ public class MusketV106ProcessTest {
         args.setQualityThreshold(50);
         args.setKmer(15);
         args.setThreads(32);
-        args.setFromLibrary(lib);
+        args.setFromLibrary(lib, null, null);
 
         return args;
     }

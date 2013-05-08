@@ -52,7 +52,7 @@ public class QuakeV034Process extends AbstractConanProcess implements ErrorCorre
     @Override
     public void initialise() {
         String pwdFull = new File(".").getAbsolutePath();
-        String pwd = pwdFull.substring(0, pwdFull.length() - 1);
+        String pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
         this.addPreCommand("cd " + this.getArgs().getOutputDir().getAbsolutePath());
         this.addPostCommand("cd " + pwd);
