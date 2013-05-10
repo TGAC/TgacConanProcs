@@ -44,9 +44,9 @@ public class AscV10ProcessTest {
     public void testCommand() {
 
         AscV10Args args = new AscV10Args();
-        args.setInputDir(new File("input"));
-        args.setOutputDir(new File("output"));
-        args.setPlot(true);
+        args.setInput(new File("input"));
+        args.setOutput(new File("output"));
+        args.setMode("FULL");
 
         AscV10Process asc = new AscV10Process(args);
 

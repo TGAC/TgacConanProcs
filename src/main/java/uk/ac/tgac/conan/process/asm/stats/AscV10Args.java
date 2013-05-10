@@ -33,38 +33,38 @@ public class AscV10Args implements ProcessArgs {
 
     private AscV10Params params = new AscV10Params();
 
-    private File inputDir;
-    private File outputDir;
-    private boolean plot;
+    private File input;
+    private File output;
+    private String mode;
 
     public AscV10Args() {
-        this.inputDir = null;
-        this.outputDir = null;
-        this.plot = false;
+        this.input = null;
+        this.output = null;
+        this.mode = "FULL";
     }
 
-    public File getInputDir() {
-        return inputDir;
+    public File getInput() {
+        return input;
     }
 
-    public void setInputDir(File inputDir) {
-        this.inputDir = inputDir;
+    public void setInput(File input) {
+        this.input = input;
     }
 
-    public File getOutputDir() {
-        return outputDir;
+    public File getOutput() {
+        return output;
     }
 
-    public void setOutputDir(File outputDir) {
-        this.outputDir = outputDir;
+    public void setOutput(File output) {
+        this.output = output;
     }
 
-    public boolean isPlot() {
-        return plot;
+    public String getMode() {
+        return mode;
     }
 
-    public void setPlot(boolean plot) {
-        this.plot = plot;
+    public void setMode(String mode) {
+        this.mode = mode;
     }
 
     @Override
@@ -77,15 +77,17 @@ public class AscV10Args implements ProcessArgs {
 
         Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
 
-        if (this.inputDir != null) {
-            pvp.put(params.getInputDir(), this.inputDir.getAbsolutePath());
+        if (this.input != null) {
+            pvp.put(params.getInputDir(), this.input.getAbsolutePath());
         }
 
-        if (this.outputDir != null) {
-            pvp.put(params.getOutputDir(), this.outputDir.getAbsolutePath());
+        if (this.output != null) {
+            pvp.put(params.getOutputDir(), this.output.getAbsolutePath());
         }
 
-        pvp.put(params.getPlot(), Boolean.toString(this.plot));
+        if (this.mode != null) {
+            pvp.put(params.getMode(), this.mode);
+        }
 
         return pvp;
     }
@@ -102,13 +104,13 @@ public class AscV10Args implements ProcessArgs {
             String val = entry.getValue();
 
             if (param.equals(this.params.getInputDir().getName())) {
-                this.inputDir = new File(val);
+                this.input = new File(val);
             }
             else if (param.equals(this.params.getOutputDir().getName())) {
-                this.outputDir = new File(val);
+                this.output = new File(val);
             }
-            else if (param.equals(this.params.getPlot().getName())) {
-                this.plot = Boolean.parseBoolean(val);
+            else if (param.equals(this.params.getMode().getName())) {
+                this.mode = val;
             }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);

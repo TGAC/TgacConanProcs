@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asm.stats;
 
+import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
 import uk.ac.ebi.fgpt.conan.core.param.FlagParameter;
 import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
@@ -35,7 +36,7 @@ public class AscV10Params implements ProcessParams {
 
     private ConanParameter inputDir;
     private ConanParameter outputDir;
-    private ConanParameter plot;
+    private ConanParameter mode;
 
     public AscV10Params() {
 
@@ -51,9 +52,11 @@ public class AscV10Params implements ProcessParams {
                 true
         );
 
-        this.plot = new FlagParameter(
-                "plot",
-                "Whether to create plots for the assembly statistics. [Default: false]"
+        this.mode = new DefaultConanParameter(
+                "mode",
+                "Run mode. Options: {STATS, PLOTS, CUMLEN, FULL} [Default: FULL]",
+                false,
+                true
         );
     }
 
@@ -65,8 +68,8 @@ public class AscV10Params implements ProcessParams {
         return outputDir;
     }
 
-    public ConanParameter getPlot() {
-        return plot;
+    public ConanParameter getMode() {
+        return mode;
     }
 
     @Override
@@ -75,7 +78,7 @@ public class AscV10Params implements ProcessParams {
                 new ConanParameter[]{
                         this.inputDir,
                         this.outputDir,
-                        this.plot
+                        this.mode
                 }
         ));
     }
