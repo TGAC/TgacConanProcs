@@ -374,27 +374,19 @@ public class Library implements Serializable {
 		
 		Library ld = new Library();
 		
-		// Required properties
-        ld.setIndex(index);
+		ld.setIndex(index);
 		ld.setName(iniSection.get(KEY_NAME));
-		ld.setAverageInsertSize(Integer.parseInt(iniSection.get(KEY_AVG_INSERT_SIZE)));
-		ld.setInsertErrorTolerance(Double.parseDouble(iniSection.get(KEY_INSERT_ERROR_TOLERANCE)));
-		ld.setReadLength(Integer.parseInt(iniSection.get(KEY_READ_LENGTH)));
-		ld.setSeqOrientation(SeqOrientation.valueOf(iniSection.get(KEY_SEQ_ORIENTATION).toUpperCase()));
+		ld.setAverageInsertSize(iniSection.containsKey(KEY_AVG_INSERT_SIZE) ? Integer.parseInt(iniSection.get(KEY_AVG_INSERT_SIZE)) : 0);
+		ld.setInsertErrorTolerance(iniSection.containsKey(KEY_INSERT_ERROR_TOLERANCE) ? Double.parseDouble(iniSection.get(KEY_INSERT_ERROR_TOLERANCE)) : 0.0);
+		ld.setReadLength(iniSection.containsKey(KEY_READ_LENGTH) ? Integer.parseInt(iniSection.get(KEY_READ_LENGTH)) : 0);
+		ld.setSeqOrientation(iniSection.containsKey(KEY_SEQ_ORIENTATION) ? SeqOrientation.valueOf(iniSection.get(KEY_SEQ_ORIENTATION).toUpperCase()) : SeqOrientation.FORWARD_REVERSE);
 		ld.setUsage(iniSection.get(KEY_USAGE));
         ld.setType(Type.valueOf(iniSection.get(KEY_TYPE).toUpperCase()));
-		ld.setFilePaired1(new SeqFile(iniSection.get(KEY_FILE_1)));	
-		ld.setFilePaired2(new SeqFile(iniSection.get(KEY_FILE_2)));
-		
-		// Optional properties		
-		if (iniSection.get(KEY_DATASET) != null) {
-			ld.setDataset(Dataset.valueOf(iniSection.get(KEY_DATASET)));
-		}
-		
-		if (iniSection.get(KEY_FILE_SE) != null) {
-			ld.setSeFile(new SeqFile(iniSection.get(KEY_FILE_SE)));
-		}
-		
+		ld.setFilePaired1(iniSection.containsKey(KEY_FILE_1) ? new SeqFile(iniSection.get(KEY_FILE_1)) : null);
+		ld.setFilePaired2(iniSection.containsKey(KEY_FILE_2) ? new SeqFile(iniSection.get(KEY_FILE_2)) : null);
+        ld.setSeFile(iniSection.containsKey(KEY_FILE_SE) ? new SeqFile(iniSection.get(KEY_FILE_SE)) : null);
+		ld.setDataset(Dataset.valueOf(iniSection.get(KEY_DATASET)));
+
 		return ld;
 	}
 }
