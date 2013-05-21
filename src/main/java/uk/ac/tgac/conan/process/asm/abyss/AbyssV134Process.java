@@ -20,6 +20,7 @@ package uk.ac.tgac.conan.process.asm.abyss;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
+import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asm.Assembler;
 import uk.ac.tgac.conan.process.asm.AssemblerArgs;
 
@@ -56,19 +57,41 @@ public class AbyssV134Process extends AbstractConanProcess implements Assembler 
         return (AssemblerArgs) this.getProcessArgs();
     }
 
+    /**
+     * Abyss will always produce unitigs
+     * @return
+     */
     @Override
     public boolean makesUnitigs() {
         return true;
     }
 
+    /**
+     * Abyss only produces contigs if at least one paired end library is provided
+     * @return
+     */
     @Override
     public boolean makesContigs() {
-        return true;
+        return containsPairedEndLib();
     }
 
+    /**
+     * Abyss only produces scaffolds if at least one paired end library is provided
+     * @return
+     */
     @Override
     public boolean makesScaffolds() {
-        return true;
+        return containsPairedEndLib();
+    }
+
+    protected boolean containsPairedEndLib() {
+        for(Library lib : this.getArgs().getLibraries()) {
+            if (lib.isPairedEnd()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public File findUnitigsFile() {

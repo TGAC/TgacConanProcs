@@ -348,15 +348,28 @@ public class Library implements Serializable {
 		
 		sb.append("[" + SECTION_PREFIX + this.getIndex().toString() + "]\n")
 		.append(KEY_NAME + "=" + this.getName() + "\n")
-		.append(KEY_AVG_INSERT_SIZE + "=" + this.getAverageInsertSize().toString() + "\n")
-		.append(KEY_INSERT_ERROR_TOLERANCE + "=" + this.getInsertErrorTolerance().toString() + "\n")
-		.append(KEY_READ_LENGTH + "=" + this.getReadLength() + "\n")
-		.append(KEY_SEQ_ORIENTATION + "=" + this.getSeqOrientation().toString() + "\n")
-		.append(KEY_USAGE + "=" + this.getUsage().toString() + "\n")
+        .append(KEY_USAGE + "=" + this.getUsage().toString() + "\n")
         .append(KEY_TYPE + "=" + this.getType().toString() + "\n");
 
-        if (this.getDataset() != null)
+        if (this.getAverageInsertSize() != null) {
+            sb.append(KEY_AVG_INSERT_SIZE + "=" + this.getAverageInsertSize().toString() + "\n");
+        }
+
+        if (this.getInsertErrorTolerance() != null) {
+		    sb.append(KEY_INSERT_ERROR_TOLERANCE + "=" + this.getInsertErrorTolerance().toString() + "\n");
+        }
+
+        if (this.getReadLength() != null) {
+		    sb.append(KEY_READ_LENGTH + "=" + this.getReadLength() + "\n");
+        }
+
+        if (this.getSeqOrientation() != null) {
+            sb.append(KEY_SEQ_ORIENTATION + "=" + this.getSeqOrientation().toString() + "\n");
+        }
+
+        if (this.getDataset() != null) {
             sb.append(KEY_DATASET + "=" + this.getDataset().toString() + "\n");
+        }
 
         if (this.getFilePaired1() != null && this.getFilePaired2() != null &&
                 (this.getType() == Type.PE || this.getType() == Type.MP)) {
@@ -376,16 +389,40 @@ public class Library implements Serializable {
 		
 		ld.setIndex(index);
 		ld.setName(iniSection.get(KEY_NAME));
-		ld.setAverageInsertSize(iniSection.containsKey(KEY_AVG_INSERT_SIZE) ? Integer.parseInt(iniSection.get(KEY_AVG_INSERT_SIZE)) : 0);
-		ld.setInsertErrorTolerance(iniSection.containsKey(KEY_INSERT_ERROR_TOLERANCE) ? Double.parseDouble(iniSection.get(KEY_INSERT_ERROR_TOLERANCE)) : 0.0);
-		ld.setReadLength(iniSection.containsKey(KEY_READ_LENGTH) ? Integer.parseInt(iniSection.get(KEY_READ_LENGTH)) : 0);
-		ld.setSeqOrientation(iniSection.containsKey(KEY_SEQ_ORIENTATION) ? SeqOrientation.valueOf(iniSection.get(KEY_SEQ_ORIENTATION).toUpperCase()) : SeqOrientation.FORWARD_REVERSE);
-		ld.setUsage(iniSection.get(KEY_USAGE));
+        ld.setUsage(iniSection.get(KEY_USAGE));
         ld.setType(Type.valueOf(iniSection.get(KEY_TYPE).toUpperCase()));
-		ld.setFilePaired1(iniSection.containsKey(KEY_FILE_1) ? new SeqFile(iniSection.get(KEY_FILE_1)) : null);
-		ld.setFilePaired2(iniSection.containsKey(KEY_FILE_2) ? new SeqFile(iniSection.get(KEY_FILE_2)) : null);
-        ld.setSeFile(iniSection.containsKey(KEY_FILE_SE) ? new SeqFile(iniSection.get(KEY_FILE_SE)) : null);
-		ld.setDataset(Dataset.valueOf(iniSection.get(KEY_DATASET)));
+
+        if (iniSection.containsKey(KEY_AVG_INSERT_SIZE)) {
+            ld.setAverageInsertSize(Integer.parseInt(iniSection.get(KEY_AVG_INSERT_SIZE)));
+        }
+
+        if (iniSection.containsKey(KEY_INSERT_ERROR_TOLERANCE)) {
+            ld.setInsertErrorTolerance(Double.parseDouble(iniSection.get(KEY_INSERT_ERROR_TOLERANCE)));
+        }
+
+		if (iniSection.containsKey(KEY_READ_LENGTH)) {
+            ld.setReadLength(Integer.parseInt(iniSection.get(KEY_READ_LENGTH)));
+        }
+
+		if (iniSection.containsKey(KEY_SEQ_ORIENTATION)) {
+            ld.setSeqOrientation(SeqOrientation.valueOf(iniSection.get(KEY_SEQ_ORIENTATION).toUpperCase()));
+        }
+
+		if (iniSection.containsKey(KEY_FILE_1)) {
+            ld.setFilePaired1(new SeqFile(iniSection.get(KEY_FILE_1)));
+        }
+
+        if (iniSection.containsKey(KEY_FILE_2)) {
+		    ld.setFilePaired2(new SeqFile(iniSection.get(KEY_FILE_2)));
+        }
+
+        if (iniSection.containsKey(KEY_FILE_SE)) {
+            ld.setSeFile(new SeqFile(iniSection.get(KEY_FILE_SE)));
+        }
+
+        if (iniSection.containsKey(KEY_DATASET)) {
+		    ld.setDataset(Dataset.valueOf(iniSection.get(KEY_DATASET)));
+        }
 
 		return ld;
 	}
