@@ -23,13 +23,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.core.data.SeqFile;
-import uk.ac.tgac.conan.process.ec.quake.QuakeV034Args;
-import uk.ac.tgac.conan.process.ec.quake.QuakeV034Process;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
@@ -84,10 +79,10 @@ public class MusketV106ProcessTest {
 
     protected MusketV106Args createMusketArgs() {
 
+
         Library lib = new Library();
         lib.setReadLength(101);
-        lib.setFilePaired1(new SeqFile("file1.fastq"));
-        lib.setFilePaired2(new SeqFile("file2.fastq"));
+        lib.setFiles("file1.fastq", "file2.fastq");
 
         MusketV106Args args = new MusketV106Args();
         args.setOutputDir(new File("musket"));

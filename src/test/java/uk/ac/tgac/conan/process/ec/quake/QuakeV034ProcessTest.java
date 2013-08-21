@@ -23,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.core.data.SeqFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,8 +89,7 @@ public class QuakeV034ProcessTest {
         args.setOutputDir(outputDir);
 
         Library lib = new Library();
-        lib.setFilePaired1(new SeqFile("file1.fastq"));
-        lib.setFilePaired2(new SeqFile("file2.fastq"));
+        lib.setFiles(pwd + "/file1.fastq", pwd + "/file2.fastq");
 
         args.setFromLibrary(lib, null, null);
 
@@ -100,7 +98,7 @@ public class QuakeV034ProcessTest {
         List<String> lines = FileUtils.readLines(readsFile);
         String line = lines.get(0);
 
-        assertTrue(line.equals("file1.fastq file2.fastq"));
+        assertTrue(line.equals(pwd + "/file1.fastq " + pwd + "/file2.fastq"));
     }
 
 

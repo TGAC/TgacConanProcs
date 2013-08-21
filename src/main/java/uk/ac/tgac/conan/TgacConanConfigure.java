@@ -18,6 +18,7 @@
 package uk.ac.tgac.conan;
 
 import org.apache.commons.io.FileUtils;
+import uk.ac.tgac.conan.core.util.JarUtils;
 
 import java.io.File;
 import java.io.IOException;

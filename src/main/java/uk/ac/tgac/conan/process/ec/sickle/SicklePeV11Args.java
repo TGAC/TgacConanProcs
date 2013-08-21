@@ -56,8 +56,8 @@ public class SicklePeV11Args extends ErrorCorrectorPairedEndArgs {
     @Override
     public void setFromLibrary(Library library, File f1, File f2) {
         this.setPairedEndInputFiles(new FilePair(
-                f1 != null ? f1 : library.getFilePaired1().getFile(),
-                f2 != null ? f2 : library.getFilePaired2().getFile()));
+                f1 != null ? f1 : library.getFile1(),
+                f2 != null ? f2 : library.getFile2()));
 
         this.outputFilePair = new FilePair(
                 new File(this.getOutputDir(), library.getName() + "_1.sickle.fastq"),

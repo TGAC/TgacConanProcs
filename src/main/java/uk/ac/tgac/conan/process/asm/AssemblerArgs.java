@@ -19,6 +19,7 @@ package uk.ac.tgac.conan.process.asm;
 
 import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
 import uk.ac.tgac.conan.core.data.Library;
+import uk.ac.tgac.conan.core.data.Organism;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,16 +31,24 @@ public abstract class AssemblerArgs implements ProcessArgs {
 
     private int kmer;
     private int coverageCutoff;
+    private int memory;
     private int threads;
     private File outputDir;
     private List<Library> libraries;
+    private Organism organism;
+    private int desiredCoverage;
+
+
 
     protected AssemblerArgs() {
         this.kmer = DEFAULT_KMER;
         this.coverageCutoff = 0;
+        this.memory = 0;
         this.threads = 0;
         this.outputDir = new File(".");
         this.libraries = new ArrayList<Library>();
+        this.desiredCoverage = 75;
+        this.organism = null;
     }
 
     public abstract AssemblerArgs copy();
@@ -86,4 +95,27 @@ public abstract class AssemblerArgs implements ProcessArgs {
         this.libraries = libraries;
     }
 
+    public int getDesiredCoverage() {
+        return desiredCoverage;
+    }
+
+    public void setDesiredCoverage(int desiredCoverage) {
+        this.desiredCoverage = desiredCoverage;
+    }
+
+    public Organism getOrganism() {
+        return organism;
+    }
+
+    public void setOrganism(Organism organism) {
+        this.organism = organism;
+    }
+
+    public int getMemory() {
+        return memory;
+    }
+
+    public void setMemory(int memory) {
+        this.memory = memory;
+    }
 }

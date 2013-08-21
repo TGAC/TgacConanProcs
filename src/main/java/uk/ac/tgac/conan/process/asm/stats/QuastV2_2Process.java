@@ -20,7 +20,6 @@ package uk.ac.tgac.conan.process.asm.stats;
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
-import uk.ac.tgac.conan.TgacConanConfigure;
 
 import java.util.ArrayList;
 import java.util.List;

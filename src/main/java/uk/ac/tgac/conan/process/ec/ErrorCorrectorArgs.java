@@ -18,7 +18,6 @@
 package uk.ac.tgac.conan.process.ec;
 
 import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
-import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
 

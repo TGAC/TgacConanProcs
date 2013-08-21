@@ -23,5 +23,7 @@ public interface Assembler extends ConanProcess {
 
     boolean usesOpenMpi();
 
+    boolean hasKParam();
+
     void initialise() throws IOException;
 }

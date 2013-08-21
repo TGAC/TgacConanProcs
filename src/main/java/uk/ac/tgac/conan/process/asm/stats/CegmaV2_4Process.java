@@ -18,10 +18,8 @@
 package uk.ac.tgac.conan.process.asm.stats;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
 
 import java.io.File;
 import java.io.IOException;

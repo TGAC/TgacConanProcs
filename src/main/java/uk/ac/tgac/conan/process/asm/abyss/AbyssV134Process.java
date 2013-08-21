@@ -157,6 +157,11 @@ public class AbyssV134Process extends AbstractConanProcess implements Assembler 
     }
 
     @Override
+    public boolean hasKParam() {
+        return true;
+    }
+
+    @Override
     public void initialise() throws IOException {
         String pwdFull = new File(".").getAbsolutePath();
         String pwd = pwdFull.substring(0, pwdFull.length() - 2);

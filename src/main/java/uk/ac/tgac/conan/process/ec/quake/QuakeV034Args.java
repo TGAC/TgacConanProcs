@@ -151,8 +151,8 @@ public class QuakeV034Args extends ErrorCorrectorPairedEndArgs {
     @Override
     public void setFromLibrary(Library lib, File f1, File f2) {
 
-        String fp1 = f1 != null ? f1.getAbsolutePath() : lib.getFilePaired1().getFilePath();
-        String fp2 = f2 != null ? f2.getAbsolutePath() : lib.getFilePaired2().getFilePath();
+        String fp1 = f1 != null ? f1.getAbsolutePath() : lib.getFile1().getAbsolutePath();
+        String fp2 = f2 != null ? f2.getAbsolutePath() : lib.getFile2().getAbsolutePath();
 
         String outLine = fp1 + " " + fp2;
 

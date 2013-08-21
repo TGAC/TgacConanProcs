@@ -26,11 +26,8 @@ import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
 import uk.ac.tgac.conan.process.asm.AssemblerArgs;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -207,36 +204,27 @@ public class SoapDeNovoV204Args extends AssemblerArgs {
 
         log.debug("Creating SOAP config file from " + libraries.size() + " libraries.  Writing config file to: " + configFile.getAbsolutePath() + ". Note that not all libraries maybe used, depending on library 'usage' paramter.");
 
+        int rank = 1;
         for (Library lib : libraries) {
 
-            // Will need to do something a little cleverer here eventually
-            if (lib.testUsage(Library.Usage.ASSEMBLING) ||
-                    lib.testUsage(Library.Usage.SCAFFOLDING) ||
-                    lib.testUsage(Library.Usage.GAP_CLOSING)) {
+            log.debug("Adding library " + lib.getName() + " to config file");
 
-                log.debug("Adding library " + lib.getName() + " to config file");
+            sj.add("[LIB]");
+            sj.add("max_rd_len=" + lib.getReadLength());
+            sj.add("avg_ins=", lib.getAverageInsertSize());
+            sj.add(lib.getSeqOrientation() != null, "reverse_seq=", lib.getSeqOrientation() == Library.SeqOrientation.FORWARD_REVERSE ? "0" : "1");
+            sj.add("asm_flags=3");
+            sj.add("rank=" + rank);
+            sj.add(lib.getFile1Type() == SeqFile.FileType.FASTQ || lib.getFile1Type() == SeqFile.FileType.UNKNOWN,
+                    "q1=", lib.getFile1().getAbsolutePath() );
+            sj.add(lib.getFile2Type() == SeqFile.FileType.FASTQ || lib.getFile2Type() == SeqFile.FileType.UNKNOWN,
+                    "q2=", lib.getFile2().getAbsolutePath());
+            //sj.add(lib.getSeFile() != null && lib.getSeFile().getFileType() == SeqFile.FileType.FASTQ, "q=", lib.getSeFile().getFilePath());
+            sj.add(lib.getFile1Type() == SeqFile.FileType.FASTA, "f1=", lib.getFile1().getAbsolutePath());
+            sj.add(lib.getFile2Type() == SeqFile.FileType.FASTA, "f2=", lib.getFile2().getAbsolutePath());
+            //sj.add(lib.getSeFile() != null && lib.getSeFile().getFileType() == SeqFile.FileType.FASTA, "f=", lib.getSeFile().getFilePath());
 
-                sj.add("[LIB]");
-                sj.add(lib.getReadLength() != null, "max_rd_len=", Integer.toString(lib.getReadLength()));
-                sj.add(lib.getAverageInsertSize() != null, "avg_ins=", Integer.toString(lib.getAverageInsertSize()));
-                sj.add(lib.getSeqOrientation() != null, "reverse_seq=", lib.getSeqOrientation() == Library.SeqOrientation.FORWARD_REVERSE ? "0" : "1");
-                sj.add("asm_flags=3");
-                sj.add(lib.getIndex() != null, "rank=", Integer.toString(lib.getIndex()));
-                sj.add( lib.getFilePaired1() != null &&
-                        (lib.getFilePaired1().getFileType() == SeqFile.FileType.FASTQ ||
-                         lib.getFilePaired1().getFileType() == SeqFile.FileType.UNKNOWN),
-                        "q1=", lib.getFilePaired1().getFilePath());
-                sj.add(lib.getFilePaired2() != null &&
-                        (lib.getFilePaired2().getFileType() == SeqFile.FileType.FASTQ ||
-                         lib.getFilePaired2().getFileType() == SeqFile.FileType.UNKNOWN),
-                        "q2=", lib.getFilePaired2().getFilePath());
-                //sj.add(lib.getSeFile() != null && lib.getSeFile().getFileType() == SeqFile.FileType.FASTQ, "q=", lib.getSeFile().getFilePath());
-                sj.add(lib.getFilePaired1() != null && lib.getFilePaired1().getFileType() == SeqFile.FileType.FASTA, "f1=", lib.getFilePaired1().getFilePath());
-                sj.add(lib.getFilePaired2() != null && lib.getFilePaired2().getFileType() == SeqFile.FileType.FASTA, "f2=", lib.getFilePaired2().getFilePath());
-                //sj.add(lib.getSeFile() != null && lib.getSeFile().getFileType() == SeqFile.FileType.FASTA, "f=", lib.getSeFile().getFilePath());
-
-            }
-
+            rank++;
         }
 
         String fileContents = sj.toString();

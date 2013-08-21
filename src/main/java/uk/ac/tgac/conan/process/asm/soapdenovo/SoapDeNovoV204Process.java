@@ -20,8 +20,6 @@ package uk.ac.tgac.conan.process.asm.soapdenovo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
-import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
-import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.tgac.conan.process.asm.Assembler;
 import uk.ac.tgac.conan.process.asm.AssemblerArgs;
 
@@ -91,6 +89,11 @@ public class SoapDeNovoV204Process extends AbstractConanProcess implements Assem
     @Override
     public boolean usesOpenMpi() {
         return false;
+    }
+
+    @Override
+    public boolean hasKParam() {
+        return true;
     }
 
     @Override

@@ -17,14 +17,11 @@
  **/
 package uk.ac.tgac.conan.process.asm.stats;
 
-import org.apache.commons.lang.StringUtils;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

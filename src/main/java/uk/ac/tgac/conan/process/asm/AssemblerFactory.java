@@ -20,6 +20,8 @@ package uk.ac.tgac.conan.process.asm;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asm.abyss.AbyssV134Args;
 import uk.ac.tgac.conan.process.asm.abyss.AbyssV134Process;
+import uk.ac.tgac.conan.process.asm.allpaths.AllpathsLgV44837Args;
+import uk.ac.tgac.conan.process.asm.allpaths.AllpathsLgV44837Process;
 import uk.ac.tgac.conan.process.asm.soapdenovo.SoapDeNovoV204Args;
 import uk.ac.tgac.conan.process.asm.soapdenovo.SoapDeNovoV204Process;
 
@@ -80,6 +82,32 @@ public enum AssemblerFactory {
 
             SoapDeNovoV204Args args = new SoapDeNovoV204Args();
             args.setKmer(kmer);
+            args.setOutputDir(outputDir);
+            args.setLibraries(libs);
+
+            return args;
+        }
+    },
+    ALLPATHSLG_V44837 {
+        @Override
+        public String getToolName() {
+            return "ALLPATHS-LG";
+        }
+
+        @Override
+        public Assembler create() {
+            return new AllpathsLgV44837Process();
+        }
+
+        @Override
+        public Assembler create(AssemblerArgs args) {
+            return new AllpathsLgV44837Process(args);
+        }
+
+        @Override
+        public AssemblerArgs createArgs(int kmer, List<Library> libs, File outputDir) {
+
+            AllpathsLgV44837Args args = new AllpathsLgV44837Args();
             args.setOutputDir(outputDir);
             args.setLibraries(libs);
 

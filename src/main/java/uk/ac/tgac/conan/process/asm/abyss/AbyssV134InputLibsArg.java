@@ -63,7 +63,7 @@ public class AbyssV134InputLibsArg {
 
         for (Library lib : this.libs) {
             if (lib.getType() == type) {
-                peLibs.put(lib.getName(), new FilePair(lib.getFilePaired1().getFile(), lib.getFilePaired2().getFile()));
+                peLibs.put(lib.getName(), new FilePair(lib.getFile1(), lib.getFile2()));
             }
         }
 
@@ -74,8 +74,8 @@ public class AbyssV134InputLibsArg {
         Set<File> seLibs = new HashSet<File>();
 
         for (Library lib : this.libs) {
-            if (lib.getSeFile() != null) {
-                seLibs.add(lib.getSeFile().getFile());
+            if (lib.getType() == Library.Type.SE) {
+                seLibs.add(lib.getFile1());
             }
         }
 
@@ -87,20 +87,30 @@ public class AbyssV134InputLibsArg {
     public String toString() {
 
         Map<String, FilePair> peLibs = getPairedLibs(Library.Type.PAIRED_END);
+        Map<String, FilePair> opeLibs = getPairedLibs(Library.Type.OVERLAPPING_PAIRED_END);
         Map<String, FilePair> mpLibs = getPairedLibs(Library.Type.MATE_PAIR);
         Set<File> seLibs = getSingleEndLibs();
 
         StringBuilder sb = new StringBuilder();
 
-        if (peLibs.size() > 0) {
+        if (peLibs.size() > 0 || opeLibs.size() > 0) {
 
             sb.append("lib='");
-            sb.append(StringUtils.join(peLibs.keySet(), " "));
+
+            String peKeys = StringUtils.join(peLibs.keySet(), " ");
+            String opeKeys = StringUtils.join(opeLibs.keySet(), " ");
+            String keys = peKeys + " " + opeKeys;
+            sb.append(keys.trim());
+
             sb.append("'");
 
             sb.append(" ");
 
-            sb.append(joinPairedLibs(peLibs));
+            String peVals = joinPairedLibs(peLibs);
+            String opeVals = joinPairedLibs(opeLibs);
+            String vals = peVals + " " + opeVals;
+
+            sb.append(vals.trim());
 
             sb.append(" ");
         }
@@ -178,11 +188,14 @@ public class AbyssV134InputLibsArg {
 
     protected static Library createNewPELibrary(String libPath1, String libPath2, Library.Type type) {
 
+        List<SeqFile> files = new ArrayList<SeqFile>();
+        files.add(new SeqFile(libPath1));
+        files.add(new SeqFile(libPath2));
+
         Library lib = new Library();
 
         lib.setType(type);
-        lib.setFilePaired1(new SeqFile(libPath1));
-        lib.setFilePaired2(new SeqFile(libPath2));
+        lib.setFiles(files);
         lib.setSeqOrientation(type == Library.Type.PE ? Library.SeqOrientation.FR : Library.SeqOrientation.RF);
 
         return lib;
@@ -190,10 +203,13 @@ public class AbyssV134InputLibsArg {
 
     protected static Library createNewSELibrary(String libPath) {
 
+        List<SeqFile> files = new ArrayList<SeqFile>();
+        files.add(new SeqFile(libPath));
+
         Library lib = new Library();
 
         lib.setType(Library.Type.SE);
-        lib.setSeFile(new SeqFile(libPath));
+        lib.setFiles(files);
 
         return lib;
     }

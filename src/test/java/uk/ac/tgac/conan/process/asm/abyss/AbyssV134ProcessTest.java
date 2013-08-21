@@ -29,7 +29,6 @@ import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.ebi.fgpt.conan.utils.CommandExecutionException;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.core.data.SeqFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -79,22 +78,10 @@ public class AbyssV134ProcessTest {
 
 
     private List<Library> createLocalPETestLibrary() {
-        SeqFile peFile1 = new SeqFile();
-        peFile1.setFileType(SeqFile.FileType.FASTQ);
-        peFile1.setFilePath(pwd + "/tools/mass/LIB1896_R1.r95.fastq");
-
-        SeqFile peFile2 = new SeqFile();
-        peFile2.setFileType(SeqFile.FileType.FASTQ);
-        peFile2.setFilePath(pwd + "/tools/mass/LIB1896_R2.r95.fastq");
 
         Library peLib = new Library();
-        peLib.setDataset(Library.Dataset.RAW);
         peLib.setName("peLib1");
-        peLib.setIndex(1);
-        peLib.setUsage("ASM");
-        peLib.setType(Library.Type.PE);
-        peLib.setFilePaired1(peFile1);
-        peLib.setFilePaired2(peFile2);
+        peLib.setFiles(pwd + "/tools/mass/LIB1896_R1.r95.fastq", pwd + "/tools/mass/LIB1896_R2.r95.fastq");
 
         List<Library> libs = new ArrayList<Library>();
         libs.add(peLib);

@@ -17,10 +17,6 @@
  **/
 package uk.ac.tgac.conan.core.data;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
-
 /**
  * User: maplesod
  * Date: 26/04/13
@@ -28,15 +24,5 @@ import static org.junit.Assert.assertTrue;
  */
 public class LibraryTest {
 
-    @Test
-    public void testUsage() {
 
-        Library lib = new Library();
-        lib.setUsage("ASM");
-
-        boolean result = lib.testUsage(Library.Usage.ASSEMBLING);
-
-        assertTrue(result);
-
-    }
 }
