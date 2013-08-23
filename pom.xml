@@ -185,15 +185,6 @@
         </dependency>
 
 
-        <!-- Ini4J -->
-
-        <dependency>
-            <groupId>org.ini4j</groupId>
-            <artifactId>ini4j</artifactId>
-            <version>0.5.2</version>
-        </dependency>
-
-
         <!-- Persistence -->
 
         <dependency>

@@ -69,7 +69,7 @@ public class Library {
     public static final String KEY_ATTR_AVG_INSERT_SIZE         = "avg_insert_size";
 	public static final String KEY_ATTR_INSERT_ERROR_TOLERANCE  = "insert_err_tolerance";
 	public static final String KEY_ATTR_READ_LENGTH             = "read_length";
-	public static final String KEY_ATTR_SEQ_ORIENTATION         = "seq_orientation";
+	public static final String KEY_ATTR_SEQ_ORIENTATION         = "orientation";
 	public static final String KEY_ATTR_TYPE                    = "type";
     public static final String KEY_ATTR_PHRED                   = "phred";
 
@@ -122,14 +122,14 @@ public class Library {
 
         // Optional
         String phredString = XmlHelper.getTextValue(ele, KEY_ATTR_PHRED);
-        this.phred = phredString == null ? null : Phred.valueOf(phredString.toUpperCase());
+        this.phred = phredString == null || phredString.isEmpty() ? null : Phred.valueOf(phredString.toUpperCase());
 
         // Some files (we test later if there are the correct number)
         Element fileElements = XmlHelper.getDistinctElementByName(ele, KEY_ELEM_FILES);
         NodeList nodes = fileElements.getElementsByTagName(KEY_ELEM_FILE_PATH);
         for(int i = 0; i < nodes.getLength(); i++) {
-            Element pathElement = (Element)nodes.item(i);
-            this.files.add(new SeqFile(pathElement.getNodeValue()));
+            String filePath = ((Element)nodes.item(i)).getFirstChild().getNodeValue();
+            this.files.add(new SeqFile(filePath));
         }
     }
 
@@ -189,8 +189,18 @@ public class Library {
         this.phred = phred;
     }
 
-    public List<SeqFile> getFiles() {
+    public List<SeqFile> getSeqFiles() {
         return files;
+    }
+
+    public List<File> getFiles() {
+
+        List<File> fs = new ArrayList<File>();
+        for(SeqFile seqFile : this.files) {
+           fs.add(seqFile.getFile());
+        }
+
+        return fs;
     }
 
     public void setFiles(List<SeqFile> files) {
@@ -238,7 +248,12 @@ public class Library {
         copy.setType(this.type);
         copy.setPhred(this.phred);
 
-        // Todo files
+        if (this.isPairedEnd()) {
+            copy.setFiles(this.getFile1().getAbsolutePath(), this.getFile2().getAbsolutePath());
+        }
+        else {
+            copy.setFiles(this.getFile1().getAbsolutePath(), null);
+        }
 
         return copy;
     }
