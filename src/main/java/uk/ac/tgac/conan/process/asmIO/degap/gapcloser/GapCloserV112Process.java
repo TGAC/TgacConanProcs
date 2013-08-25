@@ -38,7 +38,7 @@ public class GapCloserV112Process extends AbstractAssemblyIOProcess {
 
 
     public static final String EXE = "GapCloser";
-    public static final String NAME = "GapCloser";
+    public static final String NAME = "GapCloser_V1.12";
     public static final String TYPE = "degapper";
 
 
