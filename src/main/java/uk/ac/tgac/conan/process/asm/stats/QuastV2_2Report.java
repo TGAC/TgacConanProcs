@@ -29,15 +29,15 @@ import java.util.List;
  * Date: 12/08/13
  * Time: 13:29
  */
-public class QuastV2_4Report {
+public class QuastV2_2Report {
 
     private List<QuastV2_2AssemblyStats> statList;
 
-    public QuastV2_4Report() {
+    public QuastV2_2Report() {
         statList = new ArrayList<QuastV2_2AssemblyStats>();
     }
 
-    public QuastV2_4Report(File reportFile) throws IOException {
+    public QuastV2_2Report(File reportFile) throws IOException {
         parse(reportFile);
     }
 

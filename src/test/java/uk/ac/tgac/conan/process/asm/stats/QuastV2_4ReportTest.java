@@ -37,7 +37,7 @@ public class QuastV2_4ReportTest {
     @Test
     public void testQuastReport() throws IOException {
 
-        QuastV2_4Report report = new QuastV2_4Report(quastReportFile);
+        QuastV2_2Report report = new QuastV2_2Report(quastReportFile);
 
         assertTrue(report.getAssemblyStats(0).getName().equalsIgnoreCase("rampart-5pc-k61-scaffolds"));
         assertTrue(report.getAssemblyStats(7).getName().equalsIgnoreCase("rampart-100pc-k71-scaffolds"));
