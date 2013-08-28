@@ -55,8 +55,19 @@ public class QuastV2_2Report {
                 String[] parts = tLine.split("\\s+");
 
                 for(int i = 1; i < parts.length; i++) {
-                    statList.add(new QuastV2_2AssemblyStats());
-                    statList.get(i-1).setName(parts[i]);
+
+                    String name = parts[i];
+
+                    boolean skip = false;
+                    if (i+1 < parts.length && parts[i+1].equalsIgnoreCase("broken")) {
+                        name += "_broken";
+                        skip = true;
+                    }
+                    QuastV2_2AssemblyStats stats = new QuastV2_2AssemblyStats();
+                    stats.setName(name);
+                    statList.add(stats);
+
+                    if (skip) i++;
                 }
             }
             else if (tLine.startsWith("# contigs (>= 0 bp)")) {

@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 public class QuastV2_4ReportTest {
 
     private File quastReportFile = FileUtils.toFile(this.getClass().getResource("/stats/quast-report.txt"));
+    private File quastReportScaffoldsFile = FileUtils.toFile(this.getClass().getResource("/stats/quast-report-scaffolds.txt"));
 
     @Test
     public void testQuastReport() throws IOException {
@@ -41,6 +42,15 @@ public class QuastV2_4ReportTest {
 
         assertTrue(report.getAssemblyStats(0).getName().equalsIgnoreCase("rampart-5pc-k61-scaffolds"));
         assertTrue(report.getAssemblyStats(7).getName().equalsIgnoreCase("rampart-100pc-k71-scaffolds"));
+    }
+
+    @Test
+    public void testQuastScaffoldsReport() throws IOException {
+
+        QuastV2_2Report report = new QuastV2_2Report(quastReportScaffoldsFile);
+
+        assertTrue(report.getAssemblyStats(0).getName().equalsIgnoreCase("abyss-raw-kmer-cvg-all_k-61-scaffolds_broken"));
+        assertTrue(report.getAssemblyStats(7).getName().equalsIgnoreCase("abyss-raw-kmer-cvg-all_k-75-scaffolds"));
     }
 
 
