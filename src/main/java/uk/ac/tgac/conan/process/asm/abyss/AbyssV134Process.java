@@ -27,6 +27,7 @@ import uk.ac.tgac.conan.process.asm.AssemblerArgs;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * User: maplesod
@@ -157,7 +158,22 @@ public class AbyssV134Process extends AbstractConanProcess implements Assembler 
     }
 
     @Override
+    public boolean doesSubsampling() {
+        return false;
+    }
+
+    @Override
     public boolean hasKParam() {
+        return true;
+    }
+
+    /**
+     * Abyss eats pretty much anything
+     * @param libraries
+     * @return
+     */
+    @Override
+    public boolean acceptsLibraries(List<Library> libraries) {
         return true;
     }
 

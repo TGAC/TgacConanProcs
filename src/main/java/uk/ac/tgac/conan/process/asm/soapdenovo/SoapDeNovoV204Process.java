@@ -20,11 +20,13 @@ package uk.ac.tgac.conan.process.asm.soapdenovo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
+import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asm.Assembler;
 import uk.ac.tgac.conan.process.asm.AssemblerArgs;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * User: maplesod
@@ -92,7 +94,17 @@ public class SoapDeNovoV204Process extends AbstractConanProcess implements Assem
     }
 
     @Override
+    public boolean doesSubsampling() {
+        return false;
+    }
+
+    @Override
     public boolean hasKParam() {
+        return true;
+    }
+
+    @Override
+    public boolean acceptsLibraries(List<Library> libraries) {
         return true;
     }
 

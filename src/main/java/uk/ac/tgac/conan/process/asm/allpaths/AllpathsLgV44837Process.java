@@ -97,6 +97,11 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
         return false;
     }
 
+    @Override
+    public boolean doesSubsampling() {
+        return true;
+    }
+
     /**
      * Actually ALLPATHS does have a K param but apparently we shouldn't mess about with it according to the ALLPATHs
      * documentation
@@ -106,6 +111,30 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
     public boolean hasKParam() {
 
         return false;
+    }
+
+    /**
+     * ALLPATHS requires at least a "fragment" library (i.e. an overlapping paired end library), and a "jumping" library
+     * (i.e. a normal paired end or mate pair library)
+     * @param libraries
+     * @return
+     */
+    @Override
+    public boolean acceptsLibraries(List<Library> libraries) {
+
+        boolean foundFragmentLib = false;
+        boolean foundJumpingLib = false;
+
+        for(Library lib : libraries) {
+            if (lib.getType() == Library.Type.OPE) {
+                foundFragmentLib = true;
+            }
+            else if (lib.getType() == Library.Type.PE || lib.getType() == Library.Type.MP) {
+                foundJumpingLib = true;
+            }
+        }
+
+        return foundFragmentLib && foundJumpingLib;
     }
 
     @Override

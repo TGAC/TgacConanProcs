@@ -62,16 +62,17 @@ public class Library {
 
     // **** Xml Key names ****
 
-	public static final String KEY_ELEM_FILES                   = "files";
-    public static final String KEY_ELEM_FILE_PATH               = "path";
+    private static final String KEY_ELEM_FILES                   = "files";
+    private static final String KEY_ELEM_FILE_PATH               = "path";
 
-    public static final String KEY_ATTR_NAME                    = "name";
-    public static final String KEY_ATTR_AVG_INSERT_SIZE         = "avg_insert_size";
-	public static final String KEY_ATTR_INSERT_ERROR_TOLERANCE  = "insert_err_tolerance";
-	public static final String KEY_ATTR_READ_LENGTH             = "read_length";
-	public static final String KEY_ATTR_SEQ_ORIENTATION         = "orientation";
-	public static final String KEY_ATTR_TYPE                    = "type";
-    public static final String KEY_ATTR_PHRED                   = "phred";
+    private static final String KEY_ATTR_NAME                    = "name";
+    private static final String KEY_ATTR_AVG_INSERT_SIZE         = "avg_insert_size";
+    private static final String KEY_ATTR_INSERT_ERROR_TOLERANCE  = "insert_err_tolerance";
+    private static final String KEY_ATTR_READ_LENGTH             = "read_length";
+    private static final String KEY_ATTR_SEQ_ORIENTATION         = "orientation";
+    private static final String KEY_ATTR_TYPE                    = "type";
+    private static final String KEY_ATTR_PHRED                   = "phred";
+    private static final String KEY_ATTR_UNIFORM                 = "uniform";
 
 
 
@@ -87,6 +88,7 @@ public class Library {
 	private Type type;
     private Phred phred;
 	private List<SeqFile> files;
+    private boolean uniform;
 
 
     /**
@@ -101,6 +103,7 @@ public class Library {
         this.type = Type.PE;
         this.phred = Phred.PHRED_64;
         this.files = new ArrayList<SeqFile>();
+        this.uniform = true;
     }
 
     /**
@@ -121,8 +124,13 @@ public class Library {
         this.type = Type.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_TYPE).toUpperCase());
 
         // Optional
-        String phredString = XmlHelper.getTextValue(ele, KEY_ATTR_PHRED);
-        this.phred = phredString == null || phredString.isEmpty() ? null : Phred.valueOf(phredString.toUpperCase());
+        this.phred = ele.hasAttribute(KEY_ATTR_PHRED) ?
+                Phred.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_PHRED).toUpperCase()) :
+                Phred.PHRED_64;
+
+        this.uniform = ele.hasAttribute(KEY_ATTR_UNIFORM) ?
+                XmlHelper.getBooleanValue(ele, KEY_ATTR_UNIFORM) :
+                true;
 
         // Some files (we test later if there are the correct number)
         Element fileElements = XmlHelper.getDistinctElementByName(ele, KEY_ELEM_FILES);
@@ -189,6 +197,14 @@ public class Library {
         this.phred = phred;
     }
 
+    public boolean isUniform() {
+        return uniform;
+    }
+
+    public void setUniform(boolean uniform) {
+        this.uniform = uniform;
+    }
+
     public List<SeqFile> getSeqFiles() {
         return files;
     }
@@ -247,6 +263,7 @@ public class Library {
         copy.setSeqOrientation(this.seqOrientation);
         copy.setType(this.type);
         copy.setPhred(this.phred);
+        copy.setUniform(this.uniform);
 
         if (this.isPairedEnd()) {
             copy.setFiles(this.getFile1().getAbsolutePath(), this.getFile2().getAbsolutePath());
