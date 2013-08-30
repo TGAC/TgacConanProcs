@@ -36,6 +36,32 @@ import java.util.List;
  */
 public class AllpathsLgV44837Process extends AbstractConanProcess implements Assembler {
 
+
+    private static class GroupInfo {
+        private File inGroupsPhred33;
+        private File inGroupsPhred64;
+        private List<String> groupNames;
+
+        private GroupInfo(File inGroupsPhred33, File inGroupsPhred64, List<String> groupNames) {
+            this.inGroupsPhred33 = inGroupsPhred33;
+            this.inGroupsPhred64 = inGroupsPhred64;
+            this.groupNames = groupNames;
+        }
+
+        private File getInGroupsPhred33() {
+            return inGroupsPhred33;
+        }
+
+        private File getInGroupsPhred64() {
+            return inGroupsPhred64;
+        }
+
+        private List<String> getGroupNames() {
+            return groupNames;
+        }
+    }
+
+
     private File refDir;
     private File cacheDir;
     private File dataDir;
@@ -43,8 +69,7 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
     private File assembliesDir;
 
     private File inLibs;
-    private File inGroupsPhred33;
-    private File inGroupsPhred64;
+    private GroupInfo groupInfo;
 
     private AllpathsLgV44837Args allpathsArgs;
 
@@ -148,14 +173,25 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
         this.createLibFile(this.inLibs, allpathsArgs.getLibraries());
 
         // Create groups input files (sets inGroupsPhredXX)
-        this.createGroupFiles(allpathsArgs.getLibraries());
+        this.groupInfo = this.createGroupFiles(allpathsArgs.getLibraries());
 
-        // Setup ALLPATHS dirs
-        this.refDir = new File(allpathsArgs.getOutputDir(), allpathsArgs.getOrganism().getName());
+        String fileSystemFriendlyName = allpathsArgs.getOrganism().getName().replaceAll(" ", "_");
+
+        // Define ALLPATHS dirs
+        this.refDir = new File(allpathsArgs.getOutputDir(), fileSystemFriendlyName);
         this.cacheDir = new File(refDir, "cache");
         this.dataDir = new File(refDir, "data");
         this.runDir = new File(dataDir, "rampart");
         this.assembliesDir = new File(runDir, "ASSEMBLIES/test");
+
+        // Create required ALLPATHS dirs
+        if (!this.cacheDir.exists()) {
+            if (!this.cacheDir.mkdirs()) {
+                throw new IOException("Could not create cache directory for ALLPATHS-LG: " + this.cacheDir.getAbsolutePath());
+            }
+        }
+
+
     }
 
     protected void createLibFile(File libFile, List<Library> libraries) throws IOException {
@@ -180,7 +216,7 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
                     paired = "1";
                     fragSize = Integer.toString(lib.getAverageInsertSize());
                     fragDev = Integer.toString((int)(lib.getAverageInsertSize() * lib.getInsertErrorTolerance()));
-                    readOrientation = lib.getSeqOrientation() == Library.SeqOrientation.RF ? "inward" : "outward";
+                    readOrientation = lib.getSeqOrientation() == Library.SeqOrientation.FR ? "inward" : "outward";
                     break;
                 case PE:
                 case MP:
@@ -188,7 +224,7 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
                     paired = "1";
                     insertSize = Integer.toString(lib.getAverageInsertSize());
                     insertDev = Integer.toString((int)(lib.getAverageInsertSize() * lib.getInsertErrorTolerance()));
-                    readOrientation = lib.getSeqOrientation() == Library.SeqOrientation.RF ? "inward" : "outward";
+                    readOrientation = lib.getSeqOrientation() == Library.SeqOrientation.FR ? "inward" : "outward";
                     break;
                 case SE:
                     type = "long";
@@ -202,7 +238,7 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
             List<String> parts = new ArrayList<String>();
             parts.add(lib.getName());
             parts.add("rampart");
-            parts.add(allpathsArgs.getOrganism().getName());
+            parts.add(allpathsArgs.getOrganism().getName().replaceAll(" ", "_"));
             parts.add(type);
             parts.add(paired);
             parts.add(fragSize);
@@ -219,15 +255,21 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
         FileUtils.writeLines(libFile, lines);
     }
 
-    private void createGroupFiles(List<Library> libraries) throws IOException {
+    private GroupInfo createGroupFiles(List<Library> libraries) throws IOException {
 
         int countOpe = 0;
         int countPe = 0;
         int countMp = 0;
         int countLong = 0;
 
-        List<String> phred33Lines = new ArrayList<String>();
-        List<String> phred64Lines = new ArrayList<String>();
+        List<String> phred33Lines = new ArrayList<>();
+        List<String> phred64Lines = new ArrayList<>();
+        List<String> groupNames = new ArrayList<>();
+
+        final String groupHeader = "group_name, library_name, file_name";
+
+        phred33Lines.add(groupHeader);
+        phred64Lines.add(groupHeader);
 
         for(Library lib : libraries) {
 
@@ -253,6 +295,8 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
                 default:
             }
 
+            groupNames.add(groupName);
+
             List<String> parts = new ArrayList<String>();
             parts.add(groupName);
             parts.add(lib.getName());
@@ -261,7 +305,7 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
                 parts.add(lib.getFile1().getAbsolutePath());
             }
             else {
-                parts.add("\"{" + lib.getFile1().getAbsolutePath() + "," + lib.getFile2().getAbsolutePath() + "}\"");
+                parts.add(createGlobPattern(lib.getFile1(), lib.getFile2()));
             }
 
             String groupLine = StringUtils.join(parts, ", ");
@@ -272,56 +316,94 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
             else {
                 phred33Lines.add(groupLine);
             }
+
+
         }
 
-        if (phred33Lines.size() > 0) {
-            this.inGroupsPhred33 = new File(allpathsArgs.getOutputDir(), "in_groups_phred33.csv");
-            FileUtils.writeLines(this.inGroupsPhred33, phred33Lines);
+        File p33File = null;
+        File p64File = null;
+
+        if (phred33Lines.size() > 1) {
+            p33File = new File(allpathsArgs.getOutputDir(), "in_groups_phred33.csv");
+            FileUtils.writeLines(p33File, phred33Lines);
         }
 
-        if (phred64Lines.size() > 0) {
-            this.inGroupsPhred64 = new File(allpathsArgs.getOutputDir(), "in_groups_phred64.csv");
-            FileUtils.writeLines(this.inGroupsPhred64, phred64Lines);
+        if (phred64Lines.size() > 1) {
+            p64File = new File(allpathsArgs.getOutputDir(), "in_groups_phred64.csv");
+            FileUtils.writeLines(p64File, phred64Lines);
         }
+
+        return new GroupInfo(p33File, p64File, groupNames);
     }
 
-    private void createGroupFile(File groupFile, List<Library> libs) throws IOException {
+    public String createGlobPattern(File file1, File file2) throws IOException {
 
-        List<String> lines = new ArrayList<String>();
+        String filePath1 = file1.getAbsolutePath();
+        String filePath2 = file2.getAbsolutePath();
 
-        lines.add("group_name, library_name, file_name");
-
-        for(Library lib : libs) {
-
+        if (filePath1.length() != filePath2.length()) {
+            throw new IOException("Can't create GLOB pattern of these two file paths: " + filePath1 + ", " + filePath2 + "; " +
+                    "paths must be the same length and differ in only one character (i.e. the file pair id)");
         }
 
-        FileUtils.writeLines(groupFile, lines);
+
+        int diffCount = 0;
+        int diffIndex = 0;
+        for(int i = 0; i < filePath1.length(); i++) {
+
+            if (filePath1.charAt(i) != filePath2.charAt(i)) {
+                diffCount++;
+                diffIndex = i;
+            }
+        }
+
+        if (diffCount == 0) {
+            throw new IOException("File paths are identical can't create glob pattern: " + filePath1);
+        }
+        else if (diffCount > 1) {
+            throw new IOException("Found " + diffCount + " differences in file paths: " + filePath1 + ", " + filePath2 +
+                    " Can only create glob pattern if there is a single character difference");
+        }
+
+        return filePath1.substring(0, diffIndex) + "?" + filePath1.substring(diffIndex+1);
     }
+
 
     @Override
     public String getCommand() {
 
         List<String> mainCommands = new ArrayList<String>();
 
+        // Generate cache libraries command ****
+        mainCommands.add(makeCacheLibsCommand());
 
-        // **** Generate cache library groups command(s) ****
+        // **** Generate cache groups command(s) ****
 
-        if (this.inGroupsPhred33 != null) {
-            mainCommands.add(makeCacheGroupsCommand(this.inGroupsPhred33, false));
+        if (this.groupInfo.getInGroupsPhred33() != null) {
+            mainCommands.add(makeCacheGroupsCommand(this.groupInfo.getInGroupsPhred33(), false));
         }
 
-        if (this.inGroupsPhred64 != null) {
-            mainCommands.add(makeCacheGroupsCommand(this.inGroupsPhred64, true));
+        if (this.groupInfo.getInGroupsPhred64() != null) {
+            mainCommands.add(makeCacheGroupsCommand(this.groupInfo.getInGroupsPhred64(), true));
         }
 
         // **** Generated ALLPATHS-LG cache to input commands ****
-        mainCommands.add(makeCacheToInputsCommand());
+        mainCommands.add(makeCacheToInputsCommand(this.groupInfo.getGroupNames()));
 
         // **** Generate run ALLPATHS-LG command ****
         mainCommands.add(makeRunCommand());
 
         // Join commands
         return StringUtils.join(mainCommands, "; ");
+    }
+
+    private String makeCacheLibsCommand() {
+
+        return "CacheLibs.pl " +
+                "CACHE_DIR=" + this.cacheDir.getAbsolutePath() + " " +
+                "IN_LIBS_CSV=" + this.inLibs.getAbsolutePath() + " " +
+                "ACTION=Add " +
+                "OVERWRITE=True";
     }
 
     protected String makeCacheGroupsCommand(File inputCsv, boolean phred64) {
@@ -338,10 +420,10 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
     }
 
 
-    protected String makeCacheToInputsCommand() {
+    protected String makeCacheToInputsCommand(List<String> groupNames) {
 
-        String groupsString   = makeGroupsString(allpathsArgs.getLibraries());
-        String coverageString = makeCoverageString(allpathsArgs.getLibraries().size(), allpathsArgs.getDesiredCoverage());
+        String groupsString   = makeGroupsString(groupNames);
+        String coverageString = makeCoverageString(groupNames.size(), allpathsArgs.getDesiredCoverage());
 
         return  "CacheToAllPathsInputs.pl " +
                 "CACHE_DIR=" + this.cacheDir.getAbsolutePath() + " " +
@@ -352,18 +434,15 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
                 "PLOIDY=" + allpathsArgs.getOrganism().getPloidy();
     }
 
-    private String makeGroupsString(List<Library> libraries) {
+    private String makeGroupsString(List<String> groupNames) {
 
-        List<String> groups = new ArrayList<String>();
-
-        for(Library lib : libraries) {
-            groups.add(lib.getName());
-        }
-
-        return "\"{" + StringUtils.join(groups, ",") + "}\"";
+        return "'{" + StringUtils.join(groupNames, ",") + "}'";
     }
 
     private String makeCoverageString(int size, int desiredCoverage) {
+
+        if (desiredCoverage == -1)
+            return "";
 
         List<String> coverages = new ArrayList<String>();
 
@@ -371,7 +450,7 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
             coverages.add(Integer.toString(desiredCoverage));
         }
 
-        return "\"{" + StringUtils.join(coverages, ",") + "}\"";
+        return "'{" + StringUtils.join(coverages, ",") + "}'";
     }
 
 
@@ -379,7 +458,7 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
 
         return "RunAllPathsLG " +
                 "PRE=" + allpathsArgs.getOutputDir().getAbsolutePath() + " " +
-                "REFERENCE_NAME=rampart " +
+                "REFERENCE_NAME=" + allpathsArgs.getOrganism().getName().replaceAll(" ", "_") + " " +
                 "DATA_SUBDIR=data " +
                 "RUN=rampart " +
                 "THREADS=" + allpathsArgs.getThreads() + " " +

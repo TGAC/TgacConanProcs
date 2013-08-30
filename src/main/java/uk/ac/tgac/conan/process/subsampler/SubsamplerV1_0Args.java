@@ -17,14 +17,11 @@
  **/
 package uk.ac.tgac.conan.process.subsampler;
 
-import org.apache.commons.lang3.StringUtils;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SubsamplerV1_0Args implements ProcessArgs {

@@ -4,12 +4,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import uk.ac.tgac.conan.process.asm.stats.QuastV2_2Args;
-import uk.ac.tgac.conan.process.asm.stats.QuastV2_2Process;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
