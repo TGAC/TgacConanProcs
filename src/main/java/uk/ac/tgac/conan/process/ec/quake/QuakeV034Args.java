@@ -93,7 +93,7 @@ public class QuakeV034Args extends ErrorCorrectorPairedEndArgs {
             String base2 = FilenameUtils.getBaseName(inputFiles.getFile2().getName());
 
             String corOut1FileName = base1 + ".cor." + ext1;
-            String corOut2FileName = base2 + ".cor." + ext1;
+            String corOut2FileName = base2 + ".cor." + ext2;
 
             File corOut1 = new File(this.getOutputDir(), corOut1FileName);
             File corOut2 = new File(this.getOutputDir(), corOut2FileName);
@@ -117,7 +117,7 @@ public class QuakeV034Args extends ErrorCorrectorPairedEndArgs {
             String base2 = FilenameUtils.getBaseName(inputFiles.getFile2().getName());
 
             String seCorOut1FileName = base1 + ".cor_single." + ext1;
-            String seCorOut2FileName = base2 + ".cor_single." + ext1;
+            String seCorOut2FileName = base2 + ".cor_single." + ext2;
 
             File seCorOut1 = new File(this.getOutputDir(), seCorOut1FileName);
             File seCorOut2 = new File(this.getOutputDir(), seCorOut2FileName);
@@ -149,10 +149,22 @@ public class QuakeV034Args extends ErrorCorrectorPairedEndArgs {
     }
 
     @Override
-    public void setFromLibrary(Library lib, File f1, File f2) {
+    public List<File> getCorrectedFiles() {
+        List<File> correctedFiles = new ArrayList<>();
 
-        String fp1 = f1 != null ? f1.getAbsolutePath() : lib.getFile1().getAbsolutePath();
-        String fp2 = f2 != null ? f2.getAbsolutePath() : lib.getFile2().getAbsolutePath();
+        FilePair fp = getPairedEndCorrectedFiles();
+
+        correctedFiles.add(fp.getFile1());
+        correctedFiles.add(fp.getFile2());
+
+        return correctedFiles;
+    }
+
+    @Override
+    public void setFromLibrary(Library lib, List<File> files) {
+
+        String fp1 = files.get(0).getAbsolutePath();
+        String fp2 = files.get(1).getAbsolutePath();
 
         String outLine = fp1 + " " + fp2;
 

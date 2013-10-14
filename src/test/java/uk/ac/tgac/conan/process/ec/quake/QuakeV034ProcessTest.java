@@ -91,7 +91,7 @@ public class QuakeV034ProcessTest {
         Library lib = new Library();
         lib.setFiles(pwd + "/file1.fastq", pwd + "/file2.fastq");
 
-        args.setFromLibrary(lib, null, null);
+        args.setFromLibrary(lib);
 
         File readsFile = args.getReadsListFile();
 

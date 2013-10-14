@@ -182,11 +182,15 @@ public class MusketV106Args extends ErrorCorrectorPairedEndArgs {
     }
 
     @Override
-    public void setFromLibrary(Library lib, File f1, File f2) {
+    public List<File> getCorrectedFiles() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setFromLibrary(Library lib, List<File> files) {
 
         this.setPairedEndInputFiles(new FilePair(
-                f1 != null ? f1 : lib.getFile1(),
-                f2 != null ? f2 : lib.getFile2()));
+                files.get(0), files.get(1)));
 
         this.readLength = lib.getReadLength();
 

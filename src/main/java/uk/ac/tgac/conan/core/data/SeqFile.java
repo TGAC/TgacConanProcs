@@ -17,12 +17,9 @@
  **/
 package uk.ac.tgac.conan.core.data;
 
-import javax.persistence.*;
 import java.io.File;
 import java.io.Serializable;
 
-@Entity
-@Table(schema="rampart",name="seq_file")
 public class SeqFile implements Serializable {
 
 	private static final long serialVersionUID = -3958558031764287299L;
@@ -54,40 +51,16 @@ public class SeqFile implements Serializable {
 		}
 	}
 	
-	@Id 
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
-	
-	@ManyToOne(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-	@JoinColumn(name="library_id")
 	private Library library;
-	
-	@Column(name="file_path")
 	private String filePath;
-	
-	@Enumerated(EnumType.STRING)
-	@Column(name="file_type")
 	private FileType fileType;
-	
-	@Column(name = "base_count")
 	private Long baseCount;
-
-	@Column(name = "seq_count")
 	private Long seqCount;
-
-	@Column(name = "a_count")
 	private Long aCount;
-
-	@Column(name = "c_count")
 	private Long cCount;
-
-	@Column(name = "g_count")
 	private Long gCount;
-
-	@Column(name = "t_count")
 	private Long tCount;
-
-	@Column(name = "n_count")
 	private Long nCount;
 	
 	public SeqFile() {

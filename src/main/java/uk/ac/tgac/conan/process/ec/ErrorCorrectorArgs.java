@@ -17,9 +17,14 @@
  **/
 package uk.ac.tgac.conan.process.ec;
 
+import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
+import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public abstract class ErrorCorrectorArgs implements ProcessArgs {
 
@@ -91,10 +96,34 @@ public abstract class ErrorCorrectorArgs implements ProcessArgs {
         this.outputDir = outputDir;
     }
 
-
     public abstract ErrorCorrectorArgs copy();
 
-    public abstract boolean isSingleEndOnly();
+    public abstract List<File> getCorrectedFiles();
 
+    public abstract boolean isPairedEnd();
 
+    /**
+     * Configures error corrector args using a Library object
+     * @param lib
+     */
+    public void setFromLibrary(Library lib) {
+
+        List<File> files = new ArrayList<>();
+        if (lib.isPairedEnd()) {
+            files.add(lib.getFile1());
+            files.add(lib.getFile2());
+        }
+        else {
+            files.add(lib.getFile1());
+        }
+
+        this.setFromLibrary(lib, files);
+    }
+
+    /**
+     * Configures error corrector args using a library, and with supplied alternate input files
+     * @param lib
+     * @param files Alternative input files
+     */
+    public abstract void setFromLibrary(Library lib, List<File> files);
 }

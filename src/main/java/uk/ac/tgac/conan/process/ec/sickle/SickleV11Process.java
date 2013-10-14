@@ -74,20 +74,14 @@ public class SickleV11Process extends AbstractConanProcess implements ErrorCorre
         public abstract ErrorCorrectorArgs createArgs();
     }
 
-    private JobType jobType;
-
     public SickleV11Process() {
-        this(JobType.PAIRED_END, new SicklePeV11Args());
+        this(new SicklePeV11Args());
     }
 
-    public SickleV11Process(JobType jobType) {
-        this(jobType, jobType.createArgs());
-    }
-
-
-    public SickleV11Process(JobType jobType, ErrorCorrectorArgs args) {
-        super(jobType.getExe(), args, jobType.getParameters());
-        this.jobType = jobType;
+    public SickleV11Process(ErrorCorrectorArgs args) {
+        super(args.isPairedEnd() ? JobType.PAIRED_END.getExe() : JobType.SINGLE_END.getExe(),
+                args,
+                args.isPairedEnd() ? JobType.PAIRED_END.getParameters() : JobType.SINGLE_END.getParameters());
     }
 
     @Override

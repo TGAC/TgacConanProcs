@@ -50,20 +50,25 @@ public class SicklePeV11Args extends ErrorCorrectorPairedEndArgs {
 
     @Override
     public ErrorCorrectorArgs copy() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
-    public void setFromLibrary(Library library, File f1, File f2) {
+    public void setFromLibrary(Library library, List<File> files) {
+
         this.setPairedEndInputFiles(new FilePair(
-                f1 != null ? f1 : library.getFile1(),
-                f2 != null ? f2 : library.getFile2()));
+                files.get(0),
+                files.get(1)));
 
         this.outputFilePair = new FilePair(
                 new File(this.getOutputDir(), library.getName() + "_1.sickle.fastq"),
                 new File(this.getOutputDir(), library.getName() + "_2.sickle.fastq"));
 
         this.seOutFile = new File(this.getOutputDir(), library.getName() + "_se.sickle.fastq");
+
+        this.qualType = library.getPhred() == Library.Phred.PHRED_64 ?
+                        SickleV11QualityTypeParameter.SickleQualityTypeOptions.ILLUMINA :
+                        SickleV11QualityTypeParameter.SickleQualityTypeOptions.SANGER;
     }
 
     @Override
@@ -73,7 +78,6 @@ public class SicklePeV11Args extends ErrorCorrectorPairedEndArgs {
 
     @Override
     public List<File> getSingleEndCorrectedFiles() {
-
         List<File> seOutFiles = new ArrayList<File>();
         seOutFiles.add(this.seOutFile);
 
@@ -90,6 +94,18 @@ public class SicklePeV11Args extends ErrorCorrectorPairedEndArgs {
         return null;
     }
 
+    @Override
+    public List<File> getCorrectedFiles() {
+
+        List<File> correctedFiles = new ArrayList<>();
+
+        correctedFiles.add(this.outputFilePair.getFile1());
+        correctedFiles.add(this.outputFilePair.getFile2());
+        correctedFiles.add(this.seOutFile);
+
+        return correctedFiles;
+    }
+
     public boolean isDiscardN() {
         return discardN;
     }
@@ -99,7 +115,7 @@ public class SicklePeV11Args extends ErrorCorrectorPairedEndArgs {
     }
 
     public SickleV11QualityTypeParameter.SickleQualityTypeOptions getQualType() {
-        return qualType;
+        return this.qualType;
     }
 
     public void setQualType(SickleV11QualityTypeParameter.SickleQualityTypeOptions qualType) {
@@ -145,8 +161,9 @@ public class SicklePeV11Args extends ErrorCorrectorPairedEndArgs {
             pvp.put(params.getDiscardN(), "--" + params.getDiscardN().getName());
         }
 
-        if (this.qualType != null)
-            pvp.put(params.getQualityType(), "--" + params.getQualityType() + "=" + this.qualType.toString().toLowerCase());
+        if (this.getQualType() != null) {
+            pvp.put(params.getQualityType(), "--" + params.getQualityType() + "=" + this.getQualType().toString().toLowerCase());
+        }
 
         if (this.getPairedEndInputFiles() != null) {
             pvp.put(params.getPeFile1(), "--" + params.getPeFile1().getName() + "=" + this.getPairedEndInputFiles().getFile1().getAbsolutePath());
@@ -198,8 +215,6 @@ public class SicklePeV11Args extends ErrorCorrectorPairedEndArgs {
                 this.seOutFile = new File(entry.getValue());
             } else if (param.equals(this.params.getDiscardN().getName())) {
                 this.discardN = Boolean.parseBoolean(entry.getValue());
-            } else if (param.equals(this.params.getQualityType().getName())) {
-                this.qualType = SickleV11QualityTypeParameter.SickleQualityTypeOptions.valueOf(entry.getValue().trim().toUpperCase());
             } else if (param.equals(this.params.getLengthThreshold().getName())) {
                 this.setMinLength(Integer.parseInt(entry.getValue().trim()));
             } else if (param.equals(this.params.getQualityThreshold().getName())) {

@@ -75,6 +75,10 @@ public class Library {
     private static final String KEY_ATTR_UNIFORM                 = "uniform";
 
 
+    private static final int    DEFAULT_AVG_INSERT_SIZE          = 500;
+    private static final double DEFAULT_INS_ERR_TOLERANCE        = 0.3;
+    private static final SeqOrientation DEFAULT_SEQ_ORIENTATION  = SeqOrientation.FR;
+    private static final Phred  DEFAULT_PHRED                    = Phred.PHRED_64;
 
 
 
@@ -96,12 +100,12 @@ public class Library {
      */
     public Library() {
         this.name = "lib";
-        this.averageInsertSize = 500;
-        this.insertErrorTolerance = 0.2;
+        this.averageInsertSize = DEFAULT_AVG_INSERT_SIZE;
+        this.insertErrorTolerance = DEFAULT_INS_ERR_TOLERANCE;
         this.readLength = 101;
-        this.seqOrientation = SeqOrientation.FR;
+        this.seqOrientation = DEFAULT_SEQ_ORIENTATION;
         this.type = Type.PE;
-        this.phred = Phred.PHRED_64;
+        this.phred = DEFAULT_PHRED;
         this.files = new ArrayList<SeqFile>();
         this.uniform = true;
     }
@@ -117,16 +121,25 @@ public class Library {
 
         // Required values
         this.name = XmlHelper.getTextValue(ele, KEY_ATTR_NAME);
-        this.averageInsertSize = XmlHelper.getIntValue(ele, KEY_ATTR_AVG_INSERT_SIZE);
-        this.insertErrorTolerance = XmlHelper.getDoubleValue(ele, KEY_ATTR_INSERT_ERROR_TOLERANCE);
         this.readLength = XmlHelper.getIntValue(ele, KEY_ATTR_READ_LENGTH);
-        this.seqOrientation = SeqOrientation.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_SEQ_ORIENTATION).toUpperCase());
         this.type = Type.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_TYPE).toUpperCase());
 
         // Optional
+        this.averageInsertSize = ele.hasAttribute(KEY_ATTR_AVG_INSERT_SIZE) ?
+                XmlHelper.getIntValue(ele, KEY_ATTR_AVG_INSERT_SIZE) :
+                DEFAULT_AVG_INSERT_SIZE;
+
+        this.insertErrorTolerance = ele.hasAttribute(KEY_ATTR_INSERT_ERROR_TOLERANCE) ?
+                XmlHelper.getDoubleValue(ele, KEY_ATTR_INSERT_ERROR_TOLERANCE) :
+                DEFAULT_INS_ERR_TOLERANCE;
+
+        this.seqOrientation = ele.hasAttribute(KEY_ATTR_SEQ_ORIENTATION) ?
+                SeqOrientation.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_SEQ_ORIENTATION).toUpperCase()) :
+                DEFAULT_SEQ_ORIENTATION;
+
         this.phred = ele.hasAttribute(KEY_ATTR_PHRED) ?
                 Phred.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_PHRED).toUpperCase()) :
-                Phred.PHRED_64;
+                DEFAULT_PHRED;
 
         this.uniform = ele.hasAttribute(KEY_ATTR_UNIFORM) ?
                 XmlHelper.getBooleanValue(ele, KEY_ATTR_UNIFORM) :

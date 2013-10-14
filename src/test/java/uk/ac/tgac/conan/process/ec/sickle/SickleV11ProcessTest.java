@@ -46,7 +46,7 @@ public class SickleV11ProcessTest {
         correctPeCommand = "sickle pe  --qual-threshold=50  --length-threshold=50   --qual-type=sanger  --pe-file1=" + pwd + "1.fq  --pe-file2=" + pwd + "2.fq  " +
                 "--output-pe1=" + pwd + "1.out.fq  --output-pe2=" + pwd + "2.out.fq  --output-single=" + pwd + "se.out.fq";
 
-        correctSeCommand = "sickle pe  --qual-threshold=50  --length-threshold=50   --qual-type=sanger  --fastq-file=" + pwd + "se.fq  --output-file=" + "se.out.fq";
+        correctSeCommand = "sickle se  --qual-threshold=50  --length-threshold=50   --qual-type=sanger  --fastq-file=" + pwd + "se.fq  --output-file=" + "se.out.fq";
     }
 
     @Test
@@ -58,10 +58,10 @@ public class SickleV11ProcessTest {
         args.setSeOutFile(new File("se.out.fq"));
         args.setDiscardN(true);
         args.setMinLength(50);
-        args.setQualType(SickleV11QualityTypeParameter.SickleQualityTypeOptions.SANGER);
         args.setQualityThreshold(50);
+        args.setQualType(SickleV11QualityTypeParameter.SickleQualityTypeOptions.SANGER);
 
-        SickleV11Process sickleV11Process = new SickleV11Process(SickleV11Process.JobType.PAIRED_END, args);
+        SickleV11Process sickleV11Process = new SickleV11Process(args);
 
         String command = sickleV11Process.getCommand();
 
@@ -79,7 +79,7 @@ public class SickleV11ProcessTest {
         args.setQualType(SickleV11QualityTypeParameter.SickleQualityTypeOptions.SANGER);
         args.setQualityThreshold(50);
 
-        SickleV11Process sickleV11Process = new SickleV11Process(SickleV11Process.JobType.PAIRED_END, args);
+        SickleV11Process sickleV11Process = new SickleV11Process(args);
 
         String command = sickleV11Process.getCommand();
 

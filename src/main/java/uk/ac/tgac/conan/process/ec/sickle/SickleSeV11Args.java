@@ -23,7 +23,9 @@ import uk.ac.tgac.conan.process.ec.ErrorCorrectorArgs;
 import uk.ac.tgac.conan.process.ec.ErrorCorrectorSingleEndArgs;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SickleSeV11Args extends ErrorCorrectorSingleEndArgs {
@@ -50,9 +52,22 @@ public class SickleSeV11Args extends ErrorCorrectorSingleEndArgs {
     }
 
     @Override
-    public void setFromLibrary(Library library, File f) {
-        this.setSingleEndInputFile(f != null ? f : library.getFile1());
+    public List<File> getCorrectedFiles() {
+
+        List<File> correctedFiles = new ArrayList<>();
+
+        correctedFiles.add(this.outputFile);
+
+        return correctedFiles;
+    }
+
+    @Override
+    public void setFromLibrary(Library library, List<File> files) {
+        this.setSingleEndInputFile(files.get(0));
         this.outputFile = new File(this.getOutputDir(), library.getName() + ".qt.fastq");
+        this.qualType = library.getPhred() == Library.Phred.PHRED_64 ?
+                SickleV11QualityTypeParameter.SickleQualityTypeOptions.ILLUMINA :
+                SickleV11QualityTypeParameter.SickleQualityTypeOptions.SANGER;
     }
 
     @Override

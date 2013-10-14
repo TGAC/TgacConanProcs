@@ -28,58 +28,27 @@ import uk.ac.tgac.conan.process.ec.sickle.SickleV11Process;
  */
 public enum ErrorCorrectorFactory {
 
-    SICKLE_SE_V1_1 {
+    SICKLE_V1_1 {
         @Override
         public String getToolName() {
             return "SICKLE";
         }
 
         @Override
-        public boolean isPairedEnd() {
-            return false;
-        }
-
-        @Override
         public ErrorCorrector create() {
-            return new SickleV11Process(SickleV11Process.JobType.SINGLE_END);
+            return new SickleV11Process();
         }
 
         @Override
         public ErrorCorrector create(ErrorCorrectorArgs args) {
-            return new SickleV11Process(SickleV11Process.JobType.SINGLE_END, args);
+            return new SickleV11Process(args);
         }
 
-    },
-    SICKLE_PE_V1_1 {
-        @Override
-        public String getToolName() {
-            return "SICKLE";
-        }
-
-        @Override
-        public boolean isPairedEnd() {
-            return true;
-        }
-
-        @Override
-        public ErrorCorrector create() {
-            return new SickleV11Process(SickleV11Process.JobType.PAIRED_END);
-        }
-
-        @Override
-        public ErrorCorrector create(ErrorCorrectorArgs args) {
-            return new SickleV11Process(SickleV11Process.JobType.PAIRED_END, args);
-        }
     },
     QUAKE_V0_3_4 {
         @Override
         public String getToolName() {
             return "QUAKE";
-        }
-
-        @Override
-        public boolean isPairedEnd() {
-            return true;
         }
 
         @Override
@@ -99,11 +68,6 @@ public enum ErrorCorrectorFactory {
         }
 
         @Override
-        public boolean isPairedEnd() {
-            return true;
-        }
-
-        @Override
         public ErrorCorrector create() {
             return new MusketV106Process();
         }
@@ -116,15 +80,13 @@ public enum ErrorCorrectorFactory {
 
     public abstract String getToolName();
 
-    public abstract boolean isPairedEnd();
-
     public abstract ErrorCorrector create();
     public abstract ErrorCorrector create(ErrorCorrectorArgs args);
 
 
 
     public static String defaultQTName() {
-        return SICKLE_PE_V1_1.toString();
+        return SICKLE_V1_1.toString();
     }
 
     public static ErrorCorrector createQualityTrimmer() {

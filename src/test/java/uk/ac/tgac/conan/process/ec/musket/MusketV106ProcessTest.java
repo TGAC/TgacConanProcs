@@ -90,7 +90,7 @@ public class MusketV106ProcessTest {
         args.setQualityThreshold(50);
         args.setKmer(15);
         args.setThreads(32);
-        args.setFromLibrary(lib, null, null);
+        args.setFromLibrary(lib);
 
         return args;
     }

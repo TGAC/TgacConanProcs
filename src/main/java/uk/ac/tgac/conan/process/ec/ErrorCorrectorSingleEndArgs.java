@@ -38,11 +38,11 @@ public abstract class ErrorCorrectorSingleEndArgs extends ErrorCorrectorArgs {
     }
 
     @Override
-    public boolean isSingleEndOnly() {
-        return true;
+    public boolean isPairedEnd() {
+        return false;
     }
 
-    public abstract void setFromLibrary(Library lib, File f);
+
     public abstract Library createOutputLibrary();
 
     public abstract File getCorrectedFile();
