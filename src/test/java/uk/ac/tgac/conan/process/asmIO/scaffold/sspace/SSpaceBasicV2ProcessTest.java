@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
 
@@ -43,14 +44,14 @@ public class SSpaceBasicV2ProcessTest {
     private static String correctFullCommand;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
 
         outputDir = temp.newFolder("sspaceTest");
 
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "SSPACE_Basic_v2.0.pl -l " + pwd + "/testlib.lib -s " + pwd + "/contigs.fa -x 0 -T 8 -b Output";
+        correctCommand = "SSPACE_Basic_v2.0.pl -l " + pwd + "/testlib.lib -s " + pwd + "/contigs.fa -T 8 -b Output";
 
         correctFullCommand = "cd " + outputDir.getAbsolutePath() + "; " + correctCommand + " 2>&1; cd " + pwd;
     }
@@ -95,5 +96,16 @@ public class SSpaceBasicV2ProcessTest {
         assertTrue(correctFullCommand != null && !correctFullCommand.isEmpty());
         assertTrue(command.length() == correctFullCommand.length());
         assertTrue(command.equals(correctFullCommand));
+    }
+
+    @Test
+    public void testParse() throws IOException {
+
+        String argString = "-z 1000";
+
+        SSpaceBasicV2Args args = new SSpaceBasicV2Args();
+        args.parse(argString);
+
+        assertTrue(args.getMinContigLength() == 1000);
     }
 }

@@ -17,8 +17,10 @@
  **/
 package uk.ac.tgac.conan.process.asmIO.scaffold.sspace;
 
+import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
@@ -30,9 +32,26 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@MetaInfServices(uk.ac.tgac.conan.process.asmIO.AssemblyIOArgsCreator.class)
 public class SSpaceBasicV2Args extends AbstractAssemblyIOArgs {
 
     private SSpaceBasicV2Params params = new SSpaceBasicV2Params();
+
+    public static final int DEFAULT_EXTEND = 0;
+
+    public static final int DEFAULT_MIN_OVERLAP = 32;
+    public static final int DEFAULT_NB_READS = 20;
+    public static final int DEFAULT_TRIM = 0;
+
+    public static final int DEFAULT_MIN_LINKS = 5;
+    public static final double DEFAULT_MAX_LINKS = 0.7;
+    public static final int DEFAULT_MIN_CONTIG_OVERLAP = 15;
+    public static final int DEFAULT_MIN_CONTIG_LENGTH = 0;
+
+    public static final int DEFAULT_BOWTIE_MAX_GAPS = 0;
+    public static final int DEFAULT_THREADS = 1;
+
+
 
     // **** Main args ****
     private File libraryConfigFile;
@@ -42,16 +61,15 @@ public class SSpaceBasicV2Args extends AbstractAssemblyIOArgs {
     private int minOverlap;
     private int nbReads;
     private int trim;
-    private int minBaseRatio;
 
     // **** Scaffolding args ****
     private int minLinks;
-    private int maxLinks;
+    private double maxLinks;
     private int minContigOverlap;
     private int minContigLength;
 
     // **** Bowtie args ****
-    private int maxGaps;
+    private int bowtieMaxGaps;
 
     // **** Additional args ****
     private boolean plot;
@@ -64,14 +82,23 @@ public class SSpaceBasicV2Args extends AbstractAssemblyIOArgs {
 
         // **** Main args ****
         this.libraryConfigFile = null;
-        this.extend = 0;
+        this.setInputFile(null);
+        this.extend = DEFAULT_EXTEND;
 
         // **** Extension args ****
+        this.minOverlap = DEFAULT_MIN_OVERLAP;
+        this.nbReads = DEFAULT_NB_READS;
+        this.trim = DEFAULT_TRIM;
 
         // **** Scaffolding args ****
+        this.minLinks = DEFAULT_MIN_LINKS;
+        this.maxLinks = DEFAULT_MAX_LINKS;
+        this.minContigOverlap = DEFAULT_MIN_CONTIG_OVERLAP;
+        this.minContigLength = DEFAULT_MIN_CONTIG_LENGTH;
 
         // **** Bowtie args ****
-        this.maxGaps = 0;
+        this.bowtieMaxGaps = DEFAULT_BOWTIE_MAX_GAPS;
+        this.setThreads(DEFAULT_THREADS);
 
         // **** Additional args ****
         this.plot = false;
@@ -131,14 +158,6 @@ public class SSpaceBasicV2Args extends AbstractAssemblyIOArgs {
         this.trim = trim;
     }
 
-    public int getMinBaseRatio() {
-        return minBaseRatio;
-    }
-
-    public void setMinBaseRatio(int minBaseRatio) {
-        this.minBaseRatio = minBaseRatio;
-    }
-
     public int getMinLinks() {
         return minLinks;
     }
@@ -147,11 +166,11 @@ public class SSpaceBasicV2Args extends AbstractAssemblyIOArgs {
         this.minLinks = minLinks;
     }
 
-    public int getMaxLinks() {
+    public double getMaxLinks() {
         return maxLinks;
     }
 
-    public void setMaxLinks(int maxLinks) {
+    public void setMaxLinks(double maxLinks) {
         this.maxLinks = maxLinks;
     }
 
@@ -171,12 +190,12 @@ public class SSpaceBasicV2Args extends AbstractAssemblyIOArgs {
         this.minContigLength = minContigLength;
     }
 
-    public int getMaxGaps() {
-        return maxGaps;
+    public int getBowtieMaxGaps() {
+        return bowtieMaxGaps;
     }
 
-    public void setMaxGaps(int maxGaps) {
-        this.maxGaps = maxGaps;
+    public void setBowtieMaxGaps(int bowtieMaxGaps) {
+        this.bowtieMaxGaps = bowtieMaxGaps;
     }
 
     public boolean isPlot() {
@@ -218,15 +237,89 @@ public class SSpaceBasicV2Args extends AbstractAssemblyIOArgs {
     }
 
 
+    public Options createOptions() {
+
+        // create Options object
+        Options options = new Options();
+
+        options.addOption(new Option(params.getExtend().getName(), true, params.getExtend().getDescription()));
+        options.addOption(new Option(params.getMinOverlap().getName(), true, params.getMinOverlap().getDescription()));
+        options.addOption(new Option(params.getNbReads().getName(), true, params.getNbReads().getDescription()));
+        options.addOption(new Option(params.getTrim().getName(), true, params.getTrim().getDescription()));
+        options.addOption(new Option(params.getMinLinks().getName(), true, params.getMinLinks().getDescription()));
+        options.addOption(new Option(params.getMaxLinks().getName(), true, params.getMaxLinks().getDescription()));
+        options.addOption(new Option(params.getMinContigOverlap().getName(), true, params.getMinContigOverlap().getDescription()));
+        options.addOption(new Option(params.getMinContigLength().getName(), true, params.getMinContigLength().getDescription()));
+        options.addOption(new Option(params.getBowtieMaxGaps().getName(), true, params.getBowtieMaxGaps().getDescription()));
+        options.addOption(new Option(params.getBowtieThreads().getName(), true, params.getBowtieThreads().getDescription()));
+        options.addOption(new Option(params.getPlot().getName(), true, params.getPlot().getDescription()));
+        options.addOption(new Option(params.getVerbose().getName(), false, params.getVerbose().getDescription()));
+
+        return options;
+    }
+
     @Override
-    public void parse(String args) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void parse(String args) throws IOException {
+        String[] splitArgs = new String(SSpaceBasicV2Process.EXE + " " + args).split(" ");
+        CommandLine cmdLine = null;
+        try {
+            cmdLine = new PosixParser().parse(createOptions(), splitArgs);
+        } catch (ParseException e) {
+            throw new IOException(e);
+        }
+
+        if (cmdLine == null)
+            return;
+
+        this.extend = cmdLine.hasOption(params.getExtend().getName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getExtend().getName())) :
+                this.extend;
+
+        this.minOverlap = cmdLine.hasOption(params.getMinOverlap().getName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getMinOverlap().getName())) :
+                this.minOverlap;
+
+        this.nbReads = cmdLine.hasOption(params.getNbReads().getName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getNbReads().getName())) :
+                this.nbReads;
+
+        this.trim = cmdLine.hasOption(params.getTrim().getName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getTrim().getName())) :
+                this.trim;
+
+        this.minLinks = cmdLine.hasOption(params.getMinLinks().getName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getMinLinks().getName())) :
+                this.minLinks;
+
+        this.maxLinks = cmdLine.hasOption(params.getMaxLinks().getName()) ?
+                Double.parseDouble(cmdLine.getOptionValue(params.getMaxLinks().getName())) :
+                this.maxLinks;
+
+        this.minContigOverlap = cmdLine.hasOption(params.getMinContigOverlap().getName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getMinContigOverlap().getName())) :
+                this.minContigOverlap;
+
+        this.minContigLength = cmdLine.hasOption(params.getMinContigLength().getName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getMinContigLength().getName())) :
+                this.minContigLength;
+
+        this.bowtieMaxGaps = cmdLine.hasOption(params.getBowtieMaxGaps().getName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getBowtieMaxGaps().getName())) :
+                this.bowtieMaxGaps;
+
+        this.setThreads(cmdLine.hasOption(params.getBowtieThreads().getName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getBowtieThreads().getName())) :
+                this.getThreads());
+
+        this.plot = cmdLine.hasOption(params.getPlot().getName());
+
+        this.verbose = cmdLine.hasOption(params.getVerbose().getName());
     }
 
     @Override
     public Map<ConanParameter, String> getArgMap() {
 
-        Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
+        Map<ConanParameter, String> pvp = new LinkedHashMap<>();
 
         // **** Main args ****
 
@@ -236,23 +329,44 @@ public class SSpaceBasicV2Args extends AbstractAssemblyIOArgs {
         if (this.getInputFile() != null)
             pvp.put(params.getContigsFile(), this.getInputFile().getAbsolutePath());
 
-        pvp.put(params.getExtend(), Integer.toString(this.extend));
+        if (this.extend != DEFAULT_EXTEND)
+            pvp.put(params.getExtend(), Integer.toString(this.extend));
 
 
         // **** Extension args ****
+
+        if (this.minOverlap != DEFAULT_MIN_OVERLAP)
+            pvp.put(params.getMinOverlap(), Integer.toString(this.minOverlap));
+
+        if (this.nbReads != DEFAULT_NB_READS)
+            pvp.put(params.getNbReads(), Integer.toString(this.nbReads));
+
+        if (this.trim != DEFAULT_TRIM)
+            pvp.put(params.getTrim(), Integer.toString(this.trim));
 
 
 
         // **** Scaffolding args ****
 
+        if (this.minLinks != DEFAULT_MIN_LINKS)
+            pvp.put(params.getMinLinks(), Integer.toString(this.minLinks));
+
+        if (this.maxLinks != DEFAULT_MAX_LINKS)
+            pvp.put(params.getMaxLinks(), Double.toString(this.maxLinks));
+
+        if (this.minContigOverlap != DEFAULT_MIN_CONTIG_OVERLAP)
+            pvp.put(params.getMinContigOverlap(), Integer.toString(this.minContigOverlap));
+
+        if (this.getMinContigLength() != DEFAULT_MIN_CONTIG_LENGTH)
+            pvp.put(params.getMinContigLength(), Integer.toString(this.minContigLength));
 
 
         // **** Bowtie args ****
 
-        if (this.maxGaps > 0)
-            pvp.put(params.getBowtieGaps(), Integer.toString(this.maxGaps));
+        if (this.bowtieMaxGaps != DEFAULT_BOWTIE_MAX_GAPS)
+            pvp.put(params.getBowtieMaxGaps(), Integer.toString(this.bowtieMaxGaps));
 
-        if (this.getThreads() > 1)
+        if (this.getThreads() != DEFAULT_THREADS)
             pvp.put(params.getBowtieThreads(), Integer.toString(this.getThreads()));
 
 
@@ -294,16 +408,37 @@ public class SSpaceBasicV2Args extends AbstractAssemblyIOArgs {
 
             // **** Extension args ****
 
+            else if (param.equals(this.params.getMinOverlap().getName())) {
+                this.minOverlap = Integer.parseInt(entry.getValue());
+            }
+            else if (param.equals(this.params.getNbReads().getName())) {
+                this.nbReads = Integer.parseInt(entry.getValue());
+            }
+            else if (param.equals(this.params.getTrim().getName())) {
+                this.trim = Integer.parseInt(entry.getValue());
+            }
 
 
             // **** Scaffolding args ****
 
+            else if (param.equals(this.params.getMinLinks().getName())) {
+                this.minLinks = Integer.parseInt(entry.getValue());
+            }
+            else if (param.equals(this.params.getMaxLinks().getName())) {
+                this.maxLinks = Double.parseDouble(entry.getValue());
+            }
+            else if (param.equals(this.params.getMinContigOverlap().getName())) {
+                this.minContigOverlap = Integer.parseInt(entry.getValue());
+            }
+            else if (param.equals(this.params.getMinContigLength().getName())) {
+                this.minContigLength = Integer.parseInt(entry.getValue());
+            }
 
 
             // **** Bowtie args ****
 
-            else if (param.equals(this.params.getBowtieGaps().getName())) {
-                this.maxGaps = Integer.parseInt(entry.getValue());
+            else if (param.equals(this.params.getBowtieMaxGaps().getName())) {
+                this.bowtieMaxGaps = Integer.parseInt(entry.getValue());
             }
             else if (param.equals(this.params.getBowtieThreads().getName())) {
                 this.setThreads(Integer.parseInt(entry.getValue()));
@@ -333,7 +468,7 @@ public class SSpaceBasicV2Args extends AbstractAssemblyIOArgs {
 
     @Override
     public AbstractAssemblyIOArgs create(File inputFile, File outputDir, String outputPrefix, List<Library> libs,
-                                         int threads, int memory, String otherArgs) {
+                                         int threads, int memory, String otherArgs) throws IOException {
 
         SSpaceBasicV2Args newArgs = new SSpaceBasicV2Args();
         newArgs.setInputFile(inputFile);

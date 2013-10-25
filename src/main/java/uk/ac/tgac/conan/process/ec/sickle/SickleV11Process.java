@@ -90,13 +90,7 @@ public class SickleV11Process extends AbstractConanProcess implements ErrorCorre
     }
 
     @Override
-    public void configure(ConanProcessService conanProcessService) {
-        this.conanProcessService = conanProcessService;
-    }
-
-    @Override
     public void initialise() {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

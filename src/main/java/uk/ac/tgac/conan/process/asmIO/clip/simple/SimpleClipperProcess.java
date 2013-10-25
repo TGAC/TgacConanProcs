@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asmIO.clip.simple;
 
+import org.kohsuke.MetaInfServices;
 import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
 import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOProcess;
 
@@ -29,6 +30,7 @@ import java.io.*;
  * Time: 10:56
  * To change this template use File | Settings | File Templates.
  */
+@MetaInfServices(uk.ac.tgac.conan.process.asmIO.AssemblyIOCreator.class)
 public class SimpleClipperProcess extends AbstractAssemblyIOProcess {
 
 

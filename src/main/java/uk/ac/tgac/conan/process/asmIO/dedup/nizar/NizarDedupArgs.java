@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asmIO.dedup.nizar;
 
+import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
@@ -30,6 +31,7 @@ import java.util.Map;
  * Date: 15/03/13
  * Time: 11:46
  */
+@MetaInfServices(uk.ac.tgac.conan.process.asmIO.AssemblyIOArgsCreator.class)
 public class NizarDedupArgs extends AbstractAssemblyIOArgs {
 
     public NizarDedupArgs() {

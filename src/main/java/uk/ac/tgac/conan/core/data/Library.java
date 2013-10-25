@@ -56,7 +56,7 @@ public class Library {
 
     public enum Phred {
         PHRED_33,
-        PHRED_64;
+        PHRED_64
     }
 	
 
@@ -149,7 +149,7 @@ public class Library {
         Element fileElements = XmlHelper.getDistinctElementByName(ele, KEY_ELEM_FILES);
         NodeList nodes = fileElements.getElementsByTagName(KEY_ELEM_FILE_PATH);
         for(int i = 0; i < nodes.getLength(); i++) {
-            String filePath = ((Element)nodes.item(i)).getFirstChild().getNodeValue();
+            String filePath = nodes.item(i).getFirstChild().getNodeValue();
             this.files.add(new SeqFile(filePath));
         }
     }

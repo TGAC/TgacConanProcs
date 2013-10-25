@@ -18,6 +18,7 @@
 package uk.ac.tgac.conan.process.asmIO.degap.gapcloser;
 
 import org.apache.commons.io.FileUtils;
+import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.util.StringJoiner;
 import uk.ac.tgac.conan.core.data.Library;
@@ -31,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@MetaInfServices(uk.ac.tgac.conan.process.asmIO.AssemblyIOArgsCreator.class)
 public class GapCloserV112Args extends AbstractAssemblyIOArgs {
 
     private GapCloserV112Params params = new GapCloserV112Params();

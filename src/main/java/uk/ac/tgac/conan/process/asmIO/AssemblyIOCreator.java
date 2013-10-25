@@ -18,9 +18,8 @@
 package uk.ac.tgac.conan.process.asmIO;
 
 /**
- * User: maplesod
- * Date: 20/08/13
- * Time: 21:56
+ * All process args that relate to processes that modify an assembly should implement this interface.  It can be used by
+ * SPI to automatically create an assembly IO process
  */
 public interface AssemblyIOCreator {
 

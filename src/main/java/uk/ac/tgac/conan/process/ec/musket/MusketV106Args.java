@@ -286,10 +286,10 @@ public class MusketV106Args extends ErrorCorrectorPairedEndArgs {
             }
             else if (param.equals(this.params.getInOrder().getName())) {
 
-                this.setInOrder(val == null || val.isEmpty() ? true : Boolean.parseBoolean(val));
+                this.setInOrder(val == null || val.isEmpty() || Boolean.parseBoolean(val));
             }
             else if (param.equals(this.params.getMultiK().getName())) {
-                this.setMultiK(val == null || val.isEmpty() ? true : Boolean.parseBoolean(val));
+                this.setMultiK(val == null || val.isEmpty() || Boolean.parseBoolean(val));
             }
             else if (param.equals(this.params.getThreads().getName())) {
                 this.setThreads(Integer.parseInt(val));

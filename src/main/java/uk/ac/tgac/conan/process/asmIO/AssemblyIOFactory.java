@@ -20,13 +20,12 @@ package uk.ac.tgac.conan.process.asmIO;
 import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.ServiceLoader;
 
 /**
- * User: maplesod
- * Date: 20/08/13
- * Time: 21:32
+ * Uses ServiceLoader and SPI to create a specific AssemblyIOProcess based on a tool name and a set of common properties
  */
 public class AssemblyIOFactory {
 
@@ -38,16 +37,16 @@ public class AssemblyIOFactory {
                                                    List<Library> libs,
                                                    int threads,
                                                    int memory,
-                                                   String otherArgs) {
+                                                   String otherArgs) throws IOException {
 
         AbstractAssemblyIOArgs actualArgs = null;
 
-        ServiceLoader<AssemblyIOArgsCreator> argsLoader = ServiceLoader.load(AssemblyIOArgsCreator.class);
+        ServiceLoader<AssemblyIOArgsCreator> foundAsmIOArgsClasses = ServiceLoader.load(AssemblyIOArgsCreator.class);
 
-        for(AssemblyIOArgsCreator aioArgs : argsLoader) {
+        for(AssemblyIOArgsCreator aioArgsClass : foundAsmIOArgsClasses) {
 
-            if (aioArgs.getName().equalsIgnoreCase(toolName.trim())) {
-                actualArgs = aioArgs.create(inputFile, outputDir, outputPrefix, libs, threads, memory, otherArgs);
+            if (aioArgsClass.getName().equalsIgnoreCase(toolName.trim())) {
+                actualArgs = aioArgsClass.create(inputFile, outputDir, outputPrefix, libs, threads, memory, otherArgs);
                 break;
             }
         }

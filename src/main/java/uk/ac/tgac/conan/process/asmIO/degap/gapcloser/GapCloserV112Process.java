@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asmIO.degap.gapcloser;
 
+import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
@@ -32,6 +33,7 @@ import java.io.IOException;
  * Date: 23/01/13
  * Time: 13:44
  */
+@MetaInfServices(uk.ac.tgac.conan.process.asmIO.AssemblyIOCreator.class)
 public class GapCloserV112Process extends AbstractAssemblyIOProcess {
 
     private static Logger log = LoggerFactory.getLogger(GapCloserV112Process.class);

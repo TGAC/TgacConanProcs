@@ -17,14 +17,12 @@
  **/
 package uk.ac.tgac.conan.process.ec;
 
-import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
 import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public abstract class ErrorCorrectorArgs implements ProcessArgs {
 

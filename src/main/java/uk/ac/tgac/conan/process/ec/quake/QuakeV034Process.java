@@ -45,11 +45,6 @@ public class QuakeV034Process extends AbstractConanProcess implements ErrorCorre
     }
 
     @Override
-    public void configure(ConanProcessService conanProcessService) {
-        this.conanProcessService = conanProcessService;
-    }
-
-    @Override
     public void initialise() {
         String pwdFull = new File(".").getAbsolutePath();
         String pwd = pwdFull.substring(0, pwdFull.length() - 2);

@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asmIO.clip.simple;
 
+import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
@@ -31,6 +32,7 @@ import java.util.Map;
  * Date: 01/02/13
  * Time: 09:58
  */
+@MetaInfServices(uk.ac.tgac.conan.process.asmIO.AssemblyIOArgsCreator.class)
 public class SimpleClipperArgs extends AbstractAssemblyIOArgs {
 
     private SimpleClipperParams params = new SimpleClipperParams();

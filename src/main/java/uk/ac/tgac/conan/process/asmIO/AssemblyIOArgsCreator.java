@@ -20,12 +20,12 @@ package uk.ac.tgac.conan.process.asmIO;
 import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
- * User: maplesod
- * Date: 21/08/13
- * Time: 19:44
+ * All process args that relate to processes that modify an assembly should implement this interface.  It can be used by
+ * SPI to automatically create an assembly IO process
  */
 public interface AssemblyIOArgsCreator {
 
@@ -34,7 +34,7 @@ public interface AssemblyIOArgsCreator {
      * @return
      */
     AbstractAssemblyIOArgs create(File inputFile, File outputDir, String outputPrefix, List<Library> libs, int threads,
-                                  int memory, String otherArgs);
+                                  int memory, String otherArgs) throws IOException;
 
     /**
      * Gets the name of this process

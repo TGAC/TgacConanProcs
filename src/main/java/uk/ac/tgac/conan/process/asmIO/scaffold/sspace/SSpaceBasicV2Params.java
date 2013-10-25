@@ -49,7 +49,7 @@ public class SSpaceBasicV2Params implements ProcessParams {
 
 
     // Bowtie parameters
-    private ConanParameter bowtieGaps;
+    private ConanParameter bowtieMaxGaps;
     private ConanParameter bowtieThreads;
 
     // Additional parameters
@@ -94,42 +94,36 @@ public class SSpaceBasicV2Params implements ProcessParams {
                 "Minimum number of overlapping bases of the reads with the contig " +
                         "during overhang consensus build up. Higher ‘-m’ values lead to more " +
                         "accurate contigs at the cost of decreased contiguity. We suggest to take" +
-                        "a value close to the largest read length.",
+                        "a value close to the largest read length. (default -m 32)",
                 true);
 
         this.nbReads = new NumericParameter(
                 "o",
                 "Minimum number of reads needed to call a base during an extension, " +
                         "also known as base coverage. The higher the ‘-o’, the more reads are " +
-                        "considered for an extension, increasing the reliability of the extension.",
+                        "considered for an extension, increasing the reliability of the extension. (default -o 20)",
                 true);
 
         this.trim = new NumericParameter(
                 "t",
                 "Trims up to ‘-t’ base(s) on the contig end when all possibilities have been " +
-                        "exhausted for an extension.",
+                        "exhausted for an extension. (default -t 0, optional)",
                 true
         );
-
-        this.minBaseRatio = new NumericParameter(
-                "r",
-                "Minimum base ratio used to accept a overhang consensus base. Higher " +
-                        "'-r' value lead to more accurate contig extension.",
-                true
-        );
-
 
         // **** Scaffolding parameters ****
 
         this.minLinks = new NumericParameter(
                 "k",
-                "The minimum number of links (read pairs) a valid contig pair must have to be considered.",
+                "The minimum number of links (read pairs) a valid contig pair must have to be considered. " +
+                "(default -k 5, optional)",
                 true
         );
 
         this.maxLinks = new NumericParameter(
                 "a",
-                "The maximum ratio between the best two contig pairs for a given contig being extended.",
+                "The maximum ratio between the best two contig pairs for a given contig being extended. " +
+                "*higher values lead to least accurate scaffolding* (default -a 0.7, optional)",
                 true
         );
 
@@ -137,7 +131,7 @@ public class SSpaceBasicV2Params implements ProcessParams {
                 "n",
                 "Minimum overlap required between contigs to merge adjacent contigs in " +
                         "a scaffold. Overlaps in the final output are shown in lower-case " +
-                        "characters.",
+                        "characters. (default -n 15, optional)",
                 true
         );
 
@@ -148,27 +142,29 @@ public class SSpaceBasicV2Params implements ProcessParams {
                         "more reliable scaffolds and also the amount of scaffolds is vastly " +
                         "reduced. Smaller contigs (< 100bp) are likely to be repeated elements " +
                         "and can stop the extension of the scaffold due to exceeding the -a " +
-                        "parameter.",
+                        "parameter. (default -z 0 (no filtering), optional)",
                 true
         );
 
 
         // **** Bowtie parameters ****
 
-        this.bowtieGaps = new NumericParameter(
+        this.bowtieMaxGaps = new NumericParameter(
                 "g",
                 "Maximum allowed gaps for Bowtie, this parameter is used both at " +
                         "mapping during extension and mapping during scaffolding. This option " +
                         "corresponds to the -v option in Bowtie. We strongly recommend using no " +
                         "gaps, since this will slow down the process and can decrease the " +
                         "reliability of the scaffolds. We only suggest to increase this parameter " +
-                        "when large reads are used, e.g. Roche 454 data or Illumina 100bp.",
+                        "when large reads are used, e.g. Roche 454 data or Illumina 100bp. " +
+                        "*higher number of allowed gaps can lead to least accurate scaffolding* " +
+                        "(default -v 0, optional)",
                 true
         );
 
         this.bowtieThreads = new NumericParameter(
                 "T",
-                "Number of search threads for mapping reads to the contigs with Bowtie.",
+                "Number of search threads for mapping reads to the contigs with Bowtie. (default -T 1, optional)",
                 true);
 
 
@@ -176,7 +172,8 @@ public class SSpaceBasicV2Params implements ProcessParams {
 
         this.plot = new FlagParameter(
                 "p",
-                "Indicate whether to generate a .dot file for visualisation of the produced scaffolds."
+                "Indicate whether to generate a .dot file for visualisation of the produced scaffolds. " +
+                    "(-p 1=yes, -p 0=no, default -p 0, optional)"
         );
 
         this.baseName = new DefaultConanParameter(
@@ -238,8 +235,8 @@ public class SSpaceBasicV2Params implements ProcessParams {
         return minContigLength;
     }
 
-    public ConanParameter getBowtieGaps() {
-        return bowtieGaps;
+    public ConanParameter getBowtieMaxGaps() {
+        return bowtieMaxGaps;
     }
 
     public ConanParameter getBowtieThreads() {
@@ -278,7 +275,7 @@ public class SSpaceBasicV2Params implements ProcessParams {
                         this.minContigOverlap,
                         this.minContigLength,
 
-                        this.bowtieGaps,
+                        this.bowtieMaxGaps,
                         this.bowtieThreads,
 
                         this.plot,

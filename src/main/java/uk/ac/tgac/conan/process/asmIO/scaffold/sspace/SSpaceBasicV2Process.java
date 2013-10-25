@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asmIO.scaffold.sspace;
 
+import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
@@ -32,6 +33,7 @@ import java.util.Collection;
  * Date: 23/01/13
  * Time: 16:00
  */
+@MetaInfServices(uk.ac.tgac.conan.process.asmIO.AssemblyIOCreator.class)
 public class SSpaceBasicV2Process extends AbstractAssemblyIOProcess {
 
     public static final String EXE = "SSPACE_Basic_v2.0.pl";

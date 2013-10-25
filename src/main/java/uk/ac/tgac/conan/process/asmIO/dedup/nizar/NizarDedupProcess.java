@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asmIO.dedup.nizar;
 
+import org.kohsuke.MetaInfServices;
 import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
 import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOProcess;
 
@@ -25,6 +26,7 @@ import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOProcess;
  * Date: 12/02/13
  * Time: 17:24
  */
+@MetaInfServices(uk.ac.tgac.conan.process.asmIO.AssemblyIOCreator.class)
 public class NizarDedupProcess extends AbstractAssemblyIOProcess {
 
     public static final String EXE = "nizar-dedup";

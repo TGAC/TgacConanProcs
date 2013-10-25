@@ -21,15 +21,19 @@ import uk.ac.ebi.fgpt.conan.model.ConanProcess;
 import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 
 /**
- * User: maplesod
- * Date: 23/01/13
- * Time: 13:48
+ * An Error Corrector is a process that attempts to either discard, correct or otherwise improve NGS datasets
  */
 public interface ErrorCorrector extends ConanProcess {
 
+    /**
+     * Returns the process args for this error corrector type case as ErrorCorrectorArgs
+     * @return
+     */
     ErrorCorrectorArgs getArgs();
 
-    void configure(ConanProcessService conanProcessService);
-
+    /**
+     * This can be used to do any setup work between running the constructor and executing the process.  For example,
+     * it can be used to add any pre or post commands that are necessary for this error correction process
+     */
     void initialise();
 }

@@ -248,7 +248,7 @@ public class AbyssV134InputLibsArg {
 
             String argTrimmed = arg.trim();
 
-            if (arg != null && !arg.isEmpty()) {
+            if (!arg.isEmpty()) {
                 argList.add(argTrimmed);
             }
         }
