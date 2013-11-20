@@ -6,7 +6,7 @@
 
     <groupId>uk.ac.tgac.conan</groupId>
     <artifactId>tgac-conan</artifactId>
-    <version>0.6.0</version>
+    <version>0.6.2</version>
 
     <name>TGAC conan procs</name>
     <description>This project contains Conan procs which might be reused in many conan pipelines.</description>
@@ -37,7 +37,7 @@
             <organization>TGAC</organization>
             <organizationUrl>http://www.tgac.ac.uk</organizationUrl>
             <roles>
-                <role>Scientific Programmer</role>
+                <role>Analysis Pipelines Project Leader</role>
             </roles>
             <timezone>0</timezone>
             <properties />
