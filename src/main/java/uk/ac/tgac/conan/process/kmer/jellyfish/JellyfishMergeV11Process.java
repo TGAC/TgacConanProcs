@@ -58,11 +58,11 @@ public class JellyfishMergeV11Process extends AbstractConanProcess {
             paths.add(f.getAbsolutePath());
         }
 
-        return sb.toString().trim() + " " + StringUtils.join(paths, " ") + ";";
+        return sb.toString().trim() + " " + StringUtils.join(paths, " ");
     }
 
     @Override
     public String getName() {
-        return "Jellyfish-Merge";
+        return "Jellyfish_Merge_V1.1";
     }
 }

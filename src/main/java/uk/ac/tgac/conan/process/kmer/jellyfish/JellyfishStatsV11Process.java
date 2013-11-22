@@ -52,11 +52,11 @@ public class JellyfishStatsV11Process extends AbstractConanProcess {
 
         JellyfishStatsV11Args args = (JellyfishStatsV11Args) this.getProcessArgs();
 
-        return sb.toString().trim() + " " + args.getInput().getAbsolutePath() + ";";
+        return sb.toString().trim() + " " + args.getInput().getAbsolutePath();
     }
 
     @Override
     public String getName() {
-        return "Jellyfish-Stats";
+        return "Jellyfish_Stats_V1.1";
     }
 }

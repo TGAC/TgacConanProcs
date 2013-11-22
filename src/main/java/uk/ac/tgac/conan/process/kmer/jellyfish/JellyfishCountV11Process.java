@@ -66,11 +66,11 @@ public class JellyfishCountV11Process extends AbstractConanProcess {
 
         JellyfishCountV11Args args = (JellyfishCountV11Args) this.getProcessArgs();
 
-        return sb.toString().trim() + " " + args.getInputFile() + ";";
+        return sb.toString().trim() + " " + args.getInputFile();
     }
 
     @Override
     public String getName() {
-        return "Jellyfish-Count";
+        return "Jellyfish_Count_V1.1";
     }
 }

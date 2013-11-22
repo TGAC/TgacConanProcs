@@ -34,7 +34,7 @@ public class KatCompV1ProcessTest {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "kat comp -o kat_comp.out -t 32 " + pwd + "/reads.jf31_0 " + pwd + "/asm.jf31_0;";
+        correctCommand = "kat comp -o kat_comp.out -t 32 " + pwd + "/reads.jf31_0 " + pwd + "/asm.jf31_0";
     }
 
     @Test

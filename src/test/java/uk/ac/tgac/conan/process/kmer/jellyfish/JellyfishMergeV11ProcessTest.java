@@ -34,7 +34,7 @@ public class JellyfishMergeV11ProcessTest {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "jellyfish merge -s 20000000 -o " + pwd + "/output " + pwd + "/input1 " + pwd + "/input2 " + pwd + "/input3 " + pwd + "/input4;";
+        correctCommand = "jellyfish merge -s 20000000 -o " + pwd + "/output " + pwd + "/input1 " + pwd + "/input2 " + pwd + "/input3 " + pwd + "/input4";
     }
 
     @Test

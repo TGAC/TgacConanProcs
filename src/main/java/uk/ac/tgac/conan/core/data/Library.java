@@ -114,7 +114,7 @@ public class Library {
      * Set from Xml Element
      * @param ele
      */
-    public Library(Element ele) {
+    public Library(Element ele, File outputDir) {
 
         // Set defaults
         this();
@@ -150,6 +150,8 @@ public class Library {
         NodeList nodes = fileElements.getElementsByTagName(KEY_ELEM_FILE_PATH);
         for(int i = 0; i < nodes.getLength(); i++) {
             String filePath = nodes.item(i).getFirstChild().getNodeValue();
+
+            filePath = filePath.startsWith("/") ? filePath : outputDir.getAbsolutePath() + "/" + filePath;
             this.files.add(new SeqFile(filePath));
         }
     }

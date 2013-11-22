@@ -32,7 +32,7 @@ public class JellyfishCountV11ProcessTest {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "jellyfish count -m 31 -s 400000000 -t 32 -o jellyfish_counts.jf31 -c 16 -C -L 2 -U 9223372036854775807 input.fastq;";
+        correctCommand = "jellyfish count -m 31 -s 400000000 -t 32 -o jellyfish_counts.jf31 -c 16 -C -L 2 -U 9223372036854775807 input.fastq";
     }
 
     @Test

@@ -51,11 +51,11 @@ public class KatCompV1Process extends AbstractConanProcess {
 
         KatCompV1Args args = (KatCompV1Args) this.getProcessArgs();
 
-        return sb.toString().trim() + " " + args.getJellyfishHash1().getAbsolutePath() + " " + args.getJellyfishHash2().getAbsolutePath() + ";";
+        return sb.toString().trim() + " " + args.getJellyfishHash1().getAbsolutePath() + " " + args.getJellyfishHash2().getAbsolutePath();
     }
 
     @Override
     public String getName() {
-        return "KAT-comp";
+        return "KAT_Comp_V1.0";
     }
 }
