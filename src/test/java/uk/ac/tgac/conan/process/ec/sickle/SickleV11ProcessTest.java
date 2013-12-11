@@ -43,10 +43,10 @@ public class SickleV11ProcessTest {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 1);
 
-        correctPeCommand = "sickle pe  --qual-threshold=50  --length-threshold=50   --qual-type=sanger  --pe-file1=" + pwd + "1.fq  --pe-file2=" + pwd + "2.fq  " +
+        correctPeCommand = "sickle pe --qual-threshold=50  --length-threshold=50   --qual-type=sanger  --pe-file1=" + pwd + "1.fq  --pe-file2=" + pwd + "2.fq  " +
                 "--output-pe1=" + pwd + "1.out.fq  --output-pe2=" + pwd + "2.out.fq  --output-single=" + pwd + "se.out.fq";
 
-        correctSeCommand = "sickle se  --qual-threshold=50  --length-threshold=50   --qual-type=sanger  --fastq-file=" + pwd + "se.fq  --output-file=" + "se.out.fq";
+        correctSeCommand = "sickle se --qual-threshold=50  --length-threshold=50   --qual-type=sanger  --fastq-file=" + pwd + "se.fq  --output-file=" + "se.out.fq";
     }
 
     @Test

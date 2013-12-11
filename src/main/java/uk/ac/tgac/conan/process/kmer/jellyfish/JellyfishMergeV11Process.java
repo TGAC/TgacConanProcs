@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class JellyfishMergeV11Process extends AbstractConanProcess {
 
-    public static final String EXE = "jellyfish merge";
+    public static final String EXE = "jellyfish";
 
     public JellyfishMergeV11Process() {
         this(new JellyfishMergeV11Args());
@@ -36,7 +36,7 @@ public class JellyfishMergeV11Process extends AbstractConanProcess {
     public String getCommand() {
         StringBuilder sb = new StringBuilder();
         sb.append(EXE);
-        sb.append(" ");
+        sb.append(" merge ");
         for (Map.Entry<ConanParameter, String> param : this.getProcessArgs().getArgMap().entrySet()) {
 
             String name = param.getKey().getName();

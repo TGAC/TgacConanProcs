@@ -17,9 +17,10 @@
  **/
 package uk.ac.tgac.conan.process.ec.musket;
 
-import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
-import uk.ac.tgac.conan.process.ec.ErrorCorrector;
-import uk.ac.tgac.conan.process.ec.ErrorCorrectorArgs;
+import org.kohsuke.MetaInfServices;
+import uk.ac.tgac.conan.process.ec.AbstractErrorCorrector;
+import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorArgs;
+import uk.ac.tgac.conan.process.ec.ErrorCorrectorCreator;
 
 import java.io.File;
 
@@ -28,19 +29,23 @@ import java.io.File;
  * Date: 02/05/13
  * Time: 15:31
  */
-public class MusketV106Process extends AbstractConanProcess implements ErrorCorrector {
+@MetaInfServices(uk.ac.tgac.conan.process.ec.ErrorCorrectorCreator.class)
+public class MusketV106Process extends AbstractErrorCorrector {
+
+    protected static final String NAME = "Musket_V1.0.6";
+
 
     public MusketV106Process() {
         this(new MusketV106Args());
     }
 
-    public MusketV106Process(ErrorCorrectorArgs args) {
+    public MusketV106Process(AbstractErrorCorrectorArgs args) {
         super("musket", args, new MusketV106Params());
     }
 
     @Override
-    public ErrorCorrectorArgs getArgs() {
-        return (ErrorCorrectorArgs) this.getProcessArgs();
+    public AbstractErrorCorrectorArgs getArgs() {
+        return (AbstractErrorCorrectorArgs) this.getProcessArgs();
     }
 
     @Override
@@ -64,7 +69,12 @@ public class MusketV106Process extends AbstractConanProcess implements ErrorCorr
     }
 
     @Override
+    public AbstractErrorCorrector create(AbstractErrorCorrectorArgs args) {
+        return new MusketV106Process(args);
+    }
+
+    @Override
     public String getName() {
-        return "Musket_V1.0.6";
+        return NAME;
     }
 }

@@ -17,34 +17,36 @@
  **/
 package uk.ac.tgac.conan.process.asm.abyss;
 
+import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
+import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.asm.Assembler;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
+import uk.ac.tgac.conan.process.asm.AbstractAssembler;
+import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * User: maplesod
  * Date: 07/01/13
  * Time: 12:12
  */
-public class AbyssV134Process extends AbstractConanProcess implements Assembler {
+@MetaInfServices(uk.ac.tgac.conan.process.asm.AssemblerCreator.class)
+public class AbyssV134Process extends AbstractAssembler {
 
     private static Logger log = LoggerFactory.getLogger(AbyssV134Process.class);
 
     public static final String EXE = "abyss-pe";
+    public static final String NAME = "Abyss_V1.3.4";
 
     public AbyssV134Process() {
         this(new AbyssV134Args());
     }
 
-    public AbyssV134Process(AssemblerArgs args) {
+    public AbyssV134Process(AbstractAssemblerArgs args) {
         super(EXE, args, new AbyssV134Params());
     }
 
@@ -54,18 +56,10 @@ public class AbyssV134Process extends AbstractConanProcess implements Assembler 
     }
 
     @Override
-    public AssemblerArgs getArgs() {
-        return (AssemblerArgs) this.getProcessArgs();
+    public AbstractAssemblerArgs getArgs() {
+        return (AbstractAssemblerArgs) this.getProcessArgs();
     }
 
-    /**
-     * Abyss will always produce unitigs
-     * @return
-     */
-    @Override
-    public boolean makesUnitigs() {
-        return true;
-    }
 
     /**
      * Abyss only produces contigs if at least one paired end library is provided
@@ -132,7 +126,7 @@ public class AbyssV134Process extends AbstractConanProcess implements Assembler 
     public File getUnitigsFile() {
 
         AbyssV134Args abyssV134Args = (AbyssV134Args)this.getArgs();
-        File unitigsFile = new File(abyssV134Args.getOutputDir(), abyssV134Args.getName() + "-unitigs.fa");
+        File unitigsFile = new File(abyssV134Args.getOutputDir(), abyssV134Args.getOutputName() + "-unitigs.fa");
         return unitigsFile;
     }
 
@@ -140,7 +134,7 @@ public class AbyssV134Process extends AbstractConanProcess implements Assembler 
     public File getContigsFile() {
 
         AbyssV134Args abyssV134Args = (AbyssV134Args)this.getArgs();
-        File unitigsFile = new File(abyssV134Args.getOutputDir(), abyssV134Args.getName() + "-contigs.fa");
+        File unitigsFile = new File(abyssV134Args.getOutputDir(), abyssV134Args.getOutputName() + "-contigs.fa");
         return unitigsFile;
     }
 
@@ -148,32 +142,12 @@ public class AbyssV134Process extends AbstractConanProcess implements Assembler 
     public File getScaffoldsFile() {
 
         AbyssV134Args abyssV134Args = (AbyssV134Args)this.getArgs();
-        File unitigsFile = new File(abyssV134Args.getOutputDir(), abyssV134Args.getName() + "-scaffolds.fa");
+        File unitigsFile = new File(abyssV134Args.getOutputDir(), abyssV134Args.getOutputName() + "-scaffolds.fa");
         return unitigsFile;
     }
 
     @Override
     public boolean usesOpenMpi() {
-        return true;
-    }
-
-    @Override
-    public boolean doesSubsampling() {
-        return false;
-    }
-
-    @Override
-    public boolean hasKParam() {
-        return true;
-    }
-
-    /**
-     * Abyss eats pretty much anything
-     * @param libraries
-     * @return
-     */
-    @Override
-    public boolean acceptsLibraries(List<Library> libraries) {
         return true;
     }
 
@@ -188,6 +162,15 @@ public class AbyssV134Process extends AbstractConanProcess implements Assembler 
 
     @Override
     public String getName() {
-        return "Abyss_V1.3.4";
+        return NAME;
+    }
+
+    @Override
+    public AbstractAssembler create(AbstractAssemblerArgs args, ConanProcessService conanProcessService) {
+
+        AbyssV134Process proc = new AbyssV134Process(args);
+        proc.setConanProcessService(conanProcessService);
+
+        return proc;
     }
 }

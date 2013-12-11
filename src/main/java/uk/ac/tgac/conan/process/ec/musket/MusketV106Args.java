@@ -17,13 +17,16 @@
  **/
 package uk.ac.tgac.conan.process.ec.musket;
 
+import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.FilePair;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.ec.ErrorCorrectorArgs;
-import uk.ac.tgac.conan.process.ec.ErrorCorrectorPairedEndArgs;
+import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorArgs;
+import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorArgs;
+import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorPairedEndArgs;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +36,8 @@ import java.util.Map;
  * Date: 02/05/13
  * Time: 15:31
  */
-public class MusketV106Args extends ErrorCorrectorPairedEndArgs {
+@MetaInfServices(uk.ac.tgac.conan.process.ec.ErrorCorrectorArgsCreator.class)
+public class MusketV106Args extends AbstractErrorCorrectorPairedEndArgs {
 
     private MusketV106Params params = new MusketV106Params();
 
@@ -177,7 +181,7 @@ public class MusketV106Args extends ErrorCorrectorPairedEndArgs {
     }
 
     @Override
-    public ErrorCorrectorArgs copy() {
+    public AbstractErrorCorrectorArgs copy() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -308,5 +312,30 @@ public class MusketV106Args extends ErrorCorrectorPairedEndArgs {
                 throw new IllegalArgumentException("Unknown param found: " + param);
             }
         }
+    }
+
+    @Override
+    public AbstractErrorCorrectorArgs create(File outputDir, Library lib, int threads,
+                                             int memory, int kmer,
+                                             int minLength,
+                                             int minQual) {
+
+        MusketV106Args margs = new MusketV106Args();
+
+        margs.setOutputDir(outputDir);
+        margs.setOutputPrefix("output");
+        margs.setFromLibrary(lib);
+        margs.setThreads(threads);
+        margs.setMemoryGb(memory);
+        margs.setKmer(kmer);
+        margs.setMinLength(minLength);
+        margs.setQualityThreshold(minQual);
+
+        return margs;
+    }
+
+    @Override
+    public String getName() {
+        return MusketV106Process.NAME;
     }
 }

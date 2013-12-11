@@ -19,10 +19,13 @@ package uk.ac.tgac.conan.process.asm.allpaths;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
+import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 import uk.ac.tgac.conan.core.data.Library;
+import uk.ac.tgac.conan.process.asm.AbstractAssembler;
+import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
 import uk.ac.tgac.conan.process.asm.Assembler;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,8 +37,10 @@ import java.util.List;
  * Date: 13/08/13
  * Time: 15:24
  */
-public class AllpathsLgV44837Process extends AbstractConanProcess implements Assembler {
+@MetaInfServices(uk.ac.tgac.conan.process.asm.AssemblerCreator.class)
+public class AllpathsLgV44837Process extends AbstractAssembler {
 
+    public static final String NAME = "AllpathsLg_V44837";
 
     private static class GroupInfo {
         private File inGroupsPhred33;
@@ -78,29 +83,16 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
         this(new AllpathsLgV44837Args());
     }
 
-    public AllpathsLgV44837Process(AssemblerArgs args) {
+    public AllpathsLgV44837Process(AbstractAssemblerArgs args) {
         super("", args, new AllpathsLgV44837Params());
     }
 
-    @Override
-    public AssemblerArgs getArgs() {
-        return (AssemblerArgs) this.getProcessArgs();
-    }
 
     @Override
     public boolean makesUnitigs() {
         return false;
     }
 
-    @Override
-    public boolean makesContigs() {
-        return true;
-    }
-
-    @Override
-    public boolean makesScaffolds() {
-        return true;
-    }
 
     @Override
     public File getUnitigsFile() {
@@ -117,10 +109,6 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
         return new File(assembliesDir, "final.assembly.fasta");
     }
 
-    @Override
-    public boolean usesOpenMpi() {
-        return false;
-    }
 
     @Override
     public boolean doesSubsampling() {
@@ -468,6 +456,15 @@ public class AllpathsLgV44837Process extends AbstractConanProcess implements Ass
 
     @Override
     public String getName() {
-        return "AllpathsLg_V44837";
+        return NAME;
+    }
+
+    @Override
+    public AbstractAssembler create(AbstractAssemblerArgs args, ConanProcessService conanProcessService) {
+
+        AllpathsLgV44837Process proc = new AllpathsLgV44837Process(args);
+        proc.setConanProcessService(conanProcessService);
+
+        return proc;
     }
 }

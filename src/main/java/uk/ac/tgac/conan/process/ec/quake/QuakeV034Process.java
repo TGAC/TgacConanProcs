@@ -17,9 +17,10 @@
  **/
 package uk.ac.tgac.conan.process.ec.quake;
 
-import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
-import uk.ac.tgac.conan.process.ec.ErrorCorrector;
-import uk.ac.tgac.conan.process.ec.ErrorCorrectorArgs;
+import org.kohsuke.MetaInfServices;
+import uk.ac.tgac.conan.process.ec.AbstractErrorCorrector;
+import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorArgs;
+import uk.ac.tgac.conan.process.ec.ErrorCorrectorCreator;
 
 import java.io.File;
 
@@ -28,19 +29,22 @@ import java.io.File;
  * Date: 22/04/13
  * Time: 09:49
  */
-public class QuakeV034Process extends AbstractConanProcess implements ErrorCorrector {
+@MetaInfServices(uk.ac.tgac.conan.process.ec.ErrorCorrectorCreator.class)
+public class QuakeV034Process extends AbstractErrorCorrector {
+
+    protected static final String NAME = "Quake_V0.3.4";
 
     public QuakeV034Process() {
         this(new QuakeV034Args());
     }
 
-    public QuakeV034Process(ErrorCorrectorArgs args) {
+    public QuakeV034Process(AbstractErrorCorrectorArgs args) {
         super("quake.py", args, new QuakeV034Params());
     }
 
     @Override
-    public ErrorCorrectorArgs getArgs() {
-        return (ErrorCorrectorArgs) this.getProcessArgs();
+    public AbstractErrorCorrectorArgs getArgs() {
+        return (AbstractErrorCorrectorArgs) this.getProcessArgs();
     }
 
     @Override
@@ -58,7 +62,12 @@ public class QuakeV034Process extends AbstractConanProcess implements ErrorCorre
     }
 
     @Override
+    public AbstractErrorCorrector create(AbstractErrorCorrectorArgs args) {
+        return new QuakeV034Process(args);
+    }
+
+    @Override
     public String getName() {
-        return "Quake_V0.3.4";
+        return NAME;
     }
 }

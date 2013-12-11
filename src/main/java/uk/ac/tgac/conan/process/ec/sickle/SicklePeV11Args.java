@@ -17,19 +17,25 @@
  **/
 package uk.ac.tgac.conan.process.ec.sickle;
 
+import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.FilePair;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.ec.ErrorCorrectorArgs;
-import uk.ac.tgac.conan.process.ec.ErrorCorrectorPairedEndArgs;
+import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorArgs;
+import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorArgs;
+import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorPairedEndArgs;
+import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorPairedEndArgs;
+import uk.ac.tgac.conan.process.ec.quake.QuakeV034Process;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SicklePeV11Args extends ErrorCorrectorPairedEndArgs {
+@MetaInfServices(uk.ac.tgac.conan.process.ec.ErrorCorrectorArgsCreator.class)
+public class SicklePeV11Args extends AbstractErrorCorrectorPairedEndArgs {
 
     private SicklePeV11Params params = new SicklePeV11Params();
 
@@ -49,7 +55,7 @@ public class SicklePeV11Args extends ErrorCorrectorPairedEndArgs {
     }
 
     @Override
-    public ErrorCorrectorArgs copy() {
+    public AbstractErrorCorrectorArgs copy() {
         return null;
     }
 
@@ -225,4 +231,29 @@ public class SicklePeV11Args extends ErrorCorrectorPairedEndArgs {
         }
     }
 
+    @Override
+    public AbstractErrorCorrectorArgs create(File outputDir, Library lib, int threads,
+                                             int memory, int kmer,
+                                             int minLength,
+                                             int minQual) {
+
+        SicklePeV11Args sargs = new SicklePeV11Args();
+
+        sargs.setOutputDir(outputDir);
+        //qargs..setOutputPrefix(outputPrefix);
+
+        sargs.setFromLibrary(lib);
+        sargs.setThreads(threads);
+        sargs.setMemoryGb(memory);
+        sargs.setKmer(kmer);
+        sargs.setMinLength(minLength);
+        sargs.setQualityThreshold(minQual);
+
+        return sargs;
+    }
+
+    @Override
+    public String getName() {
+        return SickleV11Process.NAME;
+    }
 }

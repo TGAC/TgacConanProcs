@@ -95,7 +95,7 @@ public class AbyssV134ProcessTest {
         AbyssV134Args args = new AbyssV134Args();
         args.setLibraries(libs);
         args.setKmer(61);
-        args.setName("OUTPUT_FILE");
+        args.setOutputName("OUTPUT_FILE");
         args.setThreads(16);
         args.setOutputDir(temp.getRoot());
 

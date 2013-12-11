@@ -17,12 +17,13 @@
  **/
 package uk.ac.tgac.conan.process.asm.soapdenovo;
 
+import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
+import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.asm.Assembler;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
+import uk.ac.tgac.conan.process.asm.AbstractAssembler;
+import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,18 +34,20 @@ import java.util.List;
  * Date: 16/04/13
  * Time: 15:57
  */
-public class SoapDeNovoV204Process extends AbstractConanProcess implements Assembler {
+@MetaInfServices(uk.ac.tgac.conan.process.asm.AssemblerCreator.class)
+public class SoapDeNovoV204Process extends AbstractAssembler {
 
     private static Logger log = LoggerFactory.getLogger(SoapDeNovoV204Process.class);
 
 
     public static final String EXE = "SOAPdenovo-127mer all";
+    public static final String NAME = "SoapDeNovo_V2.04";
 
     public SoapDeNovoV204Process() {
         this(new SoapDeNovoV204Args());
     }
 
-    public SoapDeNovoV204Process(AssemblerArgs args) {
+    public SoapDeNovoV204Process(AbstractAssemblerArgs args) {
         super(EXE, args, new SoapDeNovoV204Params());
     }
 
@@ -52,25 +55,9 @@ public class SoapDeNovoV204Process extends AbstractConanProcess implements Assem
         return (SoapDeNovoV204Args)this.getArgs();
     }
 
-
-    @Override
-    public AssemblerArgs getArgs() {
-        return (AssemblerArgs) this.getProcessArgs();
-    }
-
     @Override
     public boolean makesUnitigs() {
         return false;
-    }
-
-    @Override
-    public boolean makesContigs() {
-        return true;
-    }
-
-    @Override
-    public boolean makesScaffolds() {
-        return true;
     }
 
     @Override
@@ -88,25 +75,6 @@ public class SoapDeNovoV204Process extends AbstractConanProcess implements Assem
         return new File(this.getArgs().getOutputDir(), this.getSoapDeNovoArgs().getOutputPrefix() + ".scafSeq");
     }
 
-    @Override
-    public boolean usesOpenMpi() {
-        return false;
-    }
-
-    @Override
-    public boolean doesSubsampling() {
-        return false;
-    }
-
-    @Override
-    public boolean hasKParam() {
-        return true;
-    }
-
-    @Override
-    public boolean acceptsLibraries(List<Library> libraries) {
-        return true;
-    }
 
     @Override
     public void initialise() throws IOException {
@@ -142,7 +110,16 @@ public class SoapDeNovoV204Process extends AbstractConanProcess implements Assem
     }
 
     @Override
+    public AbstractAssembler create(AbstractAssemblerArgs args, ConanProcessService conanProcessService) {
+
+        SoapDeNovoV204Process proc = new SoapDeNovoV204Process(args);
+        proc.setConanProcessService(conanProcessService);
+
+        return proc;
+    }
+
+    @Override
     public String getName() {
-        return "SoapDeNovo_V2.04";
+        return NAME;
     }
 }

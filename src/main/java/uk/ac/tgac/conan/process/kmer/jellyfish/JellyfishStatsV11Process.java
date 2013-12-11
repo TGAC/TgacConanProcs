@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class JellyfishStatsV11Process extends AbstractConanProcess {
 
-    public static final String EXE = "jellyfish stats";
+    public static final String EXE = "jellyfish";
 
     public JellyfishStatsV11Process() {
         this(new JellyfishStatsV11Args());
@@ -37,7 +37,7 @@ public class JellyfishStatsV11Process extends AbstractConanProcess {
 
         StringBuilder sb = new StringBuilder();
         sb.append(EXE);
-        sb.append(" ");
+        sb.append(" stats ");
         for (Map.Entry<ConanParameter, String> param : this.getProcessArgs().getArgMap().entrySet()) {
             if (!param.getKey().getName().equals("input")) {
                 sb.append("-");

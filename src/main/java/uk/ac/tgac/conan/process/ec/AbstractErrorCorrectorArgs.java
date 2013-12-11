@@ -24,7 +24,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ErrorCorrectorArgs implements ProcessArgs {
+public abstract class AbstractErrorCorrectorArgs implements ProcessArgs, ErrorCorrectorArgsCreator {
 
     public static final int DEFAULT_MIN_LENGTH = 60;
 
@@ -36,7 +36,7 @@ public abstract class ErrorCorrectorArgs implements ProcessArgs {
 
     private File outputDir;
 
-    public ErrorCorrectorArgs() {
+    public AbstractErrorCorrectorArgs() {
 
         this.minLength = DEFAULT_MIN_LENGTH;
         this.qualityThreshold = 30;
@@ -94,17 +94,18 @@ public abstract class ErrorCorrectorArgs implements ProcessArgs {
         this.outputDir = outputDir;
     }
 
-    public abstract ErrorCorrectorArgs copy();
+    public abstract AbstractErrorCorrectorArgs copy();
 
     public abstract List<File> getCorrectedFiles();
-
-    public abstract boolean isPairedEnd();
 
     /**
      * Configures error corrector args using a Library object
      * @param lib
      */
     public void setFromLibrary(Library lib) {
+
+        if (lib == null)
+            return;
 
         List<File> files = new ArrayList<>();
         if (lib.isPairedEnd()) {

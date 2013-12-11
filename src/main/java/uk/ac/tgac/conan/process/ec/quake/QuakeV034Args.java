@@ -19,13 +19,15 @@ package uk.ac.tgac.conan.process.ec.quake;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fgpt.conan.core.param.FilePair;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.ec.ErrorCorrectorArgs;
-import uk.ac.tgac.conan.process.ec.ErrorCorrectorPairedEndArgs;
+import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorArgs;
+import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorPairedEndArgs;
+import uk.ac.tgac.conan.process.ec.musket.MusketV106Process;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +41,8 @@ import java.util.Map;
  * Date: 22/04/13
  * Time: 09:49
  */
-public class QuakeV034Args extends ErrorCorrectorPairedEndArgs {
+@MetaInfServices(uk.ac.tgac.conan.process.ec.ErrorCorrectorArgsCreator.class)
+public class QuakeV034Args extends AbstractErrorCorrectorPairedEndArgs {
 
     private static Logger log = LoggerFactory.getLogger(QuakeV034Args.class);
 
@@ -144,7 +147,7 @@ public class QuakeV034Args extends ErrorCorrectorPairedEndArgs {
     }
 
     @Override
-    public ErrorCorrectorArgs copy() {
+    public AbstractErrorCorrectorArgs copy() {
         return null;
     }
 
@@ -234,5 +237,30 @@ public class QuakeV034Args extends ErrorCorrectorPairedEndArgs {
                 throw new IllegalArgumentException("Unknown param found: " + param);
             }
         }
+    }
+
+    @Override
+    public AbstractErrorCorrectorArgs create(File outputDir, Library lib, int threads,
+                                             int memory, int kmer,
+                                             int minLength,
+                                             int minQual) {
+
+        QuakeV034Args qargs = new QuakeV034Args();
+
+        qargs.setOutputDir(outputDir);
+        //qargs..setOutputPrefix(outputPrefix);
+        qargs.setFromLibrary(lib);
+        qargs.setThreads(threads);
+        qargs.setMemoryGb(memory);
+        qargs.setKmer(kmer);
+        qargs.setMinLength(minLength);
+        qargs.setQualityThreshold(minQual);
+
+        return qargs;
+    }
+
+    @Override
+    public String getName() {
+        return QuakeV034Process.NAME;
     }
 }

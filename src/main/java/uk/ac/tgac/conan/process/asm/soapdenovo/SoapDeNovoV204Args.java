@@ -18,13 +18,15 @@
 package uk.ac.tgac.conan.process.asm.soapdenovo;
 
 import org.apache.commons.io.FileUtils;
+import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.util.StringJoiner;
 import uk.ac.tgac.conan.core.data.Library;
+import uk.ac.tgac.conan.core.data.Organism;
 import uk.ac.tgac.conan.core.data.SeqFile;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
+import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +39,8 @@ import java.util.Map;
  * Date: 16/04/13
  * Time: 15:57
  */
-public class SoapDeNovoV204Args extends AssemblerArgs {
+@MetaInfServices(uk.ac.tgac.conan.process.asm.AssemblerArgsCreator.class)
+public class SoapDeNovoV204Args extends AbstractAssemblerArgs {
 
     private static Logger log = LoggerFactory.getLogger(SoapDeNovoV204Process.class);
 
@@ -108,7 +111,7 @@ public class SoapDeNovoV204Args extends AssemblerArgs {
     }
 
     @Override
-    public AssemblerArgs copy() {
+    public AbstractAssemblerArgs copy() {
         return null;
     }
 
@@ -234,4 +237,21 @@ public class SoapDeNovoV204Args extends AssemblerArgs {
         log.debug("Config file created: " + (configFile.exists() ? "true" : "false"));
     }
 
+    @Override
+    public AbstractAssemblerArgs create(int k, List<Library> libs, File outputDir, int threads, int memory, int coverage, Organism organism) {
+        SoapDeNovoV204Args args = new SoapDeNovoV204Args();
+        args.setKmer(k);
+        args.setOutputDir(outputDir);
+        args.setLibraries(libs);
+        args.setThreads(threads);
+        args.setMemory(memory);
+        args.setDesiredCoverage(coverage);
+        args.setOrganism(organism);
+        return args;
+    }
+
+    @Override
+    public String getName() {
+        return SoapDeNovoV204Process.NAME;
+    }
 }

@@ -17,10 +17,55 @@
  **/
 package uk.ac.tgac.conan.process.asm.velvet;
 
+import org.kohsuke.MetaInfServices;
+import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
+import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
+import uk.ac.tgac.conan.process.asm.AbstractAssembler;
+import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
+
+import java.io.File;
+
 /**
  * User: maplesod
  * Date: 13/03/13
  * Time: 15:49
  */
-public class VelvetV11Process {
+@MetaInfServices(uk.ac.tgac.conan.process.asm.AssemblerCreator.class)
+public class VelvetV11Process extends AbstractAssembler {
+
+    public static final String NAME = "Velvet_V1.1";
+
+    protected VelvetV11Process(String executable, AbstractAssemblerArgs args, ProcessParams params) {
+        super(executable, args, params);
+    }
+
+    @Override
+    public File getUnitigsFile() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public File getContigsFile() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public File getScaffoldsFile() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public AbstractAssembler create(AbstractAssemblerArgs args, ConanProcessService conanProcessService) {
+        throw new UnsupportedOperationException("Velvet wrapper is not implemented yet");
+    }
+
+    @Override
+    public String getCommand() {
+        throw new UnsupportedOperationException("Velvet wrapper is not implemented yet");
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
 }

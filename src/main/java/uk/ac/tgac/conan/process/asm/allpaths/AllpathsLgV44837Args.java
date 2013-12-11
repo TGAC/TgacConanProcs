@@ -17,9 +17,14 @@
  **/
 package uk.ac.tgac.conan.process.asm.allpaths;
 
+import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
+import uk.ac.tgac.conan.core.data.Library;
+import uk.ac.tgac.conan.core.data.Organism;
+import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
 
+import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,14 +32,33 @@ import java.util.Map;
  * Date: 13/08/13
  * Time: 15:24
  */
-public class AllpathsLgV44837Args extends AssemblerArgs {
+@MetaInfServices(uk.ac.tgac.conan.process.asm.AssemblerArgsCreator.class)
+public class AllpathsLgV44837Args extends AbstractAssemblerArgs {
 
     private AllpathsLgV44837Params params = new AllpathsLgV44837Params();
 
 
+    @Override
+    public AbstractAssemblerArgs create(int k, List<Library> libs, File outputDir, int threads, int memory, int coverage, Organism organism) {
+        AllpathsLgV44837Args args = new AllpathsLgV44837Args();
+        args.setKmer(k);
+        args.setOutputDir(outputDir);
+        args.setLibraries(libs);
+        args.setThreads(threads);
+        args.setMemory(memory);
+        args.setDesiredCoverage(coverage);
+        args.setOrganism(organism);
+        return args;
+    }
 
     @Override
-    public AssemblerArgs copy() {
+    public String getName() {
+        return AllpathsLgV44837Process.NAME;
+    }
+
+
+    @Override
+    public AbstractAssemblerArgs copy() {
         AllpathsLgV44837Args copy = new AllpathsLgV44837Args();
         copy.setThreads(this.getThreads());
         copy.setDesiredCoverage(this.getDesiredCoverage());

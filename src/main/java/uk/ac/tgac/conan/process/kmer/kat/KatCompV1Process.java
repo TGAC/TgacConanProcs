@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class KatCompV1Process extends AbstractConanProcess {
 
-    public static final String EXE = "kat comp";
+    public static final String EXE = "kat";
 
     public KatCompV1Process() {
         this(new KatCompV1Args());
@@ -34,7 +34,7 @@ public class KatCompV1Process extends AbstractConanProcess {
     public String getCommand() {
         StringBuilder sb = new StringBuilder();
         sb.append(EXE);
-        sb.append(" ");
+        sb.append(" comp ");
         for (Map.Entry<ConanParameter, String> param : this.getProcessArgs().getArgMap().entrySet()) {
 
             String name = param.getKey().getName();

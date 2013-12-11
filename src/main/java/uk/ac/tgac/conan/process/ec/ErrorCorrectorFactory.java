@@ -17,104 +17,68 @@
  **/
 package uk.ac.tgac.conan.process.ec;
 
+import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
+import uk.ac.tgac.conan.core.data.Library;
+import uk.ac.tgac.conan.process.asmIO.AssemblyIOArgsCreator;
+import uk.ac.tgac.conan.process.asmIO.AssemblyIOCreator;
 import uk.ac.tgac.conan.process.ec.musket.MusketV106Process;
 import uk.ac.tgac.conan.process.ec.quake.QuakeV034Process;
 import uk.ac.tgac.conan.process.ec.sickle.SickleV11Process;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.ServiceLoader;
 
 /**
  * User: maplesod
  * Date: 30/01/13
  * Time: 18:42
  */
-public enum ErrorCorrectorFactory {
-
-    SICKLE_V1_1 {
-        @Override
-        public String getToolName() {
-            return "SICKLE";
-        }
-
-        @Override
-        public ErrorCorrector create() {
-            return new SickleV11Process();
-        }
-
-        @Override
-        public ErrorCorrector create(ErrorCorrectorArgs args) {
-            return new SickleV11Process(args);
-        }
-
-    },
-    QUAKE_V0_3_4 {
-        @Override
-        public String getToolName() {
-            return "QUAKE";
-        }
-
-        @Override
-        public ErrorCorrector create() {
-            return new QuakeV034Process();
-        }
-
-        @Override
-        public ErrorCorrector create(ErrorCorrectorArgs args) {
-            return new QuakeV034Process(args);
-        }
-    },
-    MUSKET_V1_0_6 {
-        @Override
-        public String getToolName() {
-            return "MUSKET";
-        }
-
-        @Override
-        public ErrorCorrector create() {
-            return new MusketV106Process();
-        }
-
-        @Override
-        public ErrorCorrector create(ErrorCorrectorArgs args) {
-            return new MusketV106Process(args);
-        }
-    };
-
-    public abstract String getToolName();
-
-    public abstract ErrorCorrector create();
-    public abstract ErrorCorrector create(ErrorCorrectorArgs args);
+public class ErrorCorrectorFactory {
 
 
-
-    public static String defaultQTName() {
-        return SICKLE_V1_1.toString();
-    }
-
-    public static ErrorCorrector createQualityTrimmer() {
-
-        return createQualityTrimmer("SICKLE");
+    public static AbstractErrorCorrector create(String toolName, ConanProcessService conanProcessService) {
+        return create(toolName, new File("."), null, 1, 0, 17, 8, 20, conanProcessService);
     }
 
 
-    public static ErrorCorrector createQualityTrimmer(String qtType) {
+    public static AbstractErrorCorrector create(String toolName,
+                                                   File outputDir,
+                                                   Library lib,
+                                                   int threads,
+                                                   int memory,
+                                                   int kmer,
+                                                   int minLength,
+                                                   int minQual,
+                                                   ConanProcessService conanProcessService) {
 
-        ErrorCorrectorFactory qualityTrimmerType = ErrorCorrectorFactory.valueOf(qtType.toUpperCase());
+        AbstractErrorCorrectorArgs actualArgs = null;
 
-        if (qualityTrimmerType == null) {
-            qualityTrimmerType = findGeneric(qtType);
+        ServiceLoader<ErrorCorrectorArgsCreator> foundECArgsClasses = ServiceLoader.load(ErrorCorrectorArgsCreator.class);
+
+        for(ErrorCorrectorArgsCreator ecArgsClass : foundECArgsClasses) {
+
+            if (ecArgsClass.getName().equalsIgnoreCase(toolName.trim())) {
+
+                if (lib == null || lib.isPairedEnd() == ecArgsClass.isPairedEnd()) {
+                    actualArgs = ecArgsClass.create(outputDir, lib, threads, memory, kmer, minLength, minQual);
+                    break;
+                }
+            }
         }
 
-        if (qualityTrimmerType != null) {
-            return qualityTrimmerType.create();
-        }
+        if (actualArgs == null)
+            return null;
 
-        return null;
-    }
+        ServiceLoader<ErrorCorrectorCreator> procLoader = ServiceLoader.load(ErrorCorrectorCreator.class);
 
-    protected static ErrorCorrectorFactory findGeneric(String qtType) {
+        for(ErrorCorrectorCreator ecProc : procLoader) {
 
-        for (ErrorCorrectorFactory inst : ErrorCorrectorFactory.values()) {
-            if (inst.getToolName().equalsIgnoreCase(qtType)) {
-                return inst;
+            if (ecProc.getName().equalsIgnoreCase(toolName.trim())) {
+                AbstractErrorCorrector aec = ecProc.create(actualArgs);
+                aec.setConanProcessService(conanProcessService);
+                return aec;
             }
         }
 

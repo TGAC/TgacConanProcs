@@ -13,10 +13,10 @@ import java.util.List;
 public interface Assembler extends ConanProcess {
 
     /**
-     * Return the process args as an AssemblerArgs type (all Assemblers should support AssemblerArgs).
+     * Return the process args as an AbstractAssemblerArgs type (all Assemblers should support AbstractAssemblerArgs).
      * @return
      */
-    AssemblerArgs getArgs();
+    AbstractAssemblerArgs getArgs();
 
     /**
      * Whether this assembler produces unitigs or not

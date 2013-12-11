@@ -17,22 +17,34 @@
  **/
 package uk.ac.tgac.conan.process.ec;
 
-import uk.ac.ebi.fgpt.conan.model.ConanProcess;
+import uk.ac.tgac.conan.core.data.Library;
 
-/**
- * An Error Corrector is a process that attempts to either discard, correct or otherwise improve NGS datasets
- */
-public interface ErrorCorrector extends ConanProcess {
+import java.io.File;
 
-    /**
-     * Returns the process args for this error corrector type case as ErrorCorrectorArgs
-     * @return
-     */
-    ErrorCorrectorArgs getArgs();
+public abstract class AbstractErrorCorrectorSingleEndArgs extends AbstractErrorCorrectorArgs {
 
-    /**
-     * This can be used to do any setup work between running the constructor and executing the process.  For example,
-     * it can be used to add any pre or post commands that are necessary for this error correction process
-     */
-    void initialise();
+    private File singleEndInputFile;
+
+    public AbstractErrorCorrectorSingleEndArgs() {
+        this.singleEndInputFile = null;
+    }
+
+    public File getSingleEndInputFile() {
+        return singleEndInputFile;
+    }
+
+    public void setSingleEndInputFile(File singleEndInputFile) {
+        this.singleEndInputFile = singleEndInputFile;
+    }
+
+    @Override
+    public boolean isPairedEnd() {
+        return false;
+    }
+
+
+    public abstract Library createOutputLibrary();
+
+    public abstract File getCorrectedFile();
+    public abstract File getErrorFile();
 }

@@ -17,34 +17,35 @@
  **/
 package uk.ac.tgac.conan.process.ec;
 
-import uk.ac.tgac.conan.core.data.Library;
+import uk.ac.ebi.fgpt.conan.core.param.FilePair;
 
 import java.io.File;
+import java.util.List;
 
-public abstract class ErrorCorrectorSingleEndArgs extends ErrorCorrectorArgs {
+public abstract class AbstractErrorCorrectorPairedEndArgs extends AbstractErrorCorrectorArgs {
 
-    private File singleEndInputFile;
+    private FilePair pairedEndInputFiles;
 
-    public ErrorCorrectorSingleEndArgs() {
-        this.singleEndInputFile = null;
+    public AbstractErrorCorrectorPairedEndArgs() {
+
+        this.pairedEndInputFiles = null;
     }
 
-    public File getSingleEndInputFile() {
-        return singleEndInputFile;
+    public FilePair getPairedEndInputFiles() {
+        return pairedEndInputFiles;
     }
 
-    public void setSingleEndInputFile(File singleEndInputFile) {
-        this.singleEndInputFile = singleEndInputFile;
+    public void setPairedEndInputFiles(FilePair pairedEndInputFiles) {
+        this.pairedEndInputFiles = pairedEndInputFiles;
     }
 
     @Override
     public boolean isPairedEnd() {
-        return false;
+        return true;
     }
 
-
-    public abstract Library createOutputLibrary();
-
-    public abstract File getCorrectedFile();
-    public abstract File getErrorFile();
+    public abstract FilePair getPairedEndCorrectedFiles();
+    public abstract List<File> getSingleEndCorrectedFiles();
+    public abstract FilePair getPairedEndErrorFiles();
+    public abstract List<File> getSingleEndErrorFiles();
 }

@@ -25,7 +25,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AssemblerArgs implements ProcessArgs {
+public abstract class AbstractAssemblerArgs implements ProcessArgs, AssemblerArgsCreator {
 
     public static final int DEFAULT_KMER = 65;
 
@@ -40,7 +40,7 @@ public abstract class AssemblerArgs implements ProcessArgs {
 
 
 
-    protected AssemblerArgs() {
+    protected AbstractAssemblerArgs() {
         this.kmer = DEFAULT_KMER;
         this.coverageCutoff = 0;
         this.memory = 0;
@@ -51,7 +51,7 @@ public abstract class AssemblerArgs implements ProcessArgs {
         this.organism = null;
     }
 
-    public abstract AssemblerArgs copy();
+    public abstract AbstractAssemblerArgs copy();
 
 
 

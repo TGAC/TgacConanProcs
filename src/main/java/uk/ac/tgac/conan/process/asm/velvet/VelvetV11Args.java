@@ -17,15 +17,63 @@
  **/
 package uk.ac.tgac.conan.process.asm.velvet;
 
+import org.kohsuke.MetaInfServices;
+import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.tgac.conan.core.data.Library;
+import uk.ac.tgac.conan.core.data.Organism;
+import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 /**
  * User: maplesod
  * Date: 13/03/13
  * Time: 15:49
  */
-public class VelvetV11Args {
+@MetaInfServices(uk.ac.tgac.conan.process.asm.AssemblerArgsCreator.class)
+public class VelvetV11Args extends AbstractAssemblerArgs {
 
     private VelvetV11Params params = new VelvetV11Params();
 
 
+    @Override
+    public AbstractAssemblerArgs copy() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
+    @Override
+    public AbstractAssemblerArgs create(int k, List<Library> libs, File outputDir, int threads, int memory, int coverage, Organism organism) {
+        VelvetV11Args args = new VelvetV11Args();
+        args.setKmer(k);
+        args.setOutputDir(outputDir);
+        args.setLibraries(libs);
+        args.setThreads(threads);
+        args.setMemory(memory);
+        args.setDesiredCoverage(coverage);
+        args.setOrganism(organism);
+        return args;
+    }
+
+    @Override
+    public String getName() {
+        return VelvetV11Process.NAME;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void parse(String args) throws IOException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Map<ConanParameter, String> getArgMap() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setFromArgMap(Map<ConanParameter, String> pvp) throws IOException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
