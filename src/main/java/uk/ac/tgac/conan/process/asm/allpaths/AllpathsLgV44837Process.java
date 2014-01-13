@@ -40,6 +40,7 @@ import java.util.List;
 @MetaInfServices(uk.ac.tgac.conan.process.asm.AssemblerCreator.class)
 public class AllpathsLgV44837Process extends AbstractAssembler {
 
+    public static final String EXE = "RunAllPathsLG";
     public static final String NAME = "AllpathsLg_V44837";
 
     private static class GroupInfo {
@@ -84,7 +85,7 @@ public class AllpathsLgV44837Process extends AbstractAssembler {
     }
 
     public AllpathsLgV44837Process(AbstractAssemblerArgs args) {
-        super("", args, new AllpathsLgV44837Params());
+        super(EXE, args, new AllpathsLgV44837Params());
     }
 
 
