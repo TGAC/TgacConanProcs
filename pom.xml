@@ -6,7 +6,7 @@
 
     <groupId>uk.ac.tgac.conan</groupId>
     <artifactId>tgac-conan</artifactId>
-    <version>0.6.3</version>
+    <version>0.7.0</version>
 
     <name>TGAC conan procs</name>
     <description>This project contains Conan procs which might be reused in many conan pipelines.</description>
