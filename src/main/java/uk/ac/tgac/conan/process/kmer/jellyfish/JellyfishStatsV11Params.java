@@ -1,7 +1,8 @@
 package uk.ac.tgac.conan.process.kmer.jellyfish;
 
+import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
-import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
+import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 
@@ -26,15 +27,20 @@ public class JellyfishStatsV11Params implements ProcessParams {
     public JellyfishStatsV11Params() {
         super();
 
-        this.input = new PathParameter(
-                "input",
-                "Input file",
-                false);
+        this.input = new ParameterBuilder()
+                .isOption(false)
+                .isOptional(false)
+                .argIndex(0)
+                .description("Input file")
+                .argValidator(ArgValidator.PATH)
+                .create();
 
-        this.output = new PathParameter(
-                "o",
-                "Output file",
-                false);
+        this.output = new ParameterBuilder()
+                .shortName("o")
+                .longName("output")
+                .description("Output file")
+                .argValidator(ArgValidator.PATH)
+                .create();
 
         this.lowerCount = new NumericParameter(
                 "L",

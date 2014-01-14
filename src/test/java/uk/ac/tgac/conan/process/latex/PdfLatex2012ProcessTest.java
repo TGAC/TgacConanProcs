@@ -19,6 +19,7 @@ package uk.ac.tgac.conan.process.latex;
 
 import org.junit.Before;
 import org.junit.Test;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
 
@@ -58,7 +59,7 @@ public class PdfLatex2012ProcessTest {
     }
 
     @Test
-    public void testPdfLatexFullCommand() {
+    public void testPdfLatexFullCommand() throws ConanParameterException {
 
         PdfLatex2012Args args = new PdfLatex2012Args();
         args.setOutputDir(new File(pwd + "pdfLatexOut"));

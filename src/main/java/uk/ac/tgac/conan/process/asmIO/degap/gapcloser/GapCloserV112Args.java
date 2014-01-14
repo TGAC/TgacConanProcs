@@ -19,7 +19,9 @@ package uk.ac.tgac.conan.process.asmIO.degap.gapcloser;
 
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.util.StringJoiner;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
@@ -28,7 +30,6 @@ import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -135,9 +136,9 @@ public class GapCloserV112Args extends AbstractAssemblyIOArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
+    public ParamMap getArgMap() {
 
-        Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
+        ParamMap pvp = new DefaultParamMap();
 
         if (this.getInputFile() != null)
             pvp.put(params.getInputScaffoldFile(), this.getInputFile().getAbsolutePath());
@@ -161,31 +162,31 @@ public class GapCloserV112Args extends AbstractAssemblyIOArgs {
     }
 
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) {
+    public void setFromArgMap(ParamMap pvp) {
         for (Map.Entry<ConanParameter, String> entry : pvp.entrySet()) {
 
             if (!entry.getKey().validateParameterValue(entry.getValue())) {
                 throw new IllegalArgumentException("Parameter invalid: " + entry.getKey() + " : " + entry.getValue());
             }
 
-            String param = entry.getKey().getName();
+            ConanParameter param = entry.getKey();
 
-            if (param.equals(this.params.getLibraryFile().getName())) {
+            if (param.equals(this.params.getLibraryFile())) {
                 this.libraryFile = new File(entry.getValue());
             }
-            else if (param.equals(this.params.getOverlap().getName())) {
+            else if (param.equals(this.params.getOverlap())) {
                 this.overlap = Integer.parseInt(entry.getValue());
             }
-            else if (param.equals(this.params.getMaxReadLength().getName())) {
+            else if (param.equals(this.params.getMaxReadLength())) {
                 this.maxReadLength = Integer.parseInt(entry.getValue());
             }
-            else if (param.equals(this.params.getThreads().getName())) {
+            else if (param.equals(this.params.getThreads())) {
                 this.setThreads(Integer.parseInt(entry.getValue()));
             }
-            else if (param.equals(this.params.getInputScaffoldFile().getName())) {
+            else if (param.equals(this.params.getInputScaffoldFile())) {
                 this.setInputFile(new File(entry.getValue()));
             }
-            else if (param.equals(this.params.getOutputFile().getName())) {
+            else if (param.equals(this.params.getOutputFile())) {
                 this.setOutputFile(new File(entry.getValue()));
             }
             else {

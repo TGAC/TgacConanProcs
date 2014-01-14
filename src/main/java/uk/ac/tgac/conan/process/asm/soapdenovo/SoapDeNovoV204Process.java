@@ -21,13 +21,11 @@ import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
-import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asm.AbstractAssembler;
 import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * User: maplesod
@@ -102,11 +100,6 @@ public class SoapDeNovoV204Process extends AbstractAssembler {
         else if (args.getConfigFile() != null && args.getLibraries() != null) {
             log.warn("SOAP denovo found both a config file and libraries.  Assuming config file was intended to be used.");
         }
-    }
-
-    @Override
-    public String getCommand() {
-        return this.getCommand(this.getProcessArgs(), true, "-", " ");
     }
 
     @Override

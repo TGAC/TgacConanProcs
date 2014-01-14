@@ -18,17 +18,16 @@
 package uk.ac.tgac.conan.process.ec.sickle;
 
 import org.kohsuke.MetaInfServices;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorArgs;
 import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorSingleEndArgs;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @MetaInfServices(uk.ac.tgac.conan.process.ec.ErrorCorrectorArgsCreator.class)
 public class SickleSeV11Args extends AbstractErrorCorrectorSingleEndArgs {
@@ -49,6 +48,7 @@ public class SickleSeV11Args extends AbstractErrorCorrectorSingleEndArgs {
         this.qualType = SickleV11QualityTypeParameter.SickleQualityTypeOptions.SANGER;
     }
 
+    
     @Override
     public AbstractErrorCorrectorArgs copy() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
@@ -125,66 +125,61 @@ public class SickleSeV11Args extends AbstractErrorCorrectorSingleEndArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
+    public ParamMap getArgMap() {
 
-        Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
+        ParamMap pvp = new DefaultParamMap();
 
         if (this.getQualityThreshold() != 20) {
-            pvp.put(params.getQualityThreshold(), "--" + params.getQualityThreshold().getName() + "=" + String.valueOf(this.getQualityThreshold()));
+            pvp.put(params.getQualityThreshold(), String.valueOf(this.getQualityThreshold()));
         }
 
         if (this.getMinLength() != 20) {
-            pvp.put(params.getLengthThreshold(), "--" + params.getLengthThreshold().getName() + "=" + String.valueOf(this.getMinLength()));
+            pvp.put(params.getLengthThreshold(), String.valueOf(this.getMinLength()));
         }
 
         if (this.discardN) {
-            pvp.put(params.getDiscardN(), "--" + params.getDiscardN().getName());
+            pvp.put(params.getDiscardN(), Boolean.toString(true));
         }
 
         if (this.qualType != null) {
-            pvp.put(params.getQualityType(), "--" + params.getQualityType() + "=" + this.qualType.toString().toLowerCase());
+            pvp.put(params.getQualityType(), this.qualType.toString().toLowerCase());
         }
 
         if (this.getSingleEndInputFile() != null) {
-            pvp.put(params.getSeFile(), "--" + params.getSeFile().getName() + "=" + this.getSingleEndInputFile().getAbsolutePath());
+            pvp.put(params.getSeFile(),this.getSingleEndInputFile().getAbsolutePath());
         }
 
         if (this.getCorrectedFile() != null) {
-            pvp.put(params.getOutputFile(), "--" + params.getOutputFile().getName() + "=" + this.getCorrectedFile().getPath());
+            pvp.put(params.getOutputFile(), this.getCorrectedFile().getPath());
         }
 
         return pvp;
     }
 
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) {
-
-        for (Map.Entry<ConanParameter, String> entry : pvp.entrySet()) {
-
-            if (!entry.getKey().validateParameterValue(entry.getValue())) {
-                throw new IllegalArgumentException("Parameter invalid: " + entry.getKey() + " : " + entry.getValue());
-            }
-
-            String param = entry.getKey().getName();
-
-            if (param.equals(this.params.getSeFile().getName())) {
-                this.setSingleEndInputFile(new File(entry.getValue()));
-            } else if (param.equals(this.params.getOutputFile().getName())) {
-                this.outputFile = new File(entry.getValue());
-            } else if (param.equals(this.params.getDiscardN().getName())) {
-                this.discardN = Boolean.parseBoolean(entry.getValue());
-            } else if (param.equals(this.params.getQualityType().getName())) {
-                this.qualType = SickleV11QualityTypeParameter.SickleQualityTypeOptions.valueOf(entry.getValue().trim().toUpperCase());
-            } else if (param.equals(this.params.getLengthThreshold().getName())) {
-                this.setMinLength(Integer.parseInt(entry.getValue().trim()));
-            } else if (param.equals(this.params.getQualityThreshold().getName())) {
-                this.setQualityThreshold(Integer.parseInt(entry.getValue().trim()));
-            } else {
-                throw new IllegalArgumentException("Unknown param found: " + param);
-            }
-
+    protected void setOptionFromMapEntry(ConanParameter param, String value) {
+        if (param.equals(this.params.getSeFile())) {
+            this.setSingleEndInputFile(new File(value));
+        } else if (param.equals(this.params.getOutputFile())) {
+            this.outputFile = new File(value);
+        } else if (param.equals(this.params.getDiscardN())) {
+            this.discardN = Boolean.parseBoolean(value);
+        } else if (param.equals(this.params.getQualityType())) {
+            this.qualType = SickleV11QualityTypeParameter.SickleQualityTypeOptions.valueOf(value.toUpperCase());
+        } else if (param.equals(this.params.getLengthThreshold())) {
+            this.setMinLength(Integer.parseInt(value));
+        } else if (param.equals(this.params.getQualityThreshold())) {
+            this.setQualityThreshold(Integer.parseInt(value));
+        } else {
+            throw new IllegalArgumentException("Unknown param found: " + param);
         }
     }
+
+    @Override
+    protected void setArgFromMapEntry(ConanParameter param, String value) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 
     @Override
     public AbstractErrorCorrectorArgs create(File outputDir, Library lib, int threads,

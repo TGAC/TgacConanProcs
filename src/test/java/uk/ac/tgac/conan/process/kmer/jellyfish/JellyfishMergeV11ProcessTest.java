@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,11 +35,11 @@ public class JellyfishMergeV11ProcessTest {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "jellyfish merge -s 20000000 -o " + pwd + "/output " + pwd + "/input1 " + pwd + "/input2 " + pwd + "/input3 " + pwd + "/input4";
+        correctCommand = "jellyfish merge -s 20000000 --output=" + pwd + "/output " + pwd + "/input1 " + pwd + "/input2 " + pwd + "/input3 " + pwd + "/input4";
     }
 
     @Test
-    public void testJellyfishCommand() {
+    public void testJellyfishCommand() throws ConanParameterException {
 
         JellyfishMergeV11Process jf = new JellyfishMergeV11Process(createJellyfishArgs());
 

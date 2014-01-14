@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.ebi.fgpt.conan.utils.CommandExecutionException;
 import uk.ac.tgac.conan.core.data.Library;
@@ -67,7 +68,7 @@ public class AbyssV134ProcessTest {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "abyss-pe  name=OUTPUT_FILE  k=61  np=16  lib='peLib1' " +
+        correctCommand = "abyss-pe name=OUTPUT_FILE k=61 np=16 lib='peLib1' " +
                 "peLib1='" + pwd + "/tools/mass/LIB1896_R1.r95.fastq " + pwd + "/tools/mass/LIB1896_R2.r95.fastq'";
 
         correctFullCommand = "cd " + testDir + "; " + correctCommand + " 2>&1; cd " + pwd;
@@ -103,7 +104,7 @@ public class AbyssV134ProcessTest {
     }
 
     @Test
-    public void testAbyssV134Command() throws InterruptedException, ProcessExecutionException, IOException, CommandExecutionException {
+    public void testAbyssV134Command() throws Exception {
 
         AbyssV134Process abyss = createProcess();
 
@@ -116,7 +117,7 @@ public class AbyssV134ProcessTest {
     }
 
     @Test
-    public void testAbyssV134FullCommand() throws InterruptedException, ProcessExecutionException, IOException, CommandExecutionException {
+    public void testAbyssV134FullCommand() throws Exception {
 
         AbyssV134Process abyss = createProcess();
         abyss.initialise();

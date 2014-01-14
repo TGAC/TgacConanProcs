@@ -2,12 +2,12 @@ package uk.ac.tgac.conan.process.kmer.jellyfish;
 
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
-import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.CommandLineFormat;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,6 +19,7 @@ import java.util.Map;
 public class JellyfishMergeV11Process extends AbstractConanProcess {
 
     public static final String EXE = "jellyfish";
+    public static final String MODE = "merge";
 
     public JellyfishMergeV11Process() {
         this(new JellyfishMergeV11Args());
@@ -26,6 +27,7 @@ public class JellyfishMergeV11Process extends AbstractConanProcess {
 
     public JellyfishMergeV11Process(JellyfishMergeV11Args args) {
         super(EXE, args, new JellyfishMergeV11Params());
+        this.setMode(MODE);
     }
 
     public JellyfishMergeV11Args getArgs() {
@@ -33,23 +35,11 @@ public class JellyfishMergeV11Process extends AbstractConanProcess {
     }
 
     @Override
-    public String getCommand() {
+    public String getCommand() throws ConanParameterException {
         StringBuilder sb = new StringBuilder();
         sb.append(EXE);
         sb.append(" merge ");
-        for (Map.Entry<ConanParameter, String> param : this.getProcessArgs().getArgMap().entrySet()) {
-
-            String name = param.getKey().getName();
-            if (!name.equals("inputs")) {
-                sb.append("-");
-                sb.append(param.getKey());
-                if (!param.getKey().isBoolean()) {
-                    sb.append(" ");
-                    sb.append(param.getValue());
-                }
-                sb.append(" ");
-            }
-        }
+        sb.append(this.getArgs().getArgMap().buildOptionString(CommandLineFormat.POSIX));
 
         JellyfishMergeV11Args args = (JellyfishMergeV11Args) this.getProcessArgs();
 

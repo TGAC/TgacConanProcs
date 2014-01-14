@@ -1,11 +1,11 @@
 package uk.ac.tgac.conan.process.kmer.jellyfish;
 
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
+import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
-import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,7 +14,7 @@ import java.util.Map;
  * Time: 15:07
  * To change this template use File | Settings | File Templates.
  */
-public class JellyfishCountV11Args implements ProcessArgs {
+public class JellyfishCountV11Args extends AbstractProcessArgs {
 
     private JellyfishCountV11Params params = new JellyfishCountV11Params();
 
@@ -41,6 +41,7 @@ public class JellyfishCountV11Args implements ProcessArgs {
         this.lowerCount = 0;
         this.upperCount = Long.MAX_VALUE;
     }
+
 
     public String getInputFile() {
         return inputFile;
@@ -128,8 +129,8 @@ public class JellyfishCountV11Args implements ProcessArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
-        Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
+    public ParamMap getArgMap() {
+        ParamMap pvp = new DefaultParamMap();
 
         if (this.inputFile != null && !this.inputFile.isEmpty()) {
             pvp.put(params.getInputFile(), this.inputFile);
@@ -147,44 +148,48 @@ public class JellyfishCountV11Args implements ProcessArgs {
         pvp.put(params.getCounterLength(), Integer.toString(this.counterLength));
         pvp.put(params.getBothStrands(), Boolean.toString(this.bothStrands));
         pvp.put(params.getLowerCount(), Long.toString(this.lowerCount));
-        pvp.put(params.getUpperCount(), Long.toString(this.upperCount));
+
+        if (this.upperCount != Long.MAX_VALUE) {
+            pvp.put(params.getUpperCount(), Long.toString(this.upperCount));
+        }
 
         return pvp;
     }
 
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) throws IOException {
-        for (Map.Entry<ConanParameter, String> entry : pvp.entrySet()) {
+    protected void setOptionFromMapEntry(ConanParameter param, String value) {
 
-            if (!entry.getKey().validateParameterValue(entry.getValue())) {
-                throw new IllegalArgumentException("Parameter invalid: " + entry.getKey() + " : " + entry.getValue());
-            }
-
-            String param = entry.getKey().getName();
-
-            if (param.equals(this.params.getInputFile().getName())) {
-                this.inputFile = entry.getValue();
-            } else if (param.equals(this.params.getMerLength().getName())) {
-                this.merLength = Integer.parseInt(entry.getValue());
-            } else if (param.equals(this.params.getHashSize().getName())) {
-                this.hashSize = Long.parseLong(entry.getValue());
-            } else if (param.equals(this.params.getThreads().getName())) {
-                this.threads = Integer.parseInt(entry.getValue());
-            } else if (param.equals(this.params.getMemoryMb().getName())) {
-                this.memoryMb = Integer.parseInt(entry.getValue());
-            } else if (param.equals(this.params.getOutputPrefix().getName())) {
-                this.outputPrefix = entry.getValue();
-            } else if (param.equals(this.params.getCounterLength().getName())) {
-                this.counterLength = Integer.parseInt(entry.getValue());
-            } else if (param.equals(this.params.getBothStrands().getName())) {
-                this.bothStrands = Boolean.parseBoolean(entry.getValue());
-            } else if (param.equals(this.params.getLowerCount().getName())) {
-                this.lowerCount = Long.parseLong(entry.getValue());
-            } else if (param.equals(this.params.getUpperCount().getName())) {
-                this.upperCount = Long.parseLong(entry.getValue());
-            } else {
-                throw new IllegalArgumentException("Unknown param found: " + param);
-            }
+        if (param.equals(this.params.getMerLength())) {
+            this.merLength = Integer.parseInt(value);
+        } else if (param.equals(this.params.getHashSize())) {
+            this.hashSize = Long.parseLong(value);
+        } else if (param.equals(this.params.getThreads())) {
+            this.threads = Integer.parseInt(value);
+        } else if (param.equals(this.params.getMemoryMb())) {
+            this.memoryMb = Integer.parseInt(value);
+        } else if (param.equals(this.params.getOutputPrefix())) {
+            this.outputPrefix = value;
+        } else if (param.equals(this.params.getCounterLength())) {
+            this.counterLength = Integer.parseInt(value);
+        } else if (param.equals(this.params.getBothStrands())) {
+            this.bothStrands = Boolean.parseBoolean(value);
+        } else if (param.equals(this.params.getLowerCount())) {
+            this.lowerCount = Long.parseLong(value);
+        } else if (param.equals(this.params.getUpperCount())) {
+            this.upperCount = Long.parseLong(value);
+        } else {
+            throw new IllegalArgumentException("Unknown param found: " + param);
         }
     }
+
+    @Override
+    protected void setArgFromMapEntry(ConanParameter param, String value) {
+
+        if (param.equals(this.params.getInputFile())) {
+            this.inputFile = value;
+        } else {
+            throw new IllegalArgumentException("Unknown param found: " + param);
+        }
+    }
+
 }

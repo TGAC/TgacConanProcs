@@ -18,7 +18,7 @@
 package uk.ac.tgac.conan.process.asm.velvet;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.Organism;
 import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
@@ -26,7 +26,6 @@ import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * User: maplesod
@@ -68,12 +67,12 @@ public class VelvetV11Args extends AbstractAssemblerArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
+    public ParamMap getArgMap() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) throws IOException {
+    public void setFromArgMap(ParamMap pvp) throws IOException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

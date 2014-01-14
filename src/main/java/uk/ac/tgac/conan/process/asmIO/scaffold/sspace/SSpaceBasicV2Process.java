@@ -59,11 +59,6 @@ public class SSpaceBasicV2Process extends AbstractAssemblyIOProcess {
     }
 
     @Override
-    public String getCommand() {
-        return this.getCommand(this.getProcessArgs(), true, "-", " ");
-    }
-
-    @Override
     public String getName() {
         return NAME;
     }

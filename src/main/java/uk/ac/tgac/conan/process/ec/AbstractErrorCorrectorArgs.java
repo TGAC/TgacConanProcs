@@ -17,14 +17,14 @@
  **/
 package uk.ac.tgac.conan.process.ec;
 
-import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
+import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractErrorCorrectorArgs implements ProcessArgs, ErrorCorrectorArgsCreator {
+public abstract class AbstractErrorCorrectorArgs extends AbstractProcessArgs implements ErrorCorrectorArgsCreator {
 
     public static final int DEFAULT_MIN_LENGTH = 60;
 

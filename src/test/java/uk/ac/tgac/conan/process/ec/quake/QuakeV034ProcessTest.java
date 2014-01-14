@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
@@ -59,7 +60,7 @@ public class QuakeV034ProcessTest {
     }
 
     @Test
-    public void testQuakeCommand() {
+    public void testQuakeCommand() throws ConanParameterException {
 
         QuakeV034Process quake = new QuakeV034Process(createQuakeArgs());
 
@@ -69,7 +70,7 @@ public class QuakeV034ProcessTest {
     }
 
     @Test
-    public void testQuakeFullCommand() {
+    public void testQuakeFullCommand() throws ConanParameterException {
 
         QuakeV034Process quake = new QuakeV034Process(createQuakeArgs());
         quake.initialise();

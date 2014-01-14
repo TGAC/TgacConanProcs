@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asm.abyss;
 
+import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
 
 public class AbyssV134InputLibsParameter extends DefaultConanParameter {
@@ -24,16 +25,13 @@ public class AbyssV134InputLibsParameter extends DefaultConanParameter {
     private static final long serialVersionUID = 4497529578973609010L;
 
     public AbyssV134InputLibsParameter() {
-        super(
-                "lib",
-                "Required.  The input libraries to assemble with abyss.  Can include paired end and single end.  Will run paired end assemblies in parallel.",
-                false, false, false);
-    }
+        super();
 
-    @Override
-    public boolean validateParameterValue(String value) {
-
-        // Pretty tricky to validate this in String form.  Just let Abyss do the validation for the time being...
-        return true;
+        this.name = "lib";
+        this.description = "Required.  The input libraries to assemble with abyss.  Can include paired end and single end.  Will run paired end assemblies in parallel.";
+        this.isOption = true;
+        this.isOptional = false;
+        this.isFlag = false;
+        this.argValidator = ArgValidator.OFF;
     }
 }

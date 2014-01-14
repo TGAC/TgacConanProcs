@@ -19,15 +19,8 @@ package uk.ac.tgac.conan.process.ec;
 
 import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.asmIO.AssemblyIOArgsCreator;
-import uk.ac.tgac.conan.process.asmIO.AssemblyIOCreator;
-import uk.ac.tgac.conan.process.ec.musket.MusketV106Process;
-import uk.ac.tgac.conan.process.ec.quake.QuakeV034Process;
-import uk.ac.tgac.conan.process.ec.sickle.SickleV11Process;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
 import java.util.ServiceLoader;
 
 /**

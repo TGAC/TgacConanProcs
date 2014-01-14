@@ -2,7 +2,6 @@ package uk.ac.tgac.conan.process.ec;
 
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
-import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
 
 /**
  * Created with IntelliJ IDEA.

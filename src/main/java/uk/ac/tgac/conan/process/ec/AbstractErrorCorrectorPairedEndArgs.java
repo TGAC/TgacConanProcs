@@ -17,7 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.ec;
 
-import uk.ac.ebi.fgpt.conan.core.param.FilePair;
+import uk.ac.tgac.conan.core.data.FilePair;
 
 import java.io.File;
 import java.util.List;

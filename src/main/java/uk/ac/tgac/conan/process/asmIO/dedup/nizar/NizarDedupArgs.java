@@ -18,13 +18,14 @@
 package uk.ac.tgac.conan.process.asmIO.dedup.nizar;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * User: maplesod
@@ -49,14 +50,15 @@ public class NizarDedupArgs extends AbstractAssemblyIOArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
+    public ParamMap getArgMap() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) {
+    public void setFromArgMap(ParamMap pvp) throws IOException, ConanParameterException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
+
 
     @Override
     public AbstractAssemblyIOArgs create(File inputFile, File outputDir, String outputPrefix, List<Library> libs,

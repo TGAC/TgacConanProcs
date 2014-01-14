@@ -18,11 +18,12 @@
 package uk.ac.tgac.conan.process.kmer.jellyfish;
 
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
+import uk.ac.ebi.fgpt.conan.model.param.CommandLineFormat;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * User: maplesod
@@ -32,6 +33,7 @@ import java.util.Map;
 public class JellyfishCountV11Process extends AbstractConanProcess {
 
     public static final String EXE = "jellyfish";
+    public static final String MODE = "count";
 
     public JellyfishCountV11Process() {
         this(new JellyfishCountV11Args());
@@ -39,6 +41,7 @@ public class JellyfishCountV11Process extends AbstractConanProcess {
 
     public JellyfishCountV11Process(JellyfishCountV11Args args) {
         super(EXE, args, new JellyfishCountV11Params());
+        this.setMode(MODE);
     }
 
     public JellyfishCountV11Args getArgs() {
@@ -46,27 +49,19 @@ public class JellyfishCountV11Process extends AbstractConanProcess {
     }
 
     @Override
-    public String getCommand() {
+    public String getCommand() throws ConanParameterException {
+
+        List<ConanParameter> optionException = new ArrayList<>();
+        optionException.add(new JellyfishCountV11Params().getMemoryMb());
+
         StringBuilder sb = new StringBuilder();
         sb.append(EXE);
         sb.append(" count ");
-        for (Map.Entry<ConanParameter, String> param : this.getProcessArgs().getArgMap().entrySet()) {
+        sb.append(this.getArgs().getArgMap().buildOptionString(CommandLineFormat.POSIX, optionException));
+        sb.append(" ");
+        sb.append(this.getArgs().getArgMap().buildArgString());
 
-            String name = param.getKey().getName();
-            if (!name.equals("input") && !name.equals("memory")) {
-                sb.append("-");
-                sb.append(param.getKey());
-                if (!param.getKey().isBoolean()) {
-                    sb.append(" ");
-                    sb.append(param.getValue());
-                }
-                sb.append(" ");
-            }
-        }
-
-        JellyfishCountV11Args args = (JellyfishCountV11Args) this.getProcessArgs();
-
-        return sb.toString().trim() + " " + args.getInputFile();
+        return sb.toString();
     }
 
     @Override

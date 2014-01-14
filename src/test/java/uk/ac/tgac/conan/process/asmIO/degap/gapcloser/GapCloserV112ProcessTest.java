@@ -19,6 +19,7 @@ package uk.ac.tgac.conan.process.asmIO.degap.gapcloser;
 
 import org.junit.Before;
 import org.junit.Test;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.ebi.fgpt.conan.utils.CommandExecutionException;
 
@@ -44,7 +45,7 @@ public class GapCloserV112ProcessTest {
     }
 
     @Test
-    public void testGapCloserV112() throws InterruptedException, ProcessExecutionException, IOException, CommandExecutionException {
+    public void testGapCloserV112() throws Exception {
 
         GapCloserV112Args args = new GapCloserV112Args();
         args.setOutputFile(new File("output.fa"));

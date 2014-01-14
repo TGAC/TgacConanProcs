@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
 
@@ -52,7 +53,7 @@ public class SubsamplerV1_0ProcessTest {
     }
 
     @Test
-    public void testCommand() {
+    public void testCommand() throws ConanParameterException {
 
         SubsamplerV1_0Process process = createProcess();
 

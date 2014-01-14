@@ -1,12 +1,6 @@
 package uk.ac.tgac.conan.process.asm;
 
 import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
-import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
-import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOProcess;
-
-import java.io.File;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.

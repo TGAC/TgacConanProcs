@@ -19,11 +19,11 @@ package uk.ac.tgac.conan.process.asm.stats;
 
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
-import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.CommandLineFormat;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * User: maplesod
@@ -43,25 +43,14 @@ public class QuastV2_2Process extends AbstractConanProcess {
     }
 
     @Override
-    public String getCommand() {
+    public String getCommand() throws ConanParameterException {
 
         List<String> commands = new ArrayList<String>();
 
         StringBuilder sb = new StringBuilder();
         sb.append(EXE);
         sb.append(" ");
-        for (Map.Entry<ConanParameter, String> param : this.getProcessArgs().getArgMap().entrySet()) {
-
-            if (!param.getKey().getName().equals("input")) {
-                sb.append("--");
-                sb.append(param.getKey());
-                if (!param.getKey().isBoolean()) {
-                    sb.append(" ");
-                    sb.append(param.getValue());
-                }
-                sb.append(" ");
-            }
-        }
+        sb.append(this.getProcessArgs().getArgMap().buildOptionString(CommandLineFormat.POSIX));
 
         String firstPart = sb.toString().trim();
         String files = ((QuastV2_2Args)this.getProcessArgs()).getInputFilesAsString();

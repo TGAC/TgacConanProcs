@@ -18,14 +18,15 @@
 package uk.ac.tgac.conan.process.asm.abyss;
 
 import org.kohsuke.MetaInfServices;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.util.StringJoiner;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.Organism;
 import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
 
 import java.io.File;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -91,28 +92,28 @@ public class AbyssV134Args extends AbstractAssemblerArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
+    public ParamMap getArgMap() {
 
-        Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
+        ParamMap pvp = new DefaultParamMap();
 
         if (this.outputName != null) {
-            pvp.put(params.getName(), params.getName().getName() + "=" + this.outputName);
+            pvp.put(params.getName(), this.outputName);
         }
 
         if (this.nbContigPairs != 10) {
-            pvp.put(params.getNbContigPairs(), params.getNbContigPairs().getName() + "=" + Integer.toString(this.nbContigPairs));
+            pvp.put(params.getNbContigPairs(), Integer.toString(this.nbContigPairs));
         }
 
         if (this.getKmer() > 0) {
-            pvp.put(params.getKmer(), params.getKmer().getName() + "=" + Integer.toString(this.getKmer()));
+            pvp.put(params.getKmer(), Integer.toString(this.getKmer()));
         }
 
         if (this.getCoverageCutoff() > 0) {
-            pvp.put(params.getCoverageCutoff(), params.getCoverageCutoff().getName() + "=" + Integer.toString(this.getCoverageCutoff()));
+            pvp.put(params.getCoverageCutoff(), Integer.toString(this.getCoverageCutoff()));
         }
 
         if (this.getThreads() > 1) {
-            pvp.put(params.getThreads(), params.getThreads().getName() + "=" + Integer.toString(this.getThreads()));
+            pvp.put(params.getThreads(), Integer.toString(this.getThreads()));
         }
 
         if (this.getLibraries() != null && !this.getLibraries().isEmpty()) {
@@ -123,32 +124,32 @@ public class AbyssV134Args extends AbstractAssemblerArgs {
     }
 
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) {
+    public void setFromArgMap(ParamMap pvp) {
         for (Map.Entry<ConanParameter, String> entry : pvp.entrySet()) {
 
             if (!entry.getKey().validateParameterValue(entry.getValue())) {
                 throw new IllegalArgumentException("Parameter invalid: " + entry.getKey() + " : " + entry.getValue());
             }
 
-            String param = entry.getKey().getName();
+            ConanParameter param = entry.getKey();
             String val = entry.getValue();
 
-            if (param.equals(this.params.getName().getName())) {
+            if (param.equals(this.params.getName())) {
                 this.outputName = val;
             }
-            else if (param.equals(this.params.getKmer().getName())) {
+            else if (param.equals(this.params.getKmer())) {
                 this.setKmer(Integer.parseInt(val));
             }
-            else if (param.equals(this.params.getCoverageCutoff().getName())) {
+            else if (param.equals(this.params.getCoverageCutoff())) {
                 this.setCoverageCutoff(Integer.parseInt(val));
             }
-            else if (param.equals(this.params.getNbContigPairs().getName())) {
+            else if (param.equals(this.params.getNbContigPairs())) {
                 this.nbContigPairs = Integer.parseInt(val);
             }
-            else if (param.equals(this.params.getThreads().getName())) {
+            else if (param.equals(this.params.getThreads())) {
                 this.setThreads(Integer.parseInt(val));
             }
-            else if (param.equals(this.params.getLibs().getName())) {
+            else if (param.equals(this.params.getLibs())) {
                 this.setLibraries(AbyssV134InputLibsArg.parse(val).getLibs());
             }
             else {

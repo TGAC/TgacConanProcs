@@ -17,6 +17,8 @@
  **/
 package uk.ac.tgac.conan.process.ec.sickle;
 
+import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
+import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 
@@ -36,30 +38,40 @@ public class SicklePeV11Params extends SickleV11Params {
 
         super();
 
-        this.peFile1 = new PathParameter(
-                "pe-file1",
-                "Input paired-end fastq file 1 (required, must have same number of records as pe2)",
-                false);
+        this.peFile1 = new ParameterBuilder()
+                .longName("pe-file1")
+                .description("Input paired-end fastq file 1 (required, must have same number of records as pe2)")
+                .isOptional(false)
+                .argValidator(ArgValidator.PATH)
+                .create();
 
-        this.peFile2 = new PathParameter(
-                "pe-file2",
-                "Input paired-end fastq file 2 (required, must have same number of records as pe1)",
-                false);
+        this.peFile2 = new ParameterBuilder()
+                .longName("pe-file2")
+                .description("Input paired-end fastq file 2 (required, must have same number of records as pe1)")
+                .isOptional(false)
+                .argValidator(ArgValidator.PATH)
+                .create();
 
-        this.outputPe1 = new PathParameter(
-                "output-pe1",
-                "Output trimmed fastq file 1 (required)",
-                false);
+        this.outputPe1 = new ParameterBuilder()
+                .longName("output-pe1")
+                .description("Output trimmed fastq file 1 (required)")
+                .isOptional(false)
+                .argValidator(ArgValidator.PATH)
+                .create();
 
-        this.outputPe2 = new PathParameter(
-                "output-pe2",
-                "Output trimmed fastq file 2 (required)",
-                false);
+        this.outputPe2 = new ParameterBuilder()
+                .longName("output-pe2")
+                .description("Output trimmed fastq file 2 (required)")
+                .isOptional(false)
+                .argValidator(ArgValidator.PATH)
+                .create();
 
-        this.outputSingles = new PathParameter(
-                "output-single",
-                "Output trimmed singles fastq file (required)",
-                false);
+        this.outputSingles = new ParameterBuilder()
+                .longName("output-single")
+                .description("Output trimmed singles fastq file (required)")
+                .isOptional(false)
+                .argValidator(ArgValidator.PATH)
+                .create();
     }
 
     public ConanParameter getPeFile1() {

@@ -2,20 +2,19 @@ package uk.ac.tgac.conan.process.asmIO.scaffold.soap;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.kohsuke.MetaInfServices;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.util.StringJoiner;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
 import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
-import uk.ac.tgac.conan.process.asmIO.scaffold.sspace.SSpaceBasicV2Params;
 import uk.ac.tgac.conan.process.asmIO.scaffold.sspace.SSpaceBasicV2Process;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -222,15 +221,15 @@ public class SoapV240Args extends AbstractAssemblyIOArgs {
         // create Options object
         Options options = new Options();
 
-        options.addOption(new Option(params.getKmer().getName(), true, params.getKmer().getDescription()));
-        options.addOption(new Option(params.getKmerFreqCutoff().getName(), true, params.getKmerFreqCutoff().getDescription()));
-        options.addOption(new Option(params.getFillGaps().getName(), true, params.getFillGaps().getDescription()));
-        options.addOption(new Option(params.getUnmaskContigs().getName(), true, params.getUnmaskContigs().getDescription()));
-        options.addOption(new Option(params.getRequireWeakConnection().getName(), true, params.getRequireWeakConnection().getDescription()));
-        options.addOption(new Option(params.getGapLenDiff().getName(), true, params.getGapLenDiff().getDescription()));
-        options.addOption(new Option(params.getInsertSizeUpperBound().getName(), true, params.getInsertSizeUpperBound().getDescription()));
-        options.addOption(new Option(params.getBubbleCoverage().getName(), true, params.getBubbleCoverage().getDescription()));
-        options.addOption(new Option(params.getGenomeSize().getName(), true, params.getGenomeSize().getDescription()));
+        options.addOption(new Option(params.getKmer().getShortName(), true, params.getKmer().getDescription()));
+        options.addOption(new Option(params.getKmerFreqCutoff().getShortName(), true, params.getKmerFreqCutoff().getDescription()));
+        options.addOption(new Option(params.getFillGaps().getShortName(), true, params.getFillGaps().getDescription()));
+        options.addOption(new Option(params.getUnmaskContigs().getShortName(), true, params.getUnmaskContigs().getDescription()));
+        options.addOption(new Option(params.getRequireWeakConnection().getShortName(), true, params.getRequireWeakConnection().getDescription()));
+        options.addOption(new Option(params.getGapLenDiff().getShortName(), true, params.getGapLenDiff().getDescription()));
+        options.addOption(new Option(params.getInsertSizeUpperBound().getShortName(), true, params.getInsertSizeUpperBound().getDescription()));
+        options.addOption(new Option(params.getBubbleCoverage().getShortName(), true, params.getBubbleCoverage().getDescription()));
+        options.addOption(new Option(params.getGenomeSize().getShortName(), true, params.getGenomeSize().getDescription()));
 
         return options;
     }
@@ -249,47 +248,47 @@ public class SoapV240Args extends AbstractAssemblyIOArgs {
         if (cmdLine == null)
             return;
 
-        this.kmer = cmdLine.hasOption(params.getKmer().getName()) ?
-                Integer.parseInt(cmdLine.getOptionValue(params.getKmer().getName())) :
+        this.kmer = cmdLine.hasOption(params.getKmer().getShortName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getKmer().getShortName())) :
                 this.kmer;
 
-        this.kmerFreqCutoff = cmdLine.hasOption(params.getKmerFreqCutoff().getName()) ?
-                Integer.parseInt(cmdLine.getOptionValue(params.getKmerFreqCutoff().getName())) :
+        this.kmerFreqCutoff = cmdLine.hasOption(params.getKmerFreqCutoff().getShortName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getKmerFreqCutoff().getShortName())) :
                 this.kmerFreqCutoff;
 
-        this.fillGaps = cmdLine.hasOption(params.getFillGaps().getName()) ?
-                cmdLine.hasOption(params.getFillGaps().getName()) :
+        this.fillGaps = cmdLine.hasOption(params.getFillGaps().getShortName()) ?
+                cmdLine.hasOption(params.getFillGaps().getShortName()) :
                 this.fillGaps;
 
-        this.unmaskContigs = cmdLine.hasOption(params.getUnmaskContigs().getName()) ?
-                cmdLine.hasOption(params.getUnmaskContigs().getName()) :
+        this.unmaskContigs = cmdLine.hasOption(params.getUnmaskContigs().getShortName()) ?
+                cmdLine.hasOption(params.getUnmaskContigs().getShortName()) :
                 this.unmaskContigs;
 
-        this.requireWeakConnection = cmdLine.hasOption(params.getRequireWeakConnection().getName()) ?
-                cmdLine.hasOption(params.getRequireWeakConnection().getName()) :
+        this.requireWeakConnection = cmdLine.hasOption(params.getRequireWeakConnection().getShortName()) ?
+                cmdLine.hasOption(params.getRequireWeakConnection().getShortName()) :
                 this.requireWeakConnection;
 
-        this.gapLenDiff = cmdLine.hasOption(params.getGapLenDiff().getName()) ?
-                Integer.parseInt(cmdLine.getOptionValue(params.getGapLenDiff().getName())) :
+        this.gapLenDiff = cmdLine.hasOption(params.getGapLenDiff().getShortName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getGapLenDiff().getShortName())) :
                 this.gapLenDiff;
 
-        this.insertSizeUpperBound = cmdLine.hasOption(params.getInsertSizeUpperBound().getName()) ?
-                Double.parseDouble(cmdLine.getOptionValue(params.getInsertSizeUpperBound().getName())) :
+        this.insertSizeUpperBound = cmdLine.hasOption(params.getInsertSizeUpperBound().getShortName()) ?
+                Double.parseDouble(cmdLine.getOptionValue(params.getInsertSizeUpperBound().getShortName())) :
                 this.insertSizeUpperBound;
 
-        this.bubbleCoverage = cmdLine.hasOption(params.getBubbleCoverage().getName()) ?
-                Double.parseDouble(cmdLine.getOptionValue(params.getBubbleCoverage().getName())) :
+        this.bubbleCoverage = cmdLine.hasOption(params.getBubbleCoverage().getShortName()) ?
+                Double.parseDouble(cmdLine.getOptionValue(params.getBubbleCoverage().getShortName())) :
                 this.bubbleCoverage;
 
-        this.genomeSize = cmdLine.hasOption(params.getGenomeSize().getName()) ?
-                Integer.parseInt(cmdLine.getOptionValue(params.getGenomeSize().getName())) :
+        this.genomeSize = cmdLine.hasOption(params.getGenomeSize().getShortName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getGenomeSize().getShortName())) :
                 this.genomeSize;
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
+    public ParamMap getArgMap() {
 
-        Map<ConanParameter, String> pvp = new LinkedHashMap<>();
+        ParamMap pvp = new DefaultParamMap();
 
         // **** Main args ****
 
@@ -339,60 +338,60 @@ public class SoapV240Args extends AbstractAssemblyIOArgs {
     }
 
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) throws IOException {
+    public void setFromArgMap(ParamMap pvp) throws IOException {
         for (Map.Entry<ConanParameter, String> entry : pvp.entrySet()) {
 
             if (!entry.getKey().validateParameterValue(entry.getValue())) {
                 throw new IllegalArgumentException("Parameter invalid: " + entry.getKey() + " : " + entry.getValue());
             }
 
-            String param = entry.getKey().getName();
+            ConanParameter param = entry.getKey();
 
             // **** Main args ****
 
-            if (param.equals(this.params.getConfigFile().getName())) {
+            if (param.equals(this.params.getConfigFile())) {
                 this.configFile = new File(entry.getValue());
             }
-            //else if (param.equals(this.params.().getName())) {
+            //else if (param.equals(this.params.())) {
             //    this.setInputFile(new File(entry.getValue()));
             //}
-            else if (param.equals(this.params.getOutputPrefix().getName())) {
+            else if (param.equals(this.params.getOutputPrefix())) {
                 this.setOutputPrefix(entry.getValue());
             }
-            else if (param.equals(this.params.getKmer().getName())) {
+            else if (param.equals(this.params.getKmer())) {
                 this.kmer = Integer.parseInt(entry.getValue());
             }
-            else if (param.equals(this.params.getCpus().getName())) {
+            else if (param.equals(this.params.getCpus())) {
                 this.setThreads(Integer.parseInt(entry.getValue()));
             }
-            else if (param.equals(this.params.getMemoryGb().getName())) {
+            else if (param.equals(this.params.getMemoryGb())) {
                 this.setMemory(Integer.parseInt(entry.getValue()));
             }
-            else if (param.equals(this.params.getKmerFreqCutoff().getName())) {
+            else if (param.equals(this.params.getKmerFreqCutoff())) {
                 this.kmerFreqCutoff = Integer.parseInt(entry.getValue());
             }
-            else if (param.equals(this.params.getFillGaps().getName())) {
+            else if (param.equals(this.params.getFillGaps())) {
                 this.fillGaps = Boolean.parseBoolean(entry.getValue());
             }
-            else if (param.equals(this.params.getUnmaskContigs().getName())) {
+            else if (param.equals(this.params.getUnmaskContigs())) {
                 this.unmaskContigs = Boolean.parseBoolean(entry.getValue());
             }
-            else if (param.equals(this.params.getRequireWeakConnection().getName())) {
+            else if (param.equals(this.params.getRequireWeakConnection())) {
                 this.requireWeakConnection = Boolean.parseBoolean(entry.getValue());
             }
-            else if (param.equals(this.params.getGapLenDiff().getName())) {
+            else if (param.equals(this.params.getGapLenDiff())) {
                 this.gapLenDiff = Integer.parseInt(entry.getValue());
             }
-            else if (param.equals(this.params.getGapLenDiff().getName())) {
+            else if (param.equals(this.params.getGapLenDiff())) {
                 this.gapLenDiff = Integer.parseInt(entry.getValue());
             }
-            else if (param.equals(this.params.getInsertSizeUpperBound().getName())) {
+            else if (param.equals(this.params.getInsertSizeUpperBound())) {
                 this.insertSizeUpperBound = Double.parseDouble(entry.getValue());
             }
-            else if (param.equals(this.params.getBubbleCoverage().getName())) {
+            else if (param.equals(this.params.getBubbleCoverage())) {
                 this.bubbleCoverage = Double.parseDouble(entry.getValue());
             }
-            else if (param.equals(this.params.getGenomeSize().getName())) {
+            else if (param.equals(this.params.getGenomeSize())) {
                 this.genomeSize = Integer.parseInt(entry.getValue());
             }
             else {

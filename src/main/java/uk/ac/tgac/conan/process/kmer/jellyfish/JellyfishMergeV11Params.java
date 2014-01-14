@@ -1,8 +1,8 @@
 package uk.ac.tgac.conan.process.kmer.jellyfish;
 
-import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
+import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
-import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
+import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 
@@ -25,17 +25,20 @@ public class JellyfishMergeV11Params implements ProcessParams {
 
     public JellyfishMergeV11Params() {
 
-        this.inputFiles = new DefaultConanParameter(
-                "inputs",
-                "List of input files (supports globbing)",
-                false,
-                false,
-                false);
+        this.inputFiles = new ParameterBuilder()
+                .isOption(false)
+                .isOptional(false)
+                .argIndex(0)
+                .description("Input files (supports globbing)")
+                .argValidator(ArgValidator.OFF)
+                .create();
 
-        this.outputFile = new PathParameter(
-                "o",
-                "Output file",
-                true);
+        this.outputFile = new ParameterBuilder()
+                .shortName("o")
+                .longName("output")
+                .description("Output file (mer_counts_merged.jf)")
+                .argValidator(ArgValidator.PATH)
+                .create();
 
         this.bufferSize = new NumericParameter(
                 "s",

@@ -1,15 +1,14 @@
 package uk.ac.tgac.conan.process.kmer.jellyfish;
 
 import org.apache.commons.lang3.StringUtils;
-import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -62,8 +61,9 @@ public class JellyfishMergeV11Args implements ProcessArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
-        Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
+    public ParamMap getArgMap() {
+
+        ParamMap pvp = new DefaultParamMap();
 
         if (this.inputFiles != null && !this.inputFiles.isEmpty()) {
 
@@ -85,7 +85,7 @@ public class JellyfishMergeV11Args implements ProcessArgs {
     }
 
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) throws IOException {
+    public void setFromArgMap(ParamMap pvp) throws IOException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

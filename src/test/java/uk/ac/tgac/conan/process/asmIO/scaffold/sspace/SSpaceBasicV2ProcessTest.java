@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class SSpaceBasicV2ProcessTest {
     }
 
     @Test
-    public void testSSpaceBasicV2Command() {
+    public void testSSpaceBasicV2Command() throws ConanParameterException {
 
         SSpaceBasicV2Process task = createSspaceProc();
 
@@ -85,7 +86,7 @@ public class SSpaceBasicV2ProcessTest {
     }
 
     @Test
-    public void testSSpaceBasicV2FullCommand() {
+    public void testSSpaceBasicV2FullCommand() throws ConanParameterException {
 
         SSpaceBasicV2Process task = createSspaceProc();
         task.initialise();

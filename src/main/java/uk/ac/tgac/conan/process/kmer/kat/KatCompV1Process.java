@@ -1,11 +1,14 @@
 package uk.ac.tgac.conan.process.kmer.kat;
 
+import org.apache.commons.lang3.StringUtils;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
+import uk.ac.ebi.fgpt.conan.model.param.CommandLineFormat;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
-import uk.ac.tgac.conan.process.kmer.jellyfish.JellyfishCountV11Args;
-import uk.ac.tgac.conan.process.kmer.jellyfish.JellyfishCountV11Params;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,6 +20,7 @@ import java.util.Map;
 public class KatCompV1Process extends AbstractConanProcess {
 
     public static final String EXE = "kat";
+    public static final String MODE = "comp";
 
     public KatCompV1Process() {
         this(new KatCompV1Args());
@@ -24,6 +28,7 @@ public class KatCompV1Process extends AbstractConanProcess {
 
     public KatCompV1Process(KatCompV1Args args) {
         super(EXE, args, new KatCompV1Params());
+        this.setMode(MODE);
     }
 
     public KatCompV1Args getArgs() {
@@ -31,27 +36,39 @@ public class KatCompV1Process extends AbstractConanProcess {
     }
 
     @Override
-    public String getCommand() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(EXE);
-        sb.append(" comp ");
-        for (Map.Entry<ConanParameter, String> param : this.getProcessArgs().getArgMap().entrySet()) {
+    public String getCommand() throws ConanParameterException {
 
-            String name = param.getKey().getName();
-            if (!name.equals("input1") && !name.equals("input2") && !name.equals("memory")) {
-                sb.append("-");
-                sb.append(param.getKey());
-                if (!param.getKey().isBoolean()) {
-                    sb.append(" ");
-                    sb.append(param.getValue());
-                }
-                sb.append(" ");
-            }
+        ParamMap map = this.getProcessArgs().getArgMap();
+
+        // Ensure all parameters are valid before we try to make a command
+        map.validate(this.getProcessParams());
+
+        List<ConanParameter> exclusions = new ArrayList<>();
+        exclusions.add(new KatCompV1Params().getMemoryMb());
+
+
+        List<String> commands = new ArrayList<>();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(EXE).append(" ").append(MODE);
+
+        // Add the options
+        String options = map.buildOptionString(CommandLineFormat.POSIX, exclusions).trim();
+        if (!options.isEmpty()) {
+            sb.append(" ").append(options);
         }
 
-        KatCompV1Args args = (KatCompV1Args) this.getProcessArgs();
+        // Add the arguments
+        String args = map.buildArgString().trim();
+        if (!args.isEmpty()) {
+            sb.append(" ").append(args);
+        }
 
-        return sb.toString().trim() + " " + args.getJellyfishHash1().getAbsolutePath() + " " + args.getJellyfishHash2().getAbsolutePath();
+        commands.add(sb.toString().trim());
+
+        String command = StringUtils.join(commands, "; ");
+
+        return command;
     }
 
     @Override

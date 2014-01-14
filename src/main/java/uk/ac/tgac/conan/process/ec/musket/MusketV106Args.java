@@ -18,18 +18,16 @@
 package uk.ac.tgac.conan.process.ec.musket;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.ebi.fgpt.conan.core.param.FilePair;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.tgac.conan.core.data.FilePair;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorArgs;
 import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorArgs;
 import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorPairedEndArgs;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * User: maplesod
@@ -69,6 +67,7 @@ public class MusketV106Args extends AbstractErrorCorrectorPairedEndArgs {
 
         this.readLength = 0;
     }
+
 
     public String getOutputPrefix() {
         return outputPrefix;
@@ -217,9 +216,9 @@ public class MusketV106Args extends AbstractErrorCorrectorPairedEndArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
+    public ParamMap getArgMap() {
 
-        Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
+        ParamMap pvp = new DefaultParamMap();
 
         pvp.put(params.getKmer(), String.valueOf(this.getKmer()) + " " + String.valueOf(this.getTotalKmers()));
         pvp.put(params.getOutputPrefix(), this.getOutputPrefix());
@@ -252,67 +251,66 @@ public class MusketV106Args extends AbstractErrorCorrectorPairedEndArgs {
         return pvp;
     }
 
+
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) {
-        for (Map.Entry<ConanParameter, String> entry : pvp.entrySet()) {
+    protected void setOptionFromMapEntry(ConanParameter param, String value) {
 
-            if (!entry.getKey().validateParameterValue(entry.getValue())) {
-                throw new IllegalArgumentException("Parameter invalid: " + entry.getKey() + " : " + entry.getValue());
+        if (param.equals(this.params.getKmer())) {
+
+            String[] parts = value.split(" ");
+
+            if (parts.length != 2) {
+                throw new IllegalArgumentException("Parameter/Arg map does not contain a valid kmer value pair for musket.  Musket requires two value, the first being the kmer value, the second being the estimate number of distinct kmers (4^k).");
             }
 
-            String param = entry.getKey().getName();
-            String val = entry.getValue();
+            this.setKmer(Integer.parseInt(parts[0]));
+            this.setTotalKmers(Long.parseLong(parts[1]));
+        }
+        else if (param.equals(this.params.getMaxTrim())) {
+            this.setMaxTrim(Integer.parseInt(value));
+        }
+        else if (param.equals(this.params.getInOrder())) {
 
-            if (param.equals(this.params.getReadFiles().getName())) {
-
-                // Assumes there are no space in the path!!!
-                String[] parts = val.split(" ");
-
-                if (parts.length != 2) {
-                    throw new IllegalArgumentException("Parameter/Arg map does not contain two file valid paths.  Note that each path must contain no spaces!");
-                }
-
-                this.setPairedEndInputFiles(new FilePair(new File(parts[0]), new File(parts[1])));
-            }
-            else if (param.equals(this.params.getKmer().getName())) {
-
-                String[] parts = val.split(" ");
-
-                if (parts.length != 2) {
-                    throw new IllegalArgumentException("Parameter/Arg map does not contain a valid kmer value pair for musket.  Musket requires two value, the first being the kmer value, the second being the estimate number of distinct kmers (4^k).");
-                }
-
-                this.setKmer(Integer.parseInt(parts[0]));
-                this.setTotalKmers(Long.parseLong(parts[1]));
-            }
-            else if (param.equals(this.params.getMaxTrim().getName())) {
-                this.setMaxTrim(Integer.parseInt(val));
-            }
-            else if (param.equals(this.params.getInOrder().getName())) {
-
-                this.setInOrder(val == null || val.isEmpty() || Boolean.parseBoolean(val));
-            }
-            else if (param.equals(this.params.getMultiK().getName())) {
-                this.setMultiK(val == null || val.isEmpty() || Boolean.parseBoolean(val));
-            }
-            else if (param.equals(this.params.getThreads().getName())) {
-                this.setThreads(Integer.parseInt(val));
-            }
-            else if (param.equals(this.params.getMaxErr().getName())) {
-                this.setMaxErr(Integer.parseInt(val));
-            }
-            else if (param.equals(this.params.getMaxIter().getName())) {
-                this.setMaxIter(Integer.parseInt(val));
-            }
-            else if (param.equals(this.params.getOutputPrefix().getName())) {
-                this.setOutputPrefix(val);
-            }
-
-            else {
-                throw new IllegalArgumentException("Unknown param found: " + param);
-            }
+            this.setInOrder(value == null || value.isEmpty() || Boolean.parseBoolean(value));
+        }
+        else if (param.equals(this.params.getMultiK())) {
+            this.setMultiK(value == null || value.isEmpty() || Boolean.parseBoolean(value));
+        }
+        else if (param.equals(this.params.getThreads())) {
+            this.setThreads(Integer.parseInt(value));
+        }
+        else if (param.equals(this.params.getMaxErr())) {
+            this.setMaxErr(Integer.parseInt(value));
+        }
+        else if (param.equals(this.params.getMaxIter())) {
+            this.setMaxIter(Integer.parseInt(value));
+        }
+        else if (param.equals(this.params.getOutputPrefix())) {
+            this.setOutputPrefix(value);
+        }
+        else {
+            throw new IllegalArgumentException("Unknown param found: " + param);
         }
     }
+
+    @Override
+    protected void setArgFromMapEntry(ConanParameter param, String value) {
+
+        if (param.equals(this.params.getReadFiles())) {
+
+            // Assumes there are no space in the path!!!
+            String[] parts = value.split(" ");
+
+            if (parts.length != 2) {
+                throw new IllegalArgumentException("Parameter/Arg map does not contain two file valid paths.  Note that each path must contain no spaces!");
+            }
+
+            this.setPairedEndInputFiles(new FilePair(new File(parts[0]), new File(parts[1])));
+        } else {
+            throw new IllegalArgumentException("Unknown param found: " + param);
+        }
+    }
+
 
     @Override
     public AbstractErrorCorrectorArgs create(File outputDir, Library lib, int threads,

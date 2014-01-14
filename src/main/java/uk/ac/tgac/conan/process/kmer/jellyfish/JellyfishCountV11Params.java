@@ -1,9 +1,9 @@
 package uk.ac.tgac.conan.process.kmer.jellyfish;
 
-import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
+import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.FlagParameter;
 import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
-import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
+import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 
@@ -34,10 +34,13 @@ public class JellyfishCountV11Params implements ProcessParams {
     public JellyfishCountV11Params() {
         super();
 
-        this.inputFile = new PathParameter(
-                "input",
-                "Input file (supports globbing)",
-                false);
+        this.inputFile = new ParameterBuilder()
+                .isOption(false)
+                .isOptional(false)
+                .argIndex(0)
+                .description("Input file (supports globbing)")
+                .argValidator(ArgValidator.PATH)
+                .create();
 
         this.merLength = new NumericParameter(
                 "m",
@@ -59,12 +62,12 @@ public class JellyfishCountV11Params implements ProcessParams {
                 "Amount of memory to request from the scheduler",
                 true);
 
-        this.outputPrefix = new DefaultConanParameter(
-                "o",
-                "Output prefix (mer_counts)",
-                false,
-                true,
-                false);
+        this.outputPrefix = new ParameterBuilder()
+                .shortName("o")
+                .longName("output")
+                .description("Output prefix (mer_counts)")
+                .argValidator(ArgValidator.PATH)
+                .create();
 
         this.counterLength = new NumericParameter(
                 "c",

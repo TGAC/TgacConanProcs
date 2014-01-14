@@ -1,13 +1,12 @@
 package uk.ac.tgac.conan.process.kmer.kat;
 
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
+import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
-import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
-import uk.ac.tgac.conan.process.kmer.jellyfish.JellyfishCountV11Params;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,12 +15,13 @@ import java.util.Map;
  * Time: 14:49
  * To change this template use File | Settings | File Templates.
  */
-public class KatCompV1Args implements ProcessArgs {
+public class KatCompV1Args extends AbstractProcessArgs {
 
     private KatCompV1Params params = new KatCompV1Params();
 
     private File jellyfishHash1;
     private File jellyfishHash2;
+    private File jellyfishHash3;
     private String outputPrefix;
     private int threads;
     private int memoryMb;
@@ -29,6 +29,7 @@ public class KatCompV1Args implements ProcessArgs {
     public KatCompV1Args() {
         this.jellyfishHash1 = null;
         this.jellyfishHash2 = null;
+        this.jellyfishHash3 = null;
         this.outputPrefix = "";
         this.threads = 1;
         this.memoryMb = 0;
@@ -48,6 +49,14 @@ public class KatCompV1Args implements ProcessArgs {
 
     public void setJellyfishHash2(File jellyfishHash2) {
         this.jellyfishHash2 = jellyfishHash2;
+    }
+
+    public File getJellyfishHash3() {
+        return jellyfishHash3;
+    }
+
+    public void setJellyfishHash3(File jellyfishHash3) {
+        this.jellyfishHash3 = jellyfishHash3;
     }
 
     public String getOutputPrefix() {
@@ -80,8 +89,8 @@ public class KatCompV1Args implements ProcessArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
-        Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
+    public ParamMap getArgMap() {
+        ParamMap pvp = new DefaultParamMap();
 
         if (this.jellyfishHash1 != null) {
             pvp.put(params.getJellyfishHash1(), this.jellyfishHash1.getAbsolutePath());
@@ -89,6 +98,10 @@ public class KatCompV1Args implements ProcessArgs {
 
         if (this.jellyfishHash2 != null) {
             pvp.put(params.getJellyfishHash2(), this.jellyfishHash2.getAbsolutePath());
+        }
+
+        if (this.jellyfishHash3 != null) {
+            pvp.put(params.getJellyfishHash3(), this.jellyfishHash3.getAbsolutePath());
         }
 
         if (this.outputPrefix != null && !this.outputPrefix.isEmpty()) {
@@ -101,29 +114,36 @@ public class KatCompV1Args implements ProcessArgs {
         return pvp;
     }
 
+
+
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) throws IOException {
-        for (Map.Entry<ConanParameter, String> entry : pvp.entrySet()) {
+    protected void setOptionFromMapEntry(ConanParameter param, String value) {
 
-            if (!entry.getKey().validateParameterValue(entry.getValue())) {
-                throw new IllegalArgumentException("Parameter invalid: " + entry.getKey() + " : " + entry.getValue());
-            }
-
-            String param = entry.getKey().getName();
-
-            if (param.equals(this.params.getJellyfishHash1().getName())) {
-                this.jellyfishHash1 = new File(entry.getValue());
-            } else if (param.equals(this.params.getJellyfishHash2().getName())) {
-                this.jellyfishHash2 = new File(entry.getValue());
-            } else if (param.equals(this.params.getThreads().getName())) {
-                this.threads = Integer.parseInt(entry.getValue());
-            } else if (param.equals(this.params.getMemoryMb().getName())) {
-                this.memoryMb = Integer.parseInt(entry.getValue());
-            } else if (param.equals(this.params.getOutputPrefix().getName())) {
-                this.outputPrefix = entry.getValue();
-            } else {
-                throw new IllegalArgumentException("Unknown param found: " + param);
-            }
+        if (param.equals(this.params.getThreads())) {
+            this.threads = Integer.parseInt(value);
+        } else if (param.equals(this.params.getMemoryMb())) {
+            this.memoryMb = Integer.parseInt(value);
+        } else if (param.equals(this.params.getOutputPrefix())) {
+            this.outputPrefix = value;
+        } else {
+            throw new IllegalArgumentException("Unknown param found: " + param);
         }
+
     }
+
+    @Override
+    protected void setArgFromMapEntry(ConanParameter param, String value) {
+
+        if (param.equals(this.params.getJellyfishHash1())) {
+            this.jellyfishHash1 = new File(value);
+        } else if (param.equals(this.params.getJellyfishHash2())) {
+            this.jellyfishHash2 = new File(value);
+        } else if (param.equals(this.params.getJellyfishHash3())) {
+            this.jellyfishHash3 = new File(value);
+        } else {
+            throw new IllegalArgumentException("Unknown param found: " + param);
+        }
+
+    }
+
 }

@@ -22,12 +22,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.ebi.fgpt.conan.core.param.FilePair;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.tgac.conan.core.data.FilePair;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorArgs;
 import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorPairedEndArgs;
-import uk.ac.tgac.conan.process.ec.musket.MusketV106Process;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +54,7 @@ public class QuakeV034Args extends AbstractErrorCorrectorPairedEndArgs {
     public QuakeV034Args() {
         this.readsListFile = null;
     }
+
 
     public File getReadsListFile() {
         return readsListFile;
@@ -191,8 +193,8 @@ public class QuakeV034Args extends AbstractErrorCorrectorPairedEndArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
-        Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
+    public ParamMap getArgMap() {
+        ParamMap pvp = new DefaultParamMap();
 
 
         if (this.getMinLength() != -1) {
@@ -209,34 +211,29 @@ public class QuakeV034Args extends AbstractErrorCorrectorPairedEndArgs {
         return pvp;
     }
 
+
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) {
-
-        for (Map.Entry<ConanParameter, String> entry : pvp.entrySet()) {
-
-            if (!entry.getKey().validateParameterValue(entry.getValue())) {
-                throw new IllegalArgumentException("Parameter invalid: " + entry.getKey() + " : " + entry.getValue());
-            }
-
-            String param = entry.getKey().getName();
-            String val = entry.getValue();
-
-            if (param.equals(this.params.getReadsListFile().getName())) {
-                this.readsListFile = new File(val);
-            }
-            else if (param.equals(this.params.getKmer().getName())) {
-                this.setKmer(Integer.parseInt(val));
-            }
-            else if (param.equals(this.params.getMinLength().getName())) {
-                this.setMinLength(Integer.parseInt(val));
-            }
-            else if (param.equals(this.params.getProcesses().getName())) {
-                this.setThreads(Integer.parseInt(val));
-            }
-            else {
-                throw new IllegalArgumentException("Unknown param found: " + param);
-            }
+    protected void setOptionFromMapEntry(ConanParameter param, String value) {
+        if (param.equals(this.params.getReadsListFile())) {
+            this.readsListFile = new File(value);
         }
+        else if (param.equals(this.params.getKmer())) {
+            this.setKmer(Integer.parseInt(value));
+        }
+        else if (param.equals(this.params.getMinLength())) {
+            this.setMinLength(Integer.parseInt(value));
+        }
+        else if (param.equals(this.params.getProcesses())) {
+            this.setThreads(Integer.parseInt(value));
+        }
+        else {
+            throw new IllegalArgumentException("Unknown param found: " + param);
+        }
+    }
+
+    @Override
+    protected void setArgFromMapEntry(ConanParameter param, String value) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

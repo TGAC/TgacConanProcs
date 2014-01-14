@@ -18,12 +18,13 @@
 package uk.ac.tgac.conan.process.asm.stats;
 
 import org.apache.commons.lang.StringUtils;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -106,9 +107,9 @@ public class QuastV2_2Args implements ProcessArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
+    public ParamMap getArgMap() {
 
-        Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
+        ParamMap pvp = new DefaultParamMap();
 
         if (this.inputFiles != null && !this.inputFiles.isEmpty()) {
             pvp.put(params.getInputFiles(), this.getInputFilesAsString());
@@ -136,38 +137,38 @@ public class QuastV2_2Args implements ProcessArgs {
     }
 
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) {
+    public void setFromArgMap(ParamMap pvp) {
         for (Map.Entry<ConanParameter, String> entry : pvp.entrySet()) {
 
             if (!entry.getKey().validateParameterValue(entry.getValue())) {
                 throw new IllegalArgumentException("Parameter invalid: " + entry.getKey() + " : " + entry.getValue());
             }
 
-            String param = entry.getKey().getName();
+            ConanParameter param = entry.getKey();
             String val = entry.getValue();
 
-            if (param.equals(this.params.getInputFiles().getName())) {
+            if (param.equals(this.params.getInputFiles())) {
                 String[] paths = val.split(" ");
                 for(String path : paths) {
                     this.inputFiles.add(new File(path.trim()));
                 }
             }
-            else if (param.equals(this.params.getLabels().getName())) {
+            else if (param.equals(this.params.getLabels())) {
                 String[] labelArray = val.split(",");
                 for(String label : labelArray) {
                     this.labels.add(label.trim());
                 }
             }
-            else if (param.equals(this.params.getOutputDir().getName())) {
+            else if (param.equals(this.params.getOutputDir())) {
                 this.outputDir = new File(val);
             }
-            else if (param.equals(this.params.getThreads().getName())) {
+            else if (param.equals(this.params.getThreads())) {
                 this.threads = Integer.parseInt(val);
             }
-            else if (param.equals(this.params.getEstimatedGenomeSize().getName())) {
+            else if (param.equals(this.params.getEstimatedGenomeSize())) {
                 this.estimatedGenomeSize = Integer.parseInt(val);
             }
-            else if (param.equals(this.params.getScaffolds().getName())) {
+            else if (param.equals(this.params.getScaffolds())) {
                 this.scaffolds = Boolean.parseBoolean(val);
             }
             else {
