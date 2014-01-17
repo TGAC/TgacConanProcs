@@ -1,6 +1,5 @@
 package uk.ac.tgac.conan.process.align;
 
-import org.apache.commons.lang.StringUtils;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
@@ -9,6 +8,7 @@ import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.tgac.conan.core.util.PathUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +46,21 @@ public class TophatV2_0 extends AbstractConanProcess {
 
         private Params params = new Params();
 
+        public static enum LibraryType {
+
+            UNSTRANDED,
+            FIRSTSTRAND,
+            SECONDSTRAND;
+
+            public String toArgString() {
+                return "fr-" + this.name().toLowerCase();
+            }
+
+            public static LibraryType fromArgString(String value) {
+                return LibraryType.valueOf(value.substring(3).toUpperCase());
+            }
+        }
+
         private File genomeIndexBase;
         private File[] leftReads;
         private File[] rightReads;
@@ -55,7 +70,7 @@ public class TophatV2_0 extends AbstractConanProcess {
         private int readMismatches;
         private int minIntronLength;
         private int maxIntronLength;
-        private String libraryType;
+        private LibraryType libraryType;
 
 
         public Args() {
@@ -68,7 +83,7 @@ public class TophatV2_0 extends AbstractConanProcess {
             this.readMismatches = DEFAULT_READ_MISMATCHES;
             this.minIntronLength = DEFAULT_MIN_INTRON_LENGTH;
             this.maxIntronLength = DEFAULT_MAX_INTRON_LENGTH;
-            this.libraryType = "";
+            this.libraryType = null;
         }
 
         public File getGenomeIndexBase() {
@@ -143,11 +158,11 @@ public class TophatV2_0 extends AbstractConanProcess {
             this.maxIntronLength = maxIntronLength;
         }
 
-        public String getLibraryType() {
+        public LibraryType getLibraryType() {
             return libraryType;
         }
 
-        public void setLibraryType(String libraryType) {
+        public void setLibraryType(LibraryType libraryType) {
             this.libraryType = libraryType;
         }
 
@@ -169,7 +184,7 @@ public class TophatV2_0 extends AbstractConanProcess {
                 this.maxIntronLength = Integer.parseInt(value);
             }
             else if (param.equals(this.params.getLibraryType())) {
-                this.libraryType = value;
+                this.libraryType = LibraryType.fromArgString(value);
             }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
@@ -183,13 +198,13 @@ public class TophatV2_0 extends AbstractConanProcess {
                 this.genomeIndexBase = new File(value);
             }
             else if (param.equals(this.params.getLeftReads())) {
-                this.leftReads = splitCommaSepPaths(value);
+                this.leftReads = PathUtils.splitPaths(value, ",");
             }
             else if (param.equals(this.params.getRightReads())) {
-                this.rightReads = splitCommaSepPaths(value);
+                this.rightReads = PathUtils.splitPaths(value, ",");
             }
             else if (param.equals(this.params.getSingleEndReads())) {
-                this.singleEndReads = splitCommaSepPaths(value);
+                this.singleEndReads = PathUtils.splitPaths(value, ",");
             }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
@@ -211,15 +226,15 @@ public class TophatV2_0 extends AbstractConanProcess {
             }
 
             if (this.leftReads != null && this.leftReads.length > 0) {
-                pvp.put(params.getLeftReads(), joinCommaSepPaths(this.leftReads));
+                pvp.put(params.getLeftReads(), PathUtils.joinAbsolutePaths(this.leftReads, ","));
             }
 
             if (this.rightReads != null && this.rightReads.length > 0) {
-                pvp.put(params.getRightReads(), joinCommaSepPaths(this.rightReads));
+                pvp.put(params.getRightReads(), PathUtils.joinAbsolutePaths(this.rightReads, ","));
             }
 
             if (this.singleEndReads != null && this.singleEndReads.length > 0) {
-                pvp.put(params.getSingleEndReads(), joinCommaSepPaths(this.singleEndReads));
+                pvp.put(params.getSingleEndReads(), PathUtils.joinAbsolutePaths(this.singleEndReads, ","));
             }
 
             if (this.threads > 1) {
@@ -238,44 +253,13 @@ public class TophatV2_0 extends AbstractConanProcess {
                 pvp.put(params.getMaxIntronLength(), Integer.toString(this.maxIntronLength));
             }
 
-            if (this.libraryType != null && !this.libraryType.isEmpty()) {
-                pvp.put(params.getLibraryType(), this.libraryType);
+            if (this.libraryType != null) {
+                pvp.put(params.getLibraryType(), this.libraryType.toArgString());
             }
 
             return pvp;
         }
 
-        private String joinCommaSepPaths(File[] files) {
-
-            StringBuilder sb = new StringBuilder();
-
-            if (files != null && files.length > 0) {
-                sb.append(files[0].getAbsolutePath());
-
-                for(int i = 1; i < files.length; i++) {
-                    sb.append(",").append(files[1].getAbsolutePath());
-                }
-            }
-            else {
-                return "";
-            }
-
-            return sb.toString();
-        }
-
-        private File[] splitCommaSepPaths(String paths) {
-
-            String[] parts = paths.split(",");
-
-            File[] files = new File[parts.length];
-
-
-            for(int i = 0; i < parts.length; i++) {
-                files[i] = new File(parts[i]);
-            }
-
-            return files;
-        }
     }
 
 

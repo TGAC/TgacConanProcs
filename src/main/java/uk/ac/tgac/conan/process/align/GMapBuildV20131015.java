@@ -48,12 +48,27 @@ public class GMapBuildV20131015 extends AbstractConanProcess {
         public static final int DEFAULT_KMER = 15;
         public static final int DEFAULT_BASE_SIZE = 12;
 
+        public static enum Sort {
+            NONE,
+            ALPHA,
+            NUMERIC_ALPHA,
+            CHROM;
+
+            public String toArgString() {
+                return this.name().replace('_','-').toLowerCase();
+            }
+
+            public static Sort fromArgString(String value) {
+                return Sort.valueOf(value.replace('-','_').toUpperCase());
+            }
+        }
+
         private File genomeDir;
         private String genomeDB;
         private File genomeFile;
         private int kmer;
         private int baseSize;
-        private String sort;
+        private Sort sort;
         private boolean gunzip;
         private String circular;
         private File mdFlag;
@@ -65,7 +80,7 @@ public class GMapBuildV20131015 extends AbstractConanProcess {
             this.genomeFile = null;
             this.kmer = DEFAULT_KMER;
             this.baseSize = DEFAULT_BASE_SIZE;
-            this.sort = "";
+            this.sort = null;
             this.gunzip = false;
             this.circular = "";
             this.mdFlag = null;
@@ -112,11 +127,11 @@ public class GMapBuildV20131015 extends AbstractConanProcess {
             this.baseSize = baseSize;
         }
 
-        public String getSort() {
+        public Sort getSort() {
             return sort;
         }
 
-        public void setSort(String sort) {
+        public void setSort(Sort sort) {
             this.sort = sort;
         }
 
@@ -167,7 +182,7 @@ public class GMapBuildV20131015 extends AbstractConanProcess {
                 this.baseSize = Integer.parseInt(value);
             }
             else if (param.equals(this.params.getSort())) {
-                this.sort = value;
+                this.sort = Sort.fromArgString(value);
             }
             else if (param.equals(this.params.getGunzip())) {
                 this.gunzip = Boolean.parseBoolean(value);
@@ -226,8 +241,8 @@ public class GMapBuildV20131015 extends AbstractConanProcess {
                 pvp.put(params.getBaseSize(), Integer.toString(this.baseSize));
             }
 
-            if (this.sort != null && !this.sort.isEmpty()) {
-                pvp.put(params.getSort(), this.sort);
+            if (this.sort != null) {
+                pvp.put(params.getSort(), this.sort.toArgString());
             }
 
             if (this.gunzip) {

@@ -45,9 +45,36 @@ public class ExonerateV2_2 extends AbstractConanProcess {
 
         private Params params = new Params();
 
+        public static enum Model {
+            UNGAPPED,
+            UNGAPPED_TRANS,
+            AFFINE_GLOBAL,
+            AFFINE_BESTFIT,
+            AFFINE_LOCAL,
+            AFFINE_OVERLAP,
+            EST2GENOME,
+            NER,
+            PROTEIN2DNA,
+            PROTEIN2DNA_BESTFIT,
+            PROTEIN2GENOME,
+            PROTEIN2GENOME_BESTFIT,
+            CODING2CODING,
+            CODING2GENOME,
+            CDNA2GENOME,
+            GENOME2GENOME;
+
+            public String toArgString() {
+                return this.toString().replace('_',':').toLowerCase();
+            }
+
+            public static Model fromArgString(String value) {
+                return Model.valueOf(value.replace(':','_').toUpperCase());
+            }
+        }
+
         private File query;
         private File target;
-        private String model;
+        private Model model;
         private int score;
         private double percent;
         private boolean showAlignment;
@@ -61,7 +88,7 @@ public class ExonerateV2_2 extends AbstractConanProcess {
         public Args() {
             this.query = null;
             this.target = null;
-            this.model = "";
+            this.model = null;
             this.score = 100;
             this.percent = 0.0;
             this.showAlignment = true;
@@ -89,11 +116,11 @@ public class ExonerateV2_2 extends AbstractConanProcess {
             this.target = target;
         }
 
-        public String getModel() {
+        public Model getModel() {
             return model;
         }
 
-        public void setModel(String model) {
+        public void setModel(Model model) {
             this.model = model;
         }
 
@@ -178,7 +205,7 @@ public class ExonerateV2_2 extends AbstractConanProcess {
                 this.target = new File(value);
             }
             else if (param.equals(this.params.getModel())) {
-                this.model = value;
+                this.model = Model.fromArgString(value);
             }
             else if (param.equals(this.params.getScore())) {
                 this.score = Integer.parseInt(value);
@@ -235,8 +262,8 @@ public class ExonerateV2_2 extends AbstractConanProcess {
                 pvp.put(params.getTarget(), this.target.getAbsolutePath());
             }
 
-            if (this.model != null && !this.model.isEmpty()) {
-                pvp.put(params.getModel(), this.model);
+            if (this.model != null) {
+                pvp.put(params.getModel(), this.model.toArgString());
             }
 
             if (this.score != 100) {
