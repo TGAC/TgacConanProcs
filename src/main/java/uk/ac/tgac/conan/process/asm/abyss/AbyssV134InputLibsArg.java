@@ -18,7 +18,7 @@
 package uk.ac.tgac.conan.process.asm.abyss;
 
 import org.apache.commons.lang3.StringUtils;
-import uk.ac.ebi.fgpt.conan.core.param.FilePair;
+import uk.ac.tgac.conan.core.data.FilePair;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
 
@@ -95,7 +95,7 @@ public class AbyssV134InputLibsArg {
 
         if (peLibs.size() > 0 || opeLibs.size() > 0) {
 
-            sb.append("lib='");
+            sb.append("'");
 
             String peKeys = StringUtils.join(peLibs.keySet(), " ");
             String opeKeys = StringUtils.join(opeLibs.keySet(), " ");

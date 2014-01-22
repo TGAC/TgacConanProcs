@@ -21,14 +21,15 @@ import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.MetaInfServices;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -242,18 +243,18 @@ public class SSpaceBasicV2Args extends AbstractAssemblyIOArgs {
         // create Options object
         Options options = new Options();
 
-        options.addOption(new Option(params.getExtend().getName(), true, params.getExtend().getDescription()));
-        options.addOption(new Option(params.getMinOverlap().getName(), true, params.getMinOverlap().getDescription()));
-        options.addOption(new Option(params.getNbReads().getName(), true, params.getNbReads().getDescription()));
-        options.addOption(new Option(params.getTrim().getName(), true, params.getTrim().getDescription()));
-        options.addOption(new Option(params.getMinLinks().getName(), true, params.getMinLinks().getDescription()));
-        options.addOption(new Option(params.getMaxLinks().getName(), true, params.getMaxLinks().getDescription()));
-        options.addOption(new Option(params.getMinContigOverlap().getName(), true, params.getMinContigOverlap().getDescription()));
-        options.addOption(new Option(params.getMinContigLength().getName(), true, params.getMinContigLength().getDescription()));
-        options.addOption(new Option(params.getBowtieMaxGaps().getName(), true, params.getBowtieMaxGaps().getDescription()));
-        options.addOption(new Option(params.getBowtieThreads().getName(), true, params.getBowtieThreads().getDescription()));
-        options.addOption(new Option(params.getPlot().getName(), true, params.getPlot().getDescription()));
-        options.addOption(new Option(params.getVerbose().getName(), false, params.getVerbose().getDescription()));
+        options.addOption(new Option(params.getExtend().getShortName(), true, params.getExtend().getDescription()));
+        options.addOption(new Option(params.getMinOverlap().getShortName(), true, params.getMinOverlap().getDescription()));
+        options.addOption(new Option(params.getNbReads().getShortName(), true, params.getNbReads().getDescription()));
+        options.addOption(new Option(params.getTrim().getShortName(), true, params.getTrim().getDescription()));
+        options.addOption(new Option(params.getMinLinks().getShortName(), true, params.getMinLinks().getDescription()));
+        options.addOption(new Option(params.getMaxLinks().getShortName(), true, params.getMaxLinks().getDescription()));
+        options.addOption(new Option(params.getMinContigOverlap().getShortName(), true, params.getMinContigOverlap().getDescription()));
+        options.addOption(new Option(params.getMinContigLength().getShortName(), true, params.getMinContigLength().getDescription()));
+        options.addOption(new Option(params.getBowtieMaxGaps().getShortName(), true, params.getBowtieMaxGaps().getDescription()));
+        options.addOption(new Option(params.getBowtieThreads().getShortName(), true, params.getBowtieThreads().getDescription()));
+        options.addOption(new Option(params.getPlot().getShortName(), true, params.getPlot().getDescription()));
+        options.addOption(new Option(params.getVerbose().getShortName(), false, params.getVerbose().getDescription()));
 
         return options;
     }
@@ -271,55 +272,55 @@ public class SSpaceBasicV2Args extends AbstractAssemblyIOArgs {
         if (cmdLine == null)
             return;
 
-        this.extend = cmdLine.hasOption(params.getExtend().getName()) ?
-                Integer.parseInt(cmdLine.getOptionValue(params.getExtend().getName())) :
+        this.extend = cmdLine.hasOption(params.getExtend().getShortName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getExtend().getShortName())) :
                 this.extend;
 
-        this.minOverlap = cmdLine.hasOption(params.getMinOverlap().getName()) ?
-                Integer.parseInt(cmdLine.getOptionValue(params.getMinOverlap().getName())) :
+        this.minOverlap = cmdLine.hasOption(params.getMinOverlap().getShortName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getMinOverlap().getShortName())) :
                 this.minOverlap;
 
-        this.nbReads = cmdLine.hasOption(params.getNbReads().getName()) ?
-                Integer.parseInt(cmdLine.getOptionValue(params.getNbReads().getName())) :
+        this.nbReads = cmdLine.hasOption(params.getNbReads().getShortName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getNbReads().getShortName())) :
                 this.nbReads;
 
-        this.trim = cmdLine.hasOption(params.getTrim().getName()) ?
-                Integer.parseInt(cmdLine.getOptionValue(params.getTrim().getName())) :
+        this.trim = cmdLine.hasOption(params.getTrim().getShortName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getTrim().getShortName())) :
                 this.trim;
 
-        this.minLinks = cmdLine.hasOption(params.getMinLinks().getName()) ?
-                Integer.parseInt(cmdLine.getOptionValue(params.getMinLinks().getName())) :
+        this.minLinks = cmdLine.hasOption(params.getMinLinks().getShortName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getMinLinks().getShortName())) :
                 this.minLinks;
 
-        this.maxLinks = cmdLine.hasOption(params.getMaxLinks().getName()) ?
-                Double.parseDouble(cmdLine.getOptionValue(params.getMaxLinks().getName())) :
+        this.maxLinks = cmdLine.hasOption(params.getMaxLinks().getShortName()) ?
+                Double.parseDouble(cmdLine.getOptionValue(params.getMaxLinks().getShortName())) :
                 this.maxLinks;
 
-        this.minContigOverlap = cmdLine.hasOption(params.getMinContigOverlap().getName()) ?
-                Integer.parseInt(cmdLine.getOptionValue(params.getMinContigOverlap().getName())) :
+        this.minContigOverlap = cmdLine.hasOption(params.getMinContigOverlap().getShortName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getMinContigOverlap().getShortName())) :
                 this.minContigOverlap;
 
-        this.minContigLength = cmdLine.hasOption(params.getMinContigLength().getName()) ?
-                Integer.parseInt(cmdLine.getOptionValue(params.getMinContigLength().getName())) :
+        this.minContigLength = cmdLine.hasOption(params.getMinContigLength().getShortName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getMinContigLength().getShortName())) :
                 this.minContigLength;
 
-        this.bowtieMaxGaps = cmdLine.hasOption(params.getBowtieMaxGaps().getName()) ?
-                Integer.parseInt(cmdLine.getOptionValue(params.getBowtieMaxGaps().getName())) :
+        this.bowtieMaxGaps = cmdLine.hasOption(params.getBowtieMaxGaps().getShortName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getBowtieMaxGaps().getShortName())) :
                 this.bowtieMaxGaps;
 
-        this.setThreads(cmdLine.hasOption(params.getBowtieThreads().getName()) ?
-                Integer.parseInt(cmdLine.getOptionValue(params.getBowtieThreads().getName())) :
+        this.setThreads(cmdLine.hasOption(params.getBowtieThreads().getShortName()) ?
+                Integer.parseInt(cmdLine.getOptionValue(params.getBowtieThreads().getShortName())) :
                 this.getThreads());
 
-        this.plot = cmdLine.hasOption(params.getPlot().getName());
+        this.plot = cmdLine.hasOption(params.getPlot().getShortName());
 
-        this.verbose = cmdLine.hasOption(params.getVerbose().getName());
+        this.verbose = cmdLine.hasOption(params.getVerbose().getShortName());
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
+    public ParamMap getArgMap() {
 
-        Map<ConanParameter, String> pvp = new LinkedHashMap<>();
+        ParamMap pvp = new DefaultParamMap();
 
         // **** Main args ****
 
@@ -385,75 +386,75 @@ public class SSpaceBasicV2Args extends AbstractAssemblyIOArgs {
     }
 
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) {
+    public void setFromArgMap(ParamMap pvp) {
         for (Map.Entry<ConanParameter, String> entry : pvp.entrySet()) {
 
             if (!entry.getKey().validateParameterValue(entry.getValue())) {
                 throw new IllegalArgumentException("Parameter invalid: " + entry.getKey() + " : " + entry.getValue());
             }
 
-            String param = entry.getKey().getName();
+            ConanParameter param = entry.getKey();
 
             // **** Main args ****
 
-            if (param.equals(this.params.getLibraryFile().getName())) {
+            if (param.equals(this.params.getLibraryFile())) {
                 this.libraryConfigFile = new File(entry.getValue());
             }
-            else if (param.equals(this.params.getContigsFile().getName())) {
+            else if (param.equals(this.params.getContigsFile())) {
                 this.setInputFile(new File(entry.getValue()));
             }
-            else if (param.equals(this.params.getExtend().getName())) {
+            else if (param.equals(this.params.getExtend())) {
                 this.extend = Integer.parseInt(entry.getValue());
             }
 
             // **** Extension args ****
 
-            else if (param.equals(this.params.getMinOverlap().getName())) {
+            else if (param.equals(this.params.getMinOverlap())) {
                 this.minOverlap = Integer.parseInt(entry.getValue());
             }
-            else if (param.equals(this.params.getNbReads().getName())) {
+            else if (param.equals(this.params.getNbReads())) {
                 this.nbReads = Integer.parseInt(entry.getValue());
             }
-            else if (param.equals(this.params.getTrim().getName())) {
+            else if (param.equals(this.params.getTrim())) {
                 this.trim = Integer.parseInt(entry.getValue());
             }
 
 
             // **** Scaffolding args ****
 
-            else if (param.equals(this.params.getMinLinks().getName())) {
+            else if (param.equals(this.params.getMinLinks())) {
                 this.minLinks = Integer.parseInt(entry.getValue());
             }
-            else if (param.equals(this.params.getMaxLinks().getName())) {
+            else if (param.equals(this.params.getMaxLinks())) {
                 this.maxLinks = Double.parseDouble(entry.getValue());
             }
-            else if (param.equals(this.params.getMinContigOverlap().getName())) {
+            else if (param.equals(this.params.getMinContigOverlap())) {
                 this.minContigOverlap = Integer.parseInt(entry.getValue());
             }
-            else if (param.equals(this.params.getMinContigLength().getName())) {
+            else if (param.equals(this.params.getMinContigLength())) {
                 this.minContigLength = Integer.parseInt(entry.getValue());
             }
 
 
             // **** Bowtie args ****
 
-            else if (param.equals(this.params.getBowtieMaxGaps().getName())) {
+            else if (param.equals(this.params.getBowtieMaxGaps())) {
                 this.bowtieMaxGaps = Integer.parseInt(entry.getValue());
             }
-            else if (param.equals(this.params.getBowtieThreads().getName())) {
+            else if (param.equals(this.params.getBowtieThreads())) {
                 this.setThreads(Integer.parseInt(entry.getValue()));
             }
 
 
             // **** Additional args ****
 
-            else if (param.equals(this.params.getPlot().getName())) {
+            else if (param.equals(this.params.getPlot())) {
                 this.plot = Boolean.parseBoolean(entry.getValue());
             }
-            else if (param.equals(this.params.getBaseName().getName())) {
+            else if (param.equals(this.params.getBaseName())) {
                 this.setOutputPrefix(entry.getValue());
             }
-            else if (param.equals(this.params.getVerbose().getName())) {
+            else if (param.equals(this.params.getVerbose())) {
                 this.verbose = Boolean.parseBoolean(entry.getValue());
             }
 

@@ -18,8 +18,6 @@
 package uk.ac.tgac.conan.process.ec;
 
 import uk.ac.ebi.fgpt.conan.model.ConanProcess;
-import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
-import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOProcess;
 
 /**
  * An Error Corrector is a process that attempts to either discard, correct or otherwise improve NGS datasets

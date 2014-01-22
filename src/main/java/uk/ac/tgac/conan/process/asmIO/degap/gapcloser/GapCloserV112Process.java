@@ -53,11 +53,6 @@ public class GapCloserV112Process extends AbstractAssemblyIOProcess {
     }
 
     @Override
-    public String getCommand() {
-        return this.getCommand(this.getProcessArgs(), true, "-", " ");
-    }
-
-    @Override
     public AbstractAssemblyIOProcess create(AbstractAssemblyIOArgs args) {
         return new GapCloserV112Process((GapCloserV112Args)args);
     }

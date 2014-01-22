@@ -18,9 +18,6 @@
 package uk.ac.tgac.conan.process.subsampler;
 
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
-import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
-
-import java.util.Map;
 
 /**
  * User: maplesod
@@ -37,28 +34,6 @@ public class SubsamplerV1_0Process extends AbstractConanProcess {
 
     public SubsamplerV1_0Process(SubsamplerV1_0Args args) {
         super(EXE, args, new SubsamplerV1_0Params());
-    }
-
-
-    @Override
-    public String getCommand() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(EXE);
-        sb.append(" ");
-        for (Map.Entry<ConanParameter, String> param : this.getProcessArgs().getArgMap().entrySet()) {
-
-            if (!param.getKey().getName().equals("input")) {
-                sb.append("-");
-                sb.append(param.getKey());
-                if (!param.getKey().isBoolean()) {
-                    sb.append(" ");
-                    sb.append(param.getValue());
-                }
-                sb.append(" ");
-            }
-        }
-
-        return sb.toString().trim();
     }
 
     @Override

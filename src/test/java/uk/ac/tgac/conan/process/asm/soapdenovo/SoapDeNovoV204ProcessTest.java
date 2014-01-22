@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.ebi.fgpt.conan.utils.CommandExecutionException;
 
@@ -85,7 +86,7 @@ public class SoapDeNovoV204ProcessTest {
     }
 
     @Test
-    public void testSoapCommand() throws InterruptedException, ProcessExecutionException, IOException, CommandExecutionException {
+    public void testSoapCommand() throws Exception {
 
         SoapDeNovoV204Process soap = createProcess();
 
@@ -98,7 +99,7 @@ public class SoapDeNovoV204ProcessTest {
     }
 
     @Test
-    public void testSoapFullCommand() throws InterruptedException, ProcessExecutionException, IOException, CommandExecutionException {
+    public void testSoapFullCommand() throws InterruptedException, ProcessExecutionException, IOException, CommandExecutionException, ConanParameterException {
 
         SoapDeNovoV204Process soap = createProcess();
         soap.initialise();

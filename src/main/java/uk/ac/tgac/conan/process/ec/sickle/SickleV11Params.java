@@ -17,8 +17,10 @@
  **/
 package uk.ac.tgac.conan.process.ec.sickle;
 
+import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.FlagParameter;
 import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
+import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 
@@ -40,19 +42,27 @@ public abstract class SickleV11Params implements ProcessParams {
 
     public SickleV11Params() {
 
-        this.qualityThreshold = new NumericParameter(
-                "qual-threshold",
-                "Threshold for trimming based on average quality in a window. Default 20.",
-                true);
+        this.qualityThreshold = new ParameterBuilder()
+                .longName("qual-threshold")
+                .description("Threshold for trimming based on average quality in a window. Default 20.")
+                .isOptional(true)
+                .argValidator(ArgValidator.DIGITS)
+                .create();
 
-        this.lengthThreshold = new NumericParameter(
-                "length-threshold",
-                "Threshold to keep a read based on length after trimming. Default 20.",
-                true);
+        this.lengthThreshold = new ParameterBuilder()
+                .longName("length-threshold")
+                .description("Threshold to keep a read based on length after trimming. Default 20.")
+                .isOptional(true)
+                .argValidator(ArgValidator.DIGITS)
+                .create();
 
-        this.discardN = new FlagParameter(
-                "discard-n",
-                "Discard sequences with any Ns in them.");
+        this.discardN = new ParameterBuilder()
+                .longName("discard-n")
+                .description("Discard sequences with any Ns in them.")
+                .isFlag(true)
+                .isOptional(true)
+                .argValidator(ArgValidator.OFF)
+                .create();
 
         this.qualityType = new SickleV11QualityTypeParameter();
     }

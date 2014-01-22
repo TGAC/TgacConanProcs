@@ -20,7 +20,6 @@ package uk.ac.tgac.conan.process.ec.quake;
 import org.kohsuke.MetaInfServices;
 import uk.ac.tgac.conan.process.ec.AbstractErrorCorrector;
 import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorArgs;
-import uk.ac.tgac.conan.process.ec.ErrorCorrectorCreator;
 
 import java.io.File;
 
@@ -54,11 +53,6 @@ public class QuakeV034Process extends AbstractErrorCorrector {
 
         this.addPreCommand("cd " + this.getArgs().getOutputDir().getAbsolutePath());
         this.addPostCommand("cd " + pwd);
-    }
-
-    @Override
-    public String getCommand() {
-        return this.getCommand(this.getProcessArgs(), true, "-", " ");
     }
 
     @Override

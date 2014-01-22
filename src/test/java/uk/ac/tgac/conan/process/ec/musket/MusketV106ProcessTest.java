@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
@@ -51,12 +52,12 @@ public class MusketV106ProcessTest {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "musket -k 15 53687091 -omulti output -p 32 -maxtrim 51 -inorder  " + pwd + "/file1.fastq " + pwd + "/file2.fastq";
+        correctCommand = "musket -k 15 53687091 -omulti output -p 32 -maxtrim 51 -inorder " + pwd + "/file1.fastq " + pwd + "/file2.fastq";
         correctFullCommand = "cd " + pwd + "/musket" + "; " + correctCommand + " 2>&1; cd " + pwd;
     }
 
     @Test
-    public void testMusketCommand() {
+    public void testMusketCommand() throws ConanParameterException {
 
         MusketV106Process musket = new MusketV106Process(createMusketArgs());
 
@@ -66,7 +67,7 @@ public class MusketV106ProcessTest {
     }
 
     @Test
-    public void testMusketFullCommand() {
+    public void testMusketFullCommand() throws ConanParameterException {
 
         MusketV106Process musket = new MusketV106Process(createMusketArgs());
         musket.initialise();

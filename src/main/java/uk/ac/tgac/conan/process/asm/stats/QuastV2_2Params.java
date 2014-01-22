@@ -17,10 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asm.stats;
 
-import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
-import uk.ac.ebi.fgpt.conan.core.param.FlagParameter;
-import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
-import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
+import uk.ac.ebi.fgpt.conan.core.param.*;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 
@@ -44,40 +41,49 @@ public class QuastV2_2Params implements ProcessParams {
 
     public QuastV2_2Params() {
 
-        this.inputFiles = new DefaultConanParameter(
-                "input",
-                "A list of space separated input files to compare for contiguity",
-                false
-        );
+        this.inputFiles = new ParameterBuilder()
+                .isOption(false)
+                .isOptional(false)
+                .longName("input")
+                .description("A list of space separated input files to compare for contiguity")
+                .argIndex(0)
+                .argValidator(ArgValidator.OFF)
+                .create();
 
-        this.inputFiles = new DefaultConanParameter(
-                "input",
-                "Names of assemblies to use in reports, comma-separated. If contain spaces, use quotes",
-                false
-        );
+        this.labels = new ParameterBuilder()
+                .shortName("l")
+                .longName("labels")
+                .description("Names of assemblies to use in reports, comma-separated. If contain spaces, use quotes")
+                .create();
 
-        this.outputDir = new PathParameter(
-                "output",
-                "The output directory",
-                true
-        );
+        this.outputDir = new ParameterBuilder()
+                .longName("output")
+                .description("The output directory")
+                .isOptional(true)
+                .argValidator(ArgValidator.PATH)
+                .create();
 
-        this.threads = new NumericParameter(
-                "threads",
-                "Maximum number of threads [default: number of CPUs]",
-                true
-        );
+        this.threads = new ParameterBuilder()
+                .longName("threads")
+                .description("Maximum number of threads [default: number of CPUs]")
+                .isOptional(true)
+                .argValidator(ArgValidator.DIGITS)
+                .create();
 
-        this.estimatedGenomeSize = new NumericParameter(
-                "est-ref-size",
-                "Estimated reference size (for computing NGx metrics without a reference)",
-                true
-        );
+        this.estimatedGenomeSize = new ParameterBuilder()
+                .longName("est-ref-size")
+                .description("Estimated reference size (for computing NGx metrics without a reference)")
+                .isOptional(true)
+                .argValidator(ArgValidator.DIGITS)
+                .create();
 
-        this.scaffolds = new FlagParameter(
-                "scaffolds",
-                "Assemblies are scaffolds, split them and add contigs to the comparison"
-        );
+        this.scaffolds = new ParameterBuilder()
+                .longName("scaffolds")
+                .description("Assemblies are scaffolds, split them and add contigs to the comparison")
+                .isFlag(true)
+                .isOptional(true)
+                .argValidator(ArgValidator.OFF)
+                .create();
     }
 
     public ConanParameter getInputFiles() {

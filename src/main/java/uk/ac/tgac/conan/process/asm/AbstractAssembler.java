@@ -3,9 +3,7 @@ package uk.ac.tgac.conan.process.asm;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 

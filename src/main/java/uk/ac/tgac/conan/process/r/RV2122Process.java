@@ -18,6 +18,9 @@
 package uk.ac.tgac.conan.process.r;
 
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMapEntry;
+
+import java.util.List;
 
 /**
  * User: maplesod
@@ -34,12 +37,6 @@ public class RV2122Process extends AbstractConanProcess {
 
     public RV2122Process(RV2122Args args) {
         super(EXE, args, new RV2122Params());
-    }
-
-
-    @Override
-    public String getCommand() {
-        return this.getCommand(this.getProcessArgs(), false);
     }
 
     @Override

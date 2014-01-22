@@ -18,14 +18,13 @@
 package uk.ac.tgac.conan.process.asm.allpaths;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.Organism;
 import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 /**
  * User: maplesod
@@ -74,12 +73,12 @@ public class AllpathsLgV44837Args extends AbstractAssemblerArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
+    public ParamMap getArgMap() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) {
+    public void setFromArgMap(ParamMap pvp) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

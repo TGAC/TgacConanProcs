@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
 
@@ -16,7 +17,7 @@ import static org.junit.Assert.assertTrue;
  * Time: 15:51
  * To change this template use File | Settings | File Templates.
  */
-public class JellyfishCountV11ProcessTest {
+public class JellyfishCountV11Test {
 
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
@@ -32,13 +33,13 @@ public class JellyfishCountV11ProcessTest {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "jellyfish count -m 31 -s 400000000 -t 32 -o jellyfish_counts.jf31 -c 16 -C -L 2 -U 9223372036854775807 input.fastq";
+        correctCommand = "jellyfish count -m 31 -s 400000000 -t 32 --output=jellyfish_counts.jf31 -c 16 -C -L 2 input.fastq";
     }
 
     @Test
-    public void testJellyfishCommand() {
+    public void testJellyfishCommand() throws ConanParameterException {
 
-        JellyfishCountV11Process jf = new JellyfishCountV11Process(createJellyfishArgs());
+        JellyfishCountV11 jf = new JellyfishCountV11(createJellyfishArgs());
 
         String command = jf.getCommand();
 
@@ -46,9 +47,9 @@ public class JellyfishCountV11ProcessTest {
     }
 
 
-    protected JellyfishCountV11Args createJellyfishArgs() {
+    protected JellyfishCountV11.Args createJellyfishArgs() {
 
-        JellyfishCountV11Args args = new JellyfishCountV11Args();
+        JellyfishCountV11.Args args = new JellyfishCountV11.Args();
         args.setInputFile("input.fastq");
         args.setOutputPrefix("jellyfish_counts.jf31");
         args.setMerLength(31);

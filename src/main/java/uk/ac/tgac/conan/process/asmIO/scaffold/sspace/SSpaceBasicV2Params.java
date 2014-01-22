@@ -17,10 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asmIO.scaffold.sspace;
 
-import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
-import uk.ac.ebi.fgpt.conan.core.param.FlagParameter;
-import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
-import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
+import uk.ac.ebi.fgpt.conan.core.param.*;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 
@@ -39,7 +36,7 @@ public class SSpaceBasicV2Params implements ProcessParams {
     private ConanParameter minOverlap;
     private ConanParameter nbReads;
     private ConanParameter trim;
-    private ConanParameter minBaseRatio;
+    //private ConanParameter minBaseRatio;
 
     // Scaffolding parameters
     private ConanParameter minLinks;
@@ -176,12 +173,11 @@ public class SSpaceBasicV2Params implements ProcessParams {
                     "(-p 1=yes, -p 0=no, default -p 0, optional)"
         );
 
-        this.baseName = new DefaultConanParameter(
-                "b",
-                "Base name for your output files (optional)",
-                false,
-                true,
-                false);
+        this.baseName = new ParameterBuilder()
+                .shortName("b")
+                .description("Base name for your output files (optional)")
+                .argValidator(ArgValidator.PATH)
+                .create();
 
         this.verbose = new FlagParameter(
                 "v",
@@ -215,9 +211,9 @@ public class SSpaceBasicV2Params implements ProcessParams {
         return trim;
     }
 
-    public ConanParameter getMinBaseRatio() {
+    /*public ConanParameter getMinBaseRatio() {
         return minBaseRatio;
-    }
+    }*/
 
     public ConanParameter getMinLinks() {
         return minLinks;
@@ -268,7 +264,7 @@ public class SSpaceBasicV2Params implements ProcessParams {
                         this.minOverlap,
                         this.nbReads,
                         this.trim,
-                        this.minBaseRatio,
+                        //this.minBaseRatio,
 
                         this.minLinks,
                         this.maxLinks,

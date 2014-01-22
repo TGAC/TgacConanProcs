@@ -6,7 +6,7 @@
 
     <groupId>uk.ac.tgac.conan</groupId>
     <artifactId>tgac-conan</artifactId>
-    <version>0.6.3</version>
+    <version>0.7.0</version>
 
     <name>TGAC conan procs</name>
     <description>This project contains Conan procs which might be reused in many conan pipelines.</description>
@@ -15,7 +15,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java-version>1.7</java-version>
-        <conan-version>2.6.2-X</conan-version>
+        <conan-version>2.7.0-X</conan-version>
         <slf4j-version>1.6.1</slf4j-version>
     </properties>
 

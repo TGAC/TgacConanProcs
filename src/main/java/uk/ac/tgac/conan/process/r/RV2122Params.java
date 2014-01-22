@@ -17,7 +17,8 @@
  **/
 package uk.ac.tgac.conan.process.r;
 
-import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
+import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
+import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
@@ -34,22 +35,32 @@ public class RV2122Params implements ProcessParams {
 
     public RV2122Params() {
 
-        this.args = new DefaultConanParameter(
-                "args",
-                "Any arguments that should be provided to the script",
-                false,
-                false,
-                false);
+        this.args = new ParameterBuilder()
+                .longName("args")
+                .description("Any arguments that should be provided to the script")
+                .isOption(false)
+                .isOptional(false)
+                .argIndex(1)
+                .argValidator(ArgValidator.OFF)
+                .create();
 
-        this.script = new PathParameter(
-                "script",
-                "The R script to execute",
-                false);
+        this.script = new ParameterBuilder()
+                .longName("script")
+                .isOption(false)
+                .isOptional(false)
+                .argIndex(0)
+                .argValidator(ArgValidator.PATH)
+                .description("The R script to execute")
+                .create();
 
-        this.output = new PathParameter(
-                "output",
-                "The location to store output from R",
-                false);
+        this.output = new ParameterBuilder()
+                .longName("output")
+                .description("The location to store output from R")
+                .argIndex(2)
+                .argValidator(ArgValidator.PATH)
+                .isOption(false)
+                .isOptional(false)
+                .create();
     }
 
     public ConanParameter getArgs() {
