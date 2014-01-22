@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.ec;
 
+import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 import uk.ac.tgac.conan.core.data.FilePair;
 
 import java.io.File;
@@ -26,7 +27,8 @@ public abstract class AbstractErrorCorrectorPairedEndArgs extends AbstractErrorC
 
     private FilePair pairedEndInputFiles;
 
-    public AbstractErrorCorrectorPairedEndArgs() {
+    public AbstractErrorCorrectorPairedEndArgs(ProcessParams params) {
+        super(params);
 
         this.pairedEndInputFiles = null;
     }

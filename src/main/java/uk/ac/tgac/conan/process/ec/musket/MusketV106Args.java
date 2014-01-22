@@ -37,9 +37,6 @@ import java.util.List;
 @MetaInfServices(uk.ac.tgac.conan.process.ec.ErrorCorrectorArgsCreator.class)
 public class MusketV106Args extends AbstractErrorCorrectorPairedEndArgs {
 
-    private MusketV106Params params = new MusketV106Params();
-
-
     public static final int DEFAULT_MAX_ERR = 4;
     public static final int DEFAULT_MAX_ITER = 2;
 
@@ -56,7 +53,7 @@ public class MusketV106Args extends AbstractErrorCorrectorPairedEndArgs {
 
 
     public MusketV106Args() {
-        super();
+        super(new MusketV106Params());
         this.outputPrefix = "output";
         this.totalKmers = 0;
         this.maxTrim = 0;
@@ -66,6 +63,10 @@ public class MusketV106Args extends AbstractErrorCorrectorPairedEndArgs {
         this.maxIter = 2;
 
         this.readLength = 0;
+    }
+
+    public MusketV106Params getParams() {
+        return (MusketV106Params)this.params;
     }
 
 
@@ -218,6 +219,8 @@ public class MusketV106Args extends AbstractErrorCorrectorPairedEndArgs {
     @Override
     public ParamMap getArgMap() {
 
+        MusketV106Params params = this.getParams();
+
         ParamMap pvp = new DefaultParamMap();
 
         pvp.put(params.getKmer(), String.valueOf(this.getKmer()) + " " + String.valueOf(this.getTotalKmers()));
@@ -255,7 +258,9 @@ public class MusketV106Args extends AbstractErrorCorrectorPairedEndArgs {
     @Override
     protected void setOptionFromMapEntry(ConanParameter param, String value) {
 
-        if (param.equals(this.params.getKmer())) {
+        MusketV106Params params = this.getParams();
+
+        if (param.equals(params.getKmer())) {
 
             String[] parts = value.split(" ");
 
@@ -266,26 +271,26 @@ public class MusketV106Args extends AbstractErrorCorrectorPairedEndArgs {
             this.setKmer(Integer.parseInt(parts[0]));
             this.setTotalKmers(Long.parseLong(parts[1]));
         }
-        else if (param.equals(this.params.getMaxTrim())) {
+        else if (param.equals(params.getMaxTrim())) {
             this.setMaxTrim(Integer.parseInt(value));
         }
-        else if (param.equals(this.params.getInOrder())) {
+        else if (param.equals(params.getInOrder())) {
 
             this.setInOrder(value == null || value.isEmpty() || Boolean.parseBoolean(value));
         }
-        else if (param.equals(this.params.getMultiK())) {
+        else if (param.equals(params.getMultiK())) {
             this.setMultiK(value == null || value.isEmpty() || Boolean.parseBoolean(value));
         }
-        else if (param.equals(this.params.getThreads())) {
+        else if (param.equals(params.getThreads())) {
             this.setThreads(Integer.parseInt(value));
         }
-        else if (param.equals(this.params.getMaxErr())) {
+        else if (param.equals(params.getMaxErr())) {
             this.setMaxErr(Integer.parseInt(value));
         }
-        else if (param.equals(this.params.getMaxIter())) {
+        else if (param.equals(params.getMaxIter())) {
             this.setMaxIter(Integer.parseInt(value));
         }
-        else if (param.equals(this.params.getOutputPrefix())) {
+        else if (param.equals(params.getOutputPrefix())) {
             this.setOutputPrefix(value);
         }
         else {
@@ -296,7 +301,9 @@ public class MusketV106Args extends AbstractErrorCorrectorPairedEndArgs {
     @Override
     protected void setArgFromMapEntry(ConanParameter param, String value) {
 
-        if (param.equals(this.params.getReadFiles())) {
+        MusketV106Params params = this.getParams();
+
+        if (param.equals(params.getReadFiles())) {
 
             // Assumes there are no space in the path!!!
             String[] parts = value.split(" ");

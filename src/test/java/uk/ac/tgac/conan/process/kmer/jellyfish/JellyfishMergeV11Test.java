@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
  * Time: 16:12
  * To change this template use File | Settings | File Templates.
  */
-public class JellyfishMergeV11ProcessTest {
+public class JellyfishMergeV11Test {
 
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
@@ -41,7 +41,7 @@ public class JellyfishMergeV11ProcessTest {
     @Test
     public void testJellyfishCommand() throws ConanParameterException {
 
-        JellyfishMergeV11Process jf = new JellyfishMergeV11Process(createJellyfishArgs());
+        JellyfishMergeV11 jf = new JellyfishMergeV11(createJellyfishArgs());
 
         String command = jf.getCommand();
 
@@ -49,7 +49,7 @@ public class JellyfishMergeV11ProcessTest {
     }
 
 
-    protected JellyfishMergeV11Args createJellyfishArgs() {
+    protected JellyfishMergeV11.Args createJellyfishArgs() {
 
         List<File> inputs = new ArrayList<>();
         inputs.add(new File("input1"));
@@ -58,7 +58,7 @@ public class JellyfishMergeV11ProcessTest {
         inputs.add(new File("input4"));
 
 
-        JellyfishMergeV11Args args = new JellyfishMergeV11Args();
+        JellyfishMergeV11.Args args = new JellyfishMergeV11.Args();
         args.setInputFiles(inputs);
         args.setOutputFile(new File("output"));
         args.setBufferSize(20000000);

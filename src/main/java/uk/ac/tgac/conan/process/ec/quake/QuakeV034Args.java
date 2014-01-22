@@ -47,12 +47,16 @@ public class QuakeV034Args extends AbstractErrorCorrectorPairedEndArgs {
 
     private static Logger log = LoggerFactory.getLogger(QuakeV034Args.class);
 
-    private QuakeV034Params params = new QuakeV034Params();
-
     private File readsListFile;
 
     public QuakeV034Args() {
+
+        super(new QuakeV034Params());
         this.readsListFile = null;
+    }
+
+    public QuakeV034Params getParams() {
+        return (QuakeV034Params)this.params;
     }
 
 
@@ -194,8 +198,10 @@ public class QuakeV034Args extends AbstractErrorCorrectorPairedEndArgs {
 
     @Override
     public ParamMap getArgMap() {
-        ParamMap pvp = new DefaultParamMap();
 
+        QuakeV034Params params = this.getParams();
+
+        ParamMap pvp = new DefaultParamMap();
 
         if (this.getMinLength() != -1) {
             pvp.put(params.getMinLength(), String.valueOf(this.getMinLength()));
@@ -214,16 +220,19 @@ public class QuakeV034Args extends AbstractErrorCorrectorPairedEndArgs {
 
     @Override
     protected void setOptionFromMapEntry(ConanParameter param, String value) {
-        if (param.equals(this.params.getReadsListFile())) {
+
+        QuakeV034Params params = this.getParams();
+
+        if (param.equals(params.getReadsListFile())) {
             this.readsListFile = new File(value);
         }
-        else if (param.equals(this.params.getKmer())) {
+        else if (param.equals(params.getKmer())) {
             this.setKmer(Integer.parseInt(value));
         }
-        else if (param.equals(this.params.getMinLength())) {
+        else if (param.equals(params.getMinLength())) {
             this.setMinLength(Integer.parseInt(value));
         }
-        else if (param.equals(this.params.getProcesses())) {
+        else if (param.equals(params.getProcesses())) {
             this.setThreads(Integer.parseInt(value));
         }
         else {

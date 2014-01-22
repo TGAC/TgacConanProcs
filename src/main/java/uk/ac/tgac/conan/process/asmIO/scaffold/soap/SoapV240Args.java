@@ -74,7 +74,6 @@ public class SoapV240Args extends AbstractAssemblyIOArgs {
         this.genomeSize = DEFAULT_GENOME_SIZE;
     }
 
-
     public File getConfigFile() {
         return configFile;
     }

@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
  * Time: 15:06
  * To change this template use File | Settings | File Templates.
  */
-public class KatCompV1ProcessTest {
+public class KatCompV1Test {
 
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
@@ -39,7 +39,7 @@ public class KatCompV1ProcessTest {
     @Test
     public void testKatCompCommand() throws ConanParameterException {
 
-        KatCompV1Process jf = new KatCompV1Process(createKatCompArgs());
+        KatCompV1 jf = new KatCompV1(createKatCompArgs());
 
         String command = jf.getCommand();
 
@@ -47,9 +47,9 @@ public class KatCompV1ProcessTest {
     }
 
 
-    protected KatCompV1Args createKatCompArgs() {
+    protected KatCompV1.Args createKatCompArgs() {
 
-        KatCompV1Args args = new KatCompV1Args();
+        KatCompV1.Args args = new KatCompV1.Args();
         args.setJellyfishHash1(new File("reads.jf31_0"));
         args.setJellyfishHash2(new File("asm.jf31_0"));
         args.setOutputPrefix("kat_comp.out");

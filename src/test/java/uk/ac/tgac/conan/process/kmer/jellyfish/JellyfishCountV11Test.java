@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
  * Time: 15:51
  * To change this template use File | Settings | File Templates.
  */
-public class JellyfishCountV11ProcessTest {
+public class JellyfishCountV11Test {
 
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
@@ -39,7 +39,7 @@ public class JellyfishCountV11ProcessTest {
     @Test
     public void testJellyfishCommand() throws ConanParameterException {
 
-        JellyfishCountV11Process jf = new JellyfishCountV11Process(createJellyfishArgs());
+        JellyfishCountV11 jf = new JellyfishCountV11(createJellyfishArgs());
 
         String command = jf.getCommand();
 
@@ -47,9 +47,9 @@ public class JellyfishCountV11ProcessTest {
     }
 
 
-    protected JellyfishCountV11Args createJellyfishArgs() {
+    protected JellyfishCountV11.Args createJellyfishArgs() {
 
-        JellyfishCountV11Args args = new JellyfishCountV11Args();
+        JellyfishCountV11.Args args = new JellyfishCountV11.Args();
         args.setInputFile("input.fastq");
         args.setOutputPrefix("jellyfish_counts.jf31");
         args.setMerLength(31);

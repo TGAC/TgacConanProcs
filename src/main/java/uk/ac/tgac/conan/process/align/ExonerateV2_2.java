@@ -43,8 +43,6 @@ public class ExonerateV2_2 extends AbstractConanProcess {
 
     public static class Args extends AbstractProcessArgs {
 
-        private Params params = new Params();
-
         public static enum Model {
             UNGAPPED,
             UNGAPPED_TRANS,
@@ -86,6 +84,9 @@ public class ExonerateV2_2 extends AbstractConanProcess {
         private String ryo;
 
         public Args() {
+
+            super(new Params());
+
             this.query = null;
             this.target = null;
             this.model = null;
@@ -98,6 +99,10 @@ public class ExonerateV2_2 extends AbstractConanProcess {
             this.showQueryGff = false;
             this.showTargetGff = false;
             this.ryo = "";
+        }
+
+        public Params getParams() {
+            return (Params)this.params;
         }
 
         public File getQuery() {
@@ -198,40 +203,43 @@ public class ExonerateV2_2 extends AbstractConanProcess {
 
         @Override
         protected void setOptionFromMapEntry(ConanParameter param, String value) {
-            if (param.equals(this.params.getQuery())) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getQuery())) {
                 this.query = new File(value);
             }
-            else if (param.equals(this.params.getTarget())) {
+            else if (param.equals(params.getTarget())) {
                 this.target = new File(value);
             }
-            else if (param.equals(this.params.getModel())) {
+            else if (param.equals(params.getModel())) {
                 this.model = Model.fromArgString(value);
             }
-            else if (param.equals(this.params.getScore())) {
+            else if (param.equals(params.getScore())) {
                 this.score = Integer.parseInt(value);
             }
-            else if (param.equals(this.params.getPercent())) {
+            else if (param.equals(params.getPercent())) {
                 this.percent = Double.parseDouble(value);
             }
-            else if (param.equals(this.params.getShowAlignment())) {
+            else if (param.equals(params.getShowAlignment())) {
                 this.showAlignment = Boolean.parseBoolean(value);
             }
-            else if (param.equals(this.params.getShowSugar())) {
+            else if (param.equals(params.getShowSugar())) {
                 this.showSugar = Boolean.parseBoolean(value);
             }
-            else if (param.equals(this.params.getShowCigar())) {
+            else if (param.equals(params.getShowCigar())) {
                 this.showCigar = Boolean.parseBoolean(value);
             }
-            else if (param.equals(this.params.getShowVulgar())) {
+            else if (param.equals(params.getShowVulgar())) {
                 this.showVulgar = Boolean.parseBoolean(value);
             }
-            else if (param.equals(this.params.getShowQueryGff())) {
+            else if (param.equals(params.getShowQueryGff())) {
                 this.showQueryGff = Boolean.parseBoolean(value);
             }
-            else if (param.equals(this.params.getShowTargetGff())) {
+            else if (param.equals(params.getShowTargetGff())) {
                 this.showTargetGff = Boolean.parseBoolean(value);
             }
-            else if (param.equals(this.params.getRyo())) {
+            else if (param.equals(params.getRyo())) {
                 this.ryo = value;
             }
             else {
@@ -251,6 +259,8 @@ public class ExonerateV2_2 extends AbstractConanProcess {
 
         @Override
         public ParamMap getArgMap() {
+
+            Params params = this.getParams();
 
             ParamMap pvp = new DefaultParamMap();
 

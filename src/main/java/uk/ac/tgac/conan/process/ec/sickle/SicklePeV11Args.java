@@ -35,8 +35,6 @@ import java.util.List;
 @MetaInfServices(uk.ac.tgac.conan.process.ec.ErrorCorrectorArgsCreator.class)
 public class SicklePeV11Args extends AbstractErrorCorrectorPairedEndArgs {
 
-    private SicklePeV11Params params = new SicklePeV11Params();
-
     private FilePair outputFilePair;
     private File seOutFile;
     private boolean discardN;
@@ -44,7 +42,7 @@ public class SicklePeV11Args extends AbstractErrorCorrectorPairedEndArgs {
 
 
     public SicklePeV11Args() {
-        super();
+        super(new SicklePeV11Params());
 
         this.outputFilePair = null;
         this.seOutFile = null;
@@ -52,7 +50,12 @@ public class SicklePeV11Args extends AbstractErrorCorrectorPairedEndArgs {
         this.qualType = SickleV11QualityTypeParameter.SickleQualityTypeOptions.SANGER;
     }
 
-    
+    public SicklePeV11Params getParams() {
+        return (SicklePeV11Params)this.params;
+    }
+
+
+
     @Override
     public AbstractErrorCorrectorArgs copy() {
         return null;
@@ -66,10 +69,10 @@ public class SicklePeV11Args extends AbstractErrorCorrectorPairedEndArgs {
                 files.get(1)));
 
         this.outputFilePair = new FilePair(
-                new File(this.getOutputDir(), library + "_1.sickle.fastq"),
-                new File(this.getOutputDir(), library + "_2.sickle.fastq"));
+                new File(this.getOutputDir(), library.getName() + "_1.sickle.fastq"),
+                new File(this.getOutputDir(), library.getName() + "_2.sickle.fastq"));
 
-        this.seOutFile = new File(this.getOutputDir(), library + "_se.sickle.fastq");
+        this.seOutFile = new File(this.getOutputDir(), library.getName() + "_se.sickle.fastq");
 
         this.qualType = library.getPhred() == Library.Phred.PHRED_64 ?
                         SickleV11QualityTypeParameter.SickleQualityTypeOptions.ILLUMINA :
@@ -151,6 +154,8 @@ public class SicklePeV11Args extends AbstractErrorCorrectorPairedEndArgs {
     @Override
     public ParamMap getArgMap() {
 
+        SicklePeV11Params params = this.getParams();
+
         ParamMap pvp = new DefaultParamMap();
 
         if (this.getQualityThreshold() != 20) {
@@ -189,21 +194,24 @@ public class SicklePeV11Args extends AbstractErrorCorrectorPairedEndArgs {
 
     @Override
     protected void setOptionFromMapEntry(ConanParameter param, String value) {
-        if (param.equals(this.params.getPeFile1())) {
+
+        SicklePeV11Params params = this.getParams();
+
+        if (param.equals(params.getPeFile1())) {
             this.getPairedEndInputFiles().setFile1(new File(value));
-        } else if (param.equals(this.params.getPeFile2())) {
+        } else if (param.equals(params.getPeFile2())) {
             this.getPairedEndInputFiles().setFile2(new File(value));
-        } else if (param.equals(this.params.getOutputPe1())) {
+        } else if (param.equals(params.getOutputPe1())) {
             this.outputFilePair.setFile1(new File(value));
-        } else if (param.equals(this.params.getOutputPe2())) {
+        } else if (param.equals(params.getOutputPe2())) {
             this.outputFilePair.setFile2(new File(value));
-        } else if (param.equals(this.params.getOutputSingles())) {
+        } else if (param.equals(params.getOutputSingles())) {
             this.seOutFile = new File(value);
-        } else if (param.equals(this.params.getDiscardN())) {
+        } else if (param.equals(params.getDiscardN())) {
             this.discardN = Boolean.parseBoolean(value);
-        } else if (param.equals(this.params.getLengthThreshold())) {
+        } else if (param.equals(params.getLengthThreshold())) {
             this.setMinLength(Integer.parseInt(value.trim()));
-        } else if (param.equals(this.params.getQualityThreshold())) {
+        } else if (param.equals(params.getQualityThreshold())) {
             this.setQualityThreshold(Integer.parseInt(value.trim()));
         } else {
             throw new IllegalArgumentException("Unknown param found: " + param);

@@ -43,8 +43,6 @@ public class GMapBuildV20131015 extends AbstractConanProcess {
 
     public static class Args extends AbstractProcessArgs {
 
-        private Params params = new Params();
-
         public static final int DEFAULT_KMER = 15;
         public static final int DEFAULT_BASE_SIZE = 12;
 
@@ -75,6 +73,9 @@ public class GMapBuildV20131015 extends AbstractConanProcess {
         private String compression;
 
         public Args() {
+
+            super(new Params());
+
             this.genomeDir = null;
             this.genomeDB = "";
             this.genomeFile = null;
@@ -85,6 +86,10 @@ public class GMapBuildV20131015 extends AbstractConanProcess {
             this.circular = "";
             this.mdFlag = null;
             this.compression = "";
+        }
+
+        public Params getParams() {
+            return (Params)this.params;
         }
 
         public File getGenomeDir() {
@@ -169,31 +174,34 @@ public class GMapBuildV20131015 extends AbstractConanProcess {
 
         @Override
         protected void setOptionFromMapEntry(ConanParameter param, String value) {
-            if (param.equals(this.params.getGenomeDir())) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getGenomeDir())) {
                 this.genomeDir = new File(value);
             }
-            else if (param.equals(this.params.getGenomeDB())) {
+            else if (param.equals(params.getGenomeDB())) {
                 this.genomeDB = value;
             }
-            else if (param.equals(this.params.getKmer())) {
+            else if (param.equals(params.getKmer())) {
                 this.kmer = Integer.parseInt(value);
             }
-            else if (param.equals(this.params.getBaseSize())) {
+            else if (param.equals(params.getBaseSize())) {
                 this.baseSize = Integer.parseInt(value);
             }
-            else if (param.equals(this.params.getSort())) {
+            else if (param.equals(params.getSort())) {
                 this.sort = Sort.fromArgString(value);
             }
-            else if (param.equals(this.params.getGunzip())) {
+            else if (param.equals(params.getGunzip())) {
                 this.gunzip = Boolean.parseBoolean(value);
             }
-            else if (param.equals(this.params.getCircular())) {
+            else if (param.equals(params.getCircular())) {
                 this.circular = value;
             }
-            else if (param.equals(this.params.getMdFlag())) {
+            else if (param.equals(params.getMdFlag())) {
                 this.mdFlag = new File(value);
             }
-            else if (param.equals(this.params.getCompression())) {
+            else if (param.equals(params.getCompression())) {
                 this.compression = value;
             }
             else {
@@ -203,7 +211,10 @@ public class GMapBuildV20131015 extends AbstractConanProcess {
 
         @Override
         protected void setArgFromMapEntry(ConanParameter param, String value) {
-            if (param.equals(this.params.getGenomeFile())) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getGenomeFile())) {
                 this.genomeFile = new File(value);
             }
             else {
@@ -218,6 +229,8 @@ public class GMapBuildV20131015 extends AbstractConanProcess {
 
         @Override
         public ParamMap getArgMap() {
+
+            Params params = this.getParams();
 
             ParamMap pvp = new DefaultParamMap();
 

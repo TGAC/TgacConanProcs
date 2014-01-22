@@ -44,8 +44,6 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
 
     public static class Args extends AbstractProcessArgs {
 
-        private Params params = new Params();
-
         public static enum Engine {
             CROSSMATCH,
             WUBLAST,
@@ -69,6 +67,9 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
         private int frag;
 
         public Args() {
+
+            super(new Params());
+
             this.input = null;
             this.engine = null;
             this.threads = 1;
@@ -76,6 +77,10 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
             this.outputDir = null;
             this.gff = false;
             this.frag = -1;
+        }
+
+        public Params getParams() {
+            return (Params)this.params;
         }
 
         public File[] getInput() {
@@ -137,22 +142,24 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
         @Override
         protected void setOptionFromMapEntry(ConanParameter param, String value) {
 
-            if (param.equals(this.params.getEngine())) {
+            Params params = this.getParams();
+
+            if (param.equals(params.getEngine())) {
                 this.engine = Engine.valueOf(value.toUpperCase());
             }
-            else if (param.equals(this.params.getThreads())) {
+            else if (param.equals(params.getThreads())) {
                 this.threads = Integer.parseInt(value);
             }
-            else if (param.equals(this.params.getSpecies())) {
+            else if (param.equals(params.getSpecies())) {
                 this.species = value;
             }
-            else if (param.equals(this.params.getOutputDir())) {
+            else if (param.equals(params.getOutputDir())) {
                 this.outputDir = new File(value);
             }
-            else if (param.equals(this.params.getGff())) {
+            else if (param.equals(params.getGff())) {
                 this.gff = Boolean.parseBoolean(value);
             }
-            else if (param.equals(this.params.getFrag())) {
+            else if (param.equals(params.getFrag())) {
                 this.frag = Integer.parseInt(value);
             }
             else {
@@ -162,7 +169,10 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
 
         @Override
         protected void setArgFromMapEntry(ConanParameter param, String value) {
-            if (param.equals(this.params.getInput())) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getInput())) {
                 this.input = PathUtils.splitPaths(value, " ");
             }
             else {
@@ -177,6 +187,8 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
 
         @Override
         public ParamMap getArgMap() {
+
+            Params params = this.getParams();
 
             ParamMap pvp = new DefaultParamMap();
 

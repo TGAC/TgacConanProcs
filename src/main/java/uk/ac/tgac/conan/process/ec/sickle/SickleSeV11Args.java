@@ -33,22 +33,25 @@ import java.util.List;
 public class SickleSeV11Args extends AbstractErrorCorrectorSingleEndArgs {
 
 
-    private SickleSeV11Params params = new SickleSeV11Params();
-
     private File outputFile;
     private boolean discardN;
     private SickleV11QualityTypeParameter.SickleQualityTypeOptions qualType;
 
 
     public SickleSeV11Args() {
-        super();
+        super(new SickleSeV11Params());
 
         this.outputFile = null;
         this.discardN = false;
         this.qualType = SickleV11QualityTypeParameter.SickleQualityTypeOptions.SANGER;
     }
 
-    
+    public SickleSeV11Params getParams() {
+        return (SickleSeV11Params)this.params;
+    }
+
+
+
     @Override
     public AbstractErrorCorrectorArgs copy() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
@@ -127,6 +130,8 @@ public class SickleSeV11Args extends AbstractErrorCorrectorSingleEndArgs {
     @Override
     public ParamMap getArgMap() {
 
+        SickleSeV11Params params = this.getParams();
+
         ParamMap pvp = new DefaultParamMap();
 
         if (this.getQualityThreshold() != 20) {
@@ -158,17 +163,20 @@ public class SickleSeV11Args extends AbstractErrorCorrectorSingleEndArgs {
 
     @Override
     protected void setOptionFromMapEntry(ConanParameter param, String value) {
-        if (param.equals(this.params.getSeFile())) {
+
+        SickleSeV11Params params = this.getParams();
+
+        if (param.equals(params.getSeFile())) {
             this.setSingleEndInputFile(new File(value));
-        } else if (param.equals(this.params.getOutputFile())) {
+        } else if (param.equals(params.getOutputFile())) {
             this.outputFile = new File(value);
-        } else if (param.equals(this.params.getDiscardN())) {
+        } else if (param.equals(params.getDiscardN())) {
             this.discardN = Boolean.parseBoolean(value);
-        } else if (param.equals(this.params.getQualityType())) {
+        } else if (param.equals(params.getQualityType())) {
             this.qualType = SickleV11QualityTypeParameter.SickleQualityTypeOptions.valueOf(value.toUpperCase());
-        } else if (param.equals(this.params.getLengthThreshold())) {
+        } else if (param.equals(params.getLengthThreshold())) {
             this.setMinLength(Integer.parseInt(value));
-        } else if (param.equals(this.params.getQualityThreshold())) {
+        } else if (param.equals(params.getQualityThreshold())) {
             this.setQualityThreshold(Integer.parseInt(value));
         } else {
             throw new IllegalArgumentException("Unknown param found: " + param);

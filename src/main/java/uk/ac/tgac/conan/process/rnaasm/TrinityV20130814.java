@@ -90,6 +90,7 @@ public class TrinityV20130814 extends AbstractConanProcess {
         private int butterflyPathReinforcementDistance;
 
         public Args() {
+            super(new Params());
             this.seqType = null;
             this.jellyfishMemory = 20;
             this.leftInput = null;
@@ -106,8 +107,127 @@ public class TrinityV20130814 extends AbstractConanProcess {
             this.butterflyPathReinforcementDistance = DEFAULT_BUTTERFLY_PATH_REINF_DISTANCE;
         }
 
+        public Params getParams() {
+            return (Params)this.params;
+        }
+
+        public SeqType getSeqType() {
+            return seqType;
+        }
+
+        public void setSeqType(SeqType seqType) {
+            this.seqType = seqType;
+        }
+
+        public int getJellyfishMemory() {
+            return jellyfishMemory;
+        }
+
+        public void setJellyfishMemory(int jellyfishMemory) {
+            this.jellyfishMemory = jellyfishMemory;
+        }
+
+        public File[] getLeftInput() {
+            return leftInput;
+        }
+
+        public void setLeftInput(File[] leftInput) {
+            this.leftInput = leftInput;
+        }
+
+        public File[] getRightInput() {
+            return rightInput;
+        }
+
+        public void setRightInput(File[] rightInput) {
+            this.rightInput = rightInput;
+        }
+
+        public File[] getSingleInput() {
+            return singleInput;
+        }
+
+        public void setSingleInput(File[] singleInput) {
+            this.singleInput = singleInput;
+        }
+
+        public SSLibType getSsLibType() {
+            return ssLibType;
+        }
+
+        public void setSsLibType(SSLibType ssLibType) {
+            this.ssLibType = ssLibType;
+        }
+
+        public File getOutput() {
+            return output;
+        }
+
+        public void setOutput(File output) {
+            this.output = output;
+        }
+
+        public int getCpu() {
+            return cpu;
+        }
+
+        public void setCpu(int cpu) {
+            this.cpu = cpu;
+        }
+
+        public int getMinContigLength() {
+            return minContigLength;
+        }
+
+        public void setMinContigLength(int minContigLength) {
+            this.minContigLength = minContigLength;
+        }
+
+        public boolean isGenomeGuided() {
+            return genomeGuided;
+        }
+
+        public void setGenomeGuided(boolean genomeGuided) {
+            this.genomeGuided = genomeGuided;
+        }
+
+        public int getInchwormMinKmerCoverage() {
+            return inchwormMinKmerCoverage;
+        }
+
+        public void setInchwormMinKmerCoverage(int inchwormMinKmerCoverage) {
+            this.inchwormMinKmerCoverage = inchwormMinKmerCoverage;
+        }
+
+        public int getChysalisMaxReadsPerGraph() {
+            return chysalisMaxReadsPerGraph;
+        }
+
+        public void setChysalisMaxReadsPerGraph(int chysalisMaxReadsPerGraph) {
+            this.chysalisMaxReadsPerGraph = chysalisMaxReadsPerGraph;
+        }
+
+        public int getButterflyGroupPairsDistance() {
+            return butterflyGroupPairsDistance;
+        }
+
+        public void setButterflyGroupPairsDistance(int butterflyGroupPairsDistance) {
+            this.butterflyGroupPairsDistance = butterflyGroupPairsDistance;
+        }
+
+        public int getButterflyPathReinforcementDistance() {
+            return butterflyPathReinforcementDistance;
+        }
+
+        public void setButterflyPathReinforcementDistance(int butterflyPathReinforcementDistance) {
+            this.butterflyPathReinforcementDistance = butterflyPathReinforcementDistance;
+        }
+
         @Override
         protected void setOptionFromMapEntry(ConanParameter param, String value) {
+
+            Params params = this.getParams();
+
             if (param.equals(this.params.getSeqType())) {
                 this.seqType = SeqType.valueOf(value.toUpperCase());
             }

@@ -44,8 +44,6 @@ public class TophatV2_0 extends AbstractConanProcess {
         public static final int DEFAULT_MIN_INTRON_LENGTH = 50;
         public static final int DEFAULT_MAX_INTRON_LENGTH = 500000;
 
-        private Params params = new Params();
-
         public static enum LibraryType {
 
             UNSTRANDED,
@@ -74,6 +72,9 @@ public class TophatV2_0 extends AbstractConanProcess {
 
 
         public Args() {
+
+            super(new Params());
+
             this.genomeIndexBase = null;
             this.leftReads = null;
             this.rightReads = null;
@@ -84,6 +85,10 @@ public class TophatV2_0 extends AbstractConanProcess {
             this.minIntronLength = DEFAULT_MIN_INTRON_LENGTH;
             this.maxIntronLength = DEFAULT_MAX_INTRON_LENGTH;
             this.libraryType = null;
+        }
+
+        public Params getParams() {
+            return (Params)this.params;
         }
 
         public File getGenomeIndexBase() {
@@ -168,22 +173,25 @@ public class TophatV2_0 extends AbstractConanProcess {
 
         @Override
         protected void setOptionFromMapEntry(ConanParameter param, String value) {
-            if (param.equals(this.params.getOutputDir())) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getOutputDir())) {
                 this.outputDir = new File(value);
             }
-            else if (param.equals(this.params.getThreads())) {
+            else if (param.equals(params.getThreads())) {
                 this.threads = Integer.parseInt(value);
             }
-            else if (param.equals(this.params.getReadMismatches())) {
+            else if (param.equals(params.getReadMismatches())) {
                 this.readMismatches = Integer.parseInt(value);
             }
-            else if (param.equals(this.params.getMinIntronLength())) {
+            else if (param.equals(params.getMinIntronLength())) {
                 this.minIntronLength = Integer.parseInt(value);
             }
-            else if (param.equals(this.params.getMaxIntronLength())) {
+            else if (param.equals(params.getMaxIntronLength())) {
                 this.maxIntronLength = Integer.parseInt(value);
             }
-            else if (param.equals(this.params.getLibraryType())) {
+            else if (param.equals(params.getLibraryType())) {
                 this.libraryType = LibraryType.fromArgString(value);
             }
             else {
@@ -194,16 +202,18 @@ public class TophatV2_0 extends AbstractConanProcess {
         @Override
         protected void setArgFromMapEntry(ConanParameter param, String value) {
 
-            if (param.equals(this.params.getGenomeIndexBase())) {
+            Params params = this.getParams();
+
+            if (param.equals(params.getGenomeIndexBase())) {
                 this.genomeIndexBase = new File(value);
             }
-            else if (param.equals(this.params.getLeftReads())) {
+            else if (param.equals(params.getLeftReads())) {
                 this.leftReads = PathUtils.splitPaths(value, ",");
             }
-            else if (param.equals(this.params.getRightReads())) {
+            else if (param.equals(params.getRightReads())) {
                 this.rightReads = PathUtils.splitPaths(value, ",");
             }
-            else if (param.equals(this.params.getSingleEndReads())) {
+            else if (param.equals(params.getSingleEndReads())) {
                 this.singleEndReads = PathUtils.splitPaths(value, ",");
             }
             else {
@@ -218,6 +228,8 @@ public class TophatV2_0 extends AbstractConanProcess {
 
         @Override
         public ParamMap getArgMap() {
+
+            Params params = this.getParams();
 
             ParamMap pvp = new DefaultParamMap();
 

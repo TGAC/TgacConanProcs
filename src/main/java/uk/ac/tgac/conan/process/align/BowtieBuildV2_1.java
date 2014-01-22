@@ -42,8 +42,6 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
      */
     public static class Args extends AbstractProcessArgs {
 
-        private Params params = new Params();
-
         private File[] referenceIn;
         private String baseName;
         private int threads;
@@ -51,9 +49,15 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
 
         public Args() {
 
+            super(new Params());
+
             this.referenceIn = null;
             this.baseName = "";
             this.threads = 1;
+        }
+
+        public Params getParams() {
+            return (Params)this.params;
         }
 
         public File[] getReferenceIn() {
@@ -108,6 +112,8 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
         @Override
         public ParamMap getArgMap() {
 
+            Params params = this.getParams();
+
             ParamMap pvp = new DefaultParamMap();
 
             if (this.referenceIn != null) {
@@ -127,7 +133,10 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
 
         @Override
         protected void setOptionFromMapEntry(ConanParameter param, String value) {
-            if (param.equals(this.params.getThreads())) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getThreads())) {
                 this.threads = Integer.parseInt(value);
             }
             else {
@@ -138,7 +147,9 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
         @Override
         protected void setArgFromMapEntry(ConanParameter param, String value) {
 
-            if (param.equals(this.params.getReferenceIn())) {
+            Params params = this.getParams();
+
+            if (param.equals(params.getReferenceIn())) {
 
                 String[] parts = value.split(",");
 
@@ -149,7 +160,7 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
 
                 this.referenceIn = files;
             }
-            else if (param.equals(this.params.getBaseName())) {
+            else if (param.equals(params.getBaseName())) {
                 this.baseName = value;
             }
             else {

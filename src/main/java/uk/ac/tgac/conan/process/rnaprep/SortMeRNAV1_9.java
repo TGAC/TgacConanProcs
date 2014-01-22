@@ -41,8 +41,6 @@ public class SortMeRNAV1_9 extends AbstractConanProcess {
 
     public static class Args extends AbstractProcessArgs {
 
-        private Params params = new Params();
-
         public static final int DEFAULT_MEMORY = 262144;
 
         private File[] illuminaReads;
@@ -61,6 +59,7 @@ public class SortMeRNAV1_9 extends AbstractConanProcess {
         private int memory;
 
         public Args() {
+            super(new Params());
             this.illuminaReads = null;
             this.roche454Reads = null;
             this.databases = null;
@@ -75,6 +74,10 @@ public class SortMeRNAV1_9 extends AbstractConanProcess {
             this.reverseComplementStrandOnly = false;
             this.threads = 1;
             this.memory = DEFAULT_MEMORY;
+        }
+
+        public Params getParams() {
+            return (Params)this.params;
         }
 
         public File[] getIlluminaReads() {
@@ -221,6 +224,8 @@ public class SortMeRNAV1_9 extends AbstractConanProcess {
 
         @Override
         public ParamMap getArgMap() {
+
+            Params params = this.getParams();
 
             ParamMap pvp = new DefaultParamMap();
 

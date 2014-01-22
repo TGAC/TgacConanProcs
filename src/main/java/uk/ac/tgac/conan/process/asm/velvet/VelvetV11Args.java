@@ -37,7 +37,6 @@ public class VelvetV11Args extends AbstractAssemblerArgs {
 
     private VelvetV11Params params = new VelvetV11Params();
 
-
     @Override
     public AbstractAssemblerArgs copy() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.

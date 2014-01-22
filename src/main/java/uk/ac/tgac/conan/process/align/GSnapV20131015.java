@@ -22,12 +22,10 @@ import java.io.IOException;
 public class GSnapV20131015 extends AbstractConanProcess {
     @Override
     public String getName() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return "GSnap_V20131015";
     }
 
     public static class Args extends AbstractProcessArgs {
-
-        private Params params = new Params();
 
         private File genomeDir;
         private String genomeDB;
@@ -35,9 +33,15 @@ public class GSnapV20131015 extends AbstractConanProcess {
 
         public Args() {
 
+            super(new Params());
+
             this.genomeDir = null;
             this.genomeDB = "";
             this.query = null;
+        }
+
+        public Params getParams() {
+            return (Params)this.params;
         }
 
         public File getGenomeDir() {
@@ -66,10 +70,13 @@ public class GSnapV20131015 extends AbstractConanProcess {
 
         @Override
         protected void setOptionFromMapEntry(ConanParameter param, String value) {
-            if (param.equals(this.params.getGenomeDir())) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getGenomeDir())) {
                 this.genomeDir = new File(value);
             }
-            else if (param.equals(this.params.getGenomeDB())) {
+            else if (param.equals(params.getGenomeDB())) {
                 this.genomeDB = value;
             }
             else {
@@ -79,7 +86,10 @@ public class GSnapV20131015 extends AbstractConanProcess {
 
         @Override
         protected void setArgFromMapEntry(ConanParameter param, String value) {
-            if (param.equals(this.params.getQuery())) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getQuery())) {
                 this.query = new File(value);
             }
             else {
@@ -94,6 +104,8 @@ public class GSnapV20131015 extends AbstractConanProcess {
 
         @Override
         public ParamMap getArgMap() {
+
+            Params params = this.getParams();
 
             ParamMap pvp = new DefaultParamMap();
 
