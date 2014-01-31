@@ -58,6 +58,12 @@ public class Library {
         PHRED_33,
         PHRED_64
     }
+
+    public enum Strandedness {
+        UNSTRANDED,
+        FIRST_STRAND,
+        SECOND_STRAND
+    }
 	
 
     // **** Xml Key names ****
@@ -73,12 +79,14 @@ public class Library {
     private static final String KEY_ATTR_TYPE                    = "type";
     private static final String KEY_ATTR_PHRED                   = "phred";
     private static final String KEY_ATTR_UNIFORM                 = "uniform";
+    private static final String KEY_ATTR_STRANDEDNESS            = "strandedness";
 
 
     private static final int    DEFAULT_AVG_INSERT_SIZE          = 500;
     private static final double DEFAULT_INS_ERR_TOLERANCE        = 0.3;
     private static final SeqOrientation DEFAULT_SEQ_ORIENTATION  = SeqOrientation.FR;
     private static final Phred  DEFAULT_PHRED                    = Phred.PHRED_64;
+    private static final Strandedness DEFAULT_STRANDEDNESS       = Strandedness.UNSTRANDED;
 
 
 
@@ -93,6 +101,7 @@ public class Library {
     private Phred phred;
 	private List<SeqFile> files;
     private boolean uniform;
+    private Strandedness strandedness;
 
 
     /**
@@ -108,6 +117,7 @@ public class Library {
         this.phred = DEFAULT_PHRED;
         this.files = new ArrayList<SeqFile>();
         this.uniform = true;
+        this.strandedness = DEFAULT_STRANDEDNESS;
     }
 
     /**
@@ -144,6 +154,10 @@ public class Library {
         this.uniform = ele.hasAttribute(KEY_ATTR_UNIFORM) ?
                 XmlHelper.getBooleanValue(ele, KEY_ATTR_UNIFORM) :
                 true;
+
+        this.strandedness = ele.hasAttribute(KEY_ATTR_STRANDEDNESS) ?
+                Strandedness.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_STRANDEDNESS).toUpperCase()) :
+                DEFAULT_STRANDEDNESS;
 
         // Some files (we test later if there are the correct number)
         Element fileElements = XmlHelper.getDistinctElementByName(ele, KEY_ELEM_FILES);
@@ -218,6 +232,14 @@ public class Library {
 
     public void setUniform(boolean uniform) {
         this.uniform = uniform;
+    }
+
+    public Strandedness getStrandedness() {
+        return strandedness;
+    }
+
+    public void setStrandedness(Strandedness strandedness) {
+        this.strandedness = strandedness;
     }
 
     public List<SeqFile> getSeqFiles() {

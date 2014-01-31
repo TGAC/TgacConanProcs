@@ -5,9 +5,11 @@ import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
+import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.tgac.conan.core.util.PathUtils;
 
 import java.io.File;
@@ -22,7 +24,7 @@ import java.io.IOException;
  */
 public class RepeatMaskerV4_0 extends AbstractConanProcess {
 
-    public static final String EXE = "sortmerna";
+    public static final String EXE = "RepeatMasker";
 
     public RepeatMaskerV4_0() {
         this(new Args());
@@ -30,17 +32,36 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
 
     public RepeatMaskerV4_0(Args args) {
         super(EXE, args, new Params());
+
+        String pwdFull = new File(".").getAbsolutePath();
+        String pwd = pwdFull.substring(0, pwdFull.length() - 2);
+
+        // Be careful here... if the user changes the outputdir after initialisation of the process this will fail!!
+        this.addPreCommand("cd " + this.getArgs().getOutputDir().getAbsolutePath());
+        this.addPostCommand("cd " + pwd);
     }
 
     public Args getArgs() {
         return (Args)this.getProcessArgs();
     }
 
+
+    @Override
+    public boolean execute(ExecutionContext executionContext)
+            throws InterruptedException, ProcessExecutionException {
+
+        // Ensure the output directory exists
+        if (!this.getArgs().outputDir.exists()) {
+            this.getArgs().outputDir.mkdirs();
+        }
+
+        return super.execute(executionContext);
+    }
+
     @Override
     public String getName() {
         return "RepeatMasker_V4.0.X";
     }
-
 
     public static class Args extends AbstractProcessArgs {
 
@@ -62,6 +83,9 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
         private Engine engine;
         private int threads;
         private String species;
+        private File lib;
+        private boolean lowComplexityOnly;
+        private boolean interspersedOnly;
         private File outputDir;
         private boolean gff;
         private int frag;
@@ -74,6 +98,9 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
             this.engine = null;
             this.threads = 1;
             this.species = "";
+            this.lib = null;
+            this.lowComplexityOnly = false;
+            this.interspersedOnly = false;
             this.outputDir = null;
             this.gff = false;
             this.frag = -1;
@@ -115,6 +142,30 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
             this.species = species;
         }
 
+        public File getLib() {
+            return lib;
+        }
+
+        public void setLib(File lib) {
+            this.lib = lib;
+        }
+
+        public boolean isLowComplexityOnly() {
+            return lowComplexityOnly;
+        }
+
+        public void setLowComplexityOnly(boolean lowComplexityOnly) {
+            this.lowComplexityOnly = lowComplexityOnly;
+        }
+
+        public boolean isInterspersedOnly() {
+            return interspersedOnly;
+        }
+
+        public void setInterspersedOnly(boolean interspersedOnly) {
+            this.interspersedOnly = interspersedOnly;
+        }
+
         public File getOutputDir() {
             return outputDir;
         }
@@ -139,6 +190,10 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
             this.frag = frag;
         }
 
+        public File getOutputGffFile() {
+            return new File(this.outputDir, this.input[0].getName() + ".out.gff");
+        }
+
         @Override
         protected void setOptionFromMapEntry(ConanParameter param, String value) {
 
@@ -152,6 +207,15 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
             }
             else if (param.equals(params.getSpecies())) {
                 this.species = value;
+            }
+            else if (param.equals(params.getLib())) {
+                this.lib = new File(value);
+            }
+            else if (param.equals(params.getLowOnly())) {
+                this.lowComplexityOnly = true;
+            }
+            else if (param.equals(params.getIntOnly())) {
+                this.interspersedOnly = true;
             }
             else if (param.equals(params.getOutputDir())) {
                 this.outputDir = new File(value);
@@ -208,6 +272,18 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
                 pvp.put(params.getSpecies(), this.species);
             }
 
+            if (this.lib != null) {
+                pvp.put(params.getLib(), this.lib.getAbsolutePath());
+            }
+
+            if (this.lowComplexityOnly) {
+                pvp.put(params.getLowOnly(), Boolean.toString(this.lowComplexityOnly));
+            }
+
+            if (this.interspersedOnly) {
+                pvp.put(params.getIntOnly(), Boolean.toString(this.interspersedOnly));
+            }
+
             if (this.outputDir != null) {
                 pvp.put(params.getOutputDir(), this.outputDir.getAbsolutePath());
             }
@@ -232,6 +308,9 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
         private ConanParameter engine;
         private ConanParameter threads;
         private ConanParameter species;
+        private ConanParameter lib;
+        private ConanParameter lowOnly;
+        private ConanParameter intOnly;
         private ConanParameter outputDir;
         private ConanParameter gff;
         private ConanParameter frag;
@@ -279,6 +358,24 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
                             "        diatoaea, artiodactyl, arabidopsis, rice, wheat, and maize\n")
                     .create();
 
+            this.lib = new ParameterBuilder()
+                    .shortName("lib")
+                    .description("Allows use of a custom library (e.g. from another species")
+                    .argValidator(ArgValidator.PATH)
+                    .create();
+
+            this.lowOnly = new ParameterBuilder()
+                    .shortName("low")
+                    .isFlag(true)
+                    .description("Only masks low complex/simple repeats (no interspersed repeats)")
+                    .create();
+
+            this.intOnly = new ParameterBuilder()
+                    .shortName("int")
+                    .isFlag(true)
+                    .description("Only masks interspersed repeats (no low complex/simple repeat)")
+                    .create();
+
             this.outputDir = new ParameterBuilder()
                     .shortName("dir")
                     .description("Writes output to this directory (default is query file directory, will write to current directory).)")
@@ -317,6 +414,18 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
             return species;
         }
 
+        public ConanParameter getLib() {
+            return lib;
+        }
+
+        public ConanParameter getLowOnly() {
+            return lowOnly;
+        }
+
+        public ConanParameter getIntOnly() {
+            return intOnly;
+        }
+
         public ConanParameter getOutputDir() {
             return outputDir;
         }
@@ -336,6 +445,9 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
                     this.engine,
                     this.threads,
                     this.species,
+                    this.lib,
+                    this.lowOnly,
+                    this.intOnly,
                     this.outputDir,
                     this.gff,
                     this.frag
