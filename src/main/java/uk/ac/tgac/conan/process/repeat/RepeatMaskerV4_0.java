@@ -1,5 +1,7 @@
 package uk.ac.tgac.conan.process.repeat;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
@@ -13,6 +15,8 @@ import uk.ac.tgac.conan.core.util.PathUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -188,6 +192,10 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
 
         public File getOutputGffFile() {
             return new File(this.outputDir, this.input[0].getName() + ".out.gff");
+        }
+
+        public File getOutputTblFile() {
+            return new File(this.outputDir, this.input[0].getName() + ".tbl");
         }
 
         @Override
@@ -448,6 +456,294 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
                     this.gff,
                     this.frag
             };
+        }
+    }
+
+    public static class Report {
+
+        private File rmTableFile;
+        private String label;
+
+        private int sequences;
+        private int totalLength;
+        private int totalLengthExcGaps;
+        private double gc;
+        private int basesMasked;
+        private double percMasked;
+
+        private int nbUnclassifiedInterspersed;
+        private int lenUnclassifiedInterspersed;
+        private double percUnclassifiedInterspersed;
+
+        private int lenTotalInterspersed;
+        private double percTotalInterspersed;
+
+        private int nbSrna;
+        private int lenSrna;
+        private double percSrna;
+
+        private int nbSatellites;
+        private int lenSatellites;
+        private double percSatellites;
+
+        private int nbSimple;
+        private int lenSimple;
+        private double percSimple;
+
+        private int nbLowComp;
+        private int lenLowComp;
+        private double percLowComp;
+
+
+        public Report(File rmTableFile, String label) throws IOException {
+            this.rmTableFile = rmTableFile;
+            this.label = label;
+
+            this.parse(rmTableFile);
+        }
+
+        private void parse(File rmTableFile) throws IOException {
+
+            List<String> lines = FileUtils.readLines(rmTableFile);
+
+            for(String line : lines) {
+                String[] parts = line.split("\\s+");
+
+                if (line.startsWith("sequences:")) {
+                    this.sequences = Integer.parseInt(parts[1]);
+                }
+                else if (line.startsWith("total length:")) {
+                    this.totalLength = Integer.parseInt(parts[2]);
+                    this.totalLengthExcGaps = Integer.parseInt(parts[4].substring(1));
+                }
+                else if (line.startsWith("GC level:")) {
+                    this.gc = Double.parseDouble(parts[2]);
+                }
+                else if (line.startsWith("bases masked:")) {
+                    this.basesMasked = Integer.parseInt(parts[2]);
+                    this.percMasked = Double.parseDouble(parts[5]);
+                }
+                else if (line.startsWith("Unclassified:")) {
+                    this.nbUnclassifiedInterspersed = Integer.parseInt(parts[1]);
+                    this.lenUnclassifiedInterspersed = Integer.parseInt(parts[2]);
+                    this.percUnclassifiedInterspersed = Double.parseDouble(parts[4]);
+                }
+                else if (line.startsWith("Total ")) {
+                    this.lenTotalInterspersed = Integer.parseInt(parts[3]);
+                    this.percTotalInterspersed = Double.parseDouble(parts[5]);
+                }
+                else if (line.startsWith("Small RNA:")) {
+                    this.nbSrna = Integer.parseInt(parts[2]);
+                    this.lenSrna = Integer.parseInt(parts[3]);
+                    this.percSrna = Double.parseDouble(parts[5]);
+                }
+                else if (line.startsWith("Satellites:")) {
+                    this.nbSatellites = Integer.parseInt(parts[1]);
+                    this.lenSatellites = Integer.parseInt(parts[2]);
+                    this.percSatellites = Double.parseDouble(parts[4]);
+                }
+                else if (line.startsWith("Simple ")) {
+                    this.nbSimple = Integer.parseInt(parts[2]);
+                    this.lenSimple = Integer.parseInt(parts[3]);
+                    this.percSimple = Double.parseDouble(parts[5]);
+                }
+                else if (line.startsWith("Low complexity:")) {
+                    this.nbLowComp = Integer.parseInt(parts[2]);
+                    this.lenLowComp = Integer.parseInt(parts[3]);
+                    this.percLowComp = Double.parseDouble(parts[5]);
+                }
+            }
+        }
+
+        public File getRmTableFile() {
+            return rmTableFile;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public int getSequences() {
+            return sequences;
+        }
+
+        public int getTotalLength() {
+            return totalLength;
+        }
+
+        public int getTotalLengthExcGaps() {
+            return totalLengthExcGaps;
+        }
+
+        public double getGc() {
+            return gc;
+        }
+
+        public int getBasesMasked() {
+            return basesMasked;
+        }
+
+        public double getPercMasked() {
+            return percMasked;
+        }
+
+        public int getNbUnclassifiedInterspersed() {
+            return nbUnclassifiedInterspersed;
+        }
+
+        public int getLenUnclassifiedInterspersed() {
+            return lenUnclassifiedInterspersed;
+        }
+
+        public double getPercUnclassifiedInterspersed() {
+            return percUnclassifiedInterspersed;
+        }
+
+        public int getLenTotalInterspersed() {
+            return lenTotalInterspersed;
+        }
+
+        public double getPercTotalInterspersed() {
+            return percTotalInterspersed;
+        }
+
+        public int getNbSrna() {
+            return nbSrna;
+        }
+
+        public int getLenSrna() {
+            return lenSrna;
+        }
+
+        public double getPercSrna() {
+            return percSrna;
+        }
+
+        public int getNbSatellites() {
+            return nbSatellites;
+        }
+
+        public int getLenSatellites() {
+            return lenSatellites;
+        }
+
+        public double getPercSatellites() {
+            return percSatellites;
+        }
+
+        public int getNbSimple() {
+            return nbSimple;
+        }
+
+        public int getLenSimple() {
+            return lenSimple;
+        }
+
+        public double getPercSimple() {
+            return percSimple;
+        }
+
+        public int getNbLowComp() {
+            return nbLowComp;
+        }
+
+        public int getLenLowComp() {
+            return lenLowComp;
+        }
+
+        public double getPercLowComp() {
+            return percLowComp;
+        }
+
+        @Override
+        public String toString() {
+
+            String[] columns = new String[] {
+                    this.label,
+                    this.rmTableFile.getAbsolutePath(),
+                    Integer.toString(this.sequences),
+                    Integer.toString(this.totalLength),
+                    Integer.toString(this.totalLengthExcGaps),
+                    Double.toString(this.gc),
+                    Integer.toString(this.basesMasked),
+                    Double.toString(this.percMasked),
+                    Integer.toString(this.nbUnclassifiedInterspersed),
+                    Integer.toString(this.lenUnclassifiedInterspersed),
+                    Double.toString(this.percUnclassifiedInterspersed),
+                    Integer.toString(this.lenTotalInterspersed),
+                    Double.toString(this.percTotalInterspersed),
+                    Integer.toString(this.nbSrna),
+                    Integer.toString(this.lenSrna),
+                    Double.toString(this.percSrna),
+                    Integer.toString(this.nbSatellites),
+                    Integer.toString(this.lenSatellites),
+                    Double.toString(this.percSatellites),
+                    Integer.toString(this.nbSimple),
+                    Integer.toString(this.lenSimple),
+                    Double.toString(this.percSimple),
+                    Integer.toString(this.nbLowComp),
+                    Integer.toString(this.lenLowComp),
+                    Double.toString(this.percLowComp)
+            };
+
+            return StringUtils.join(columns, "|");
+        }
+
+
+    }
+
+    public static class CombinedReport extends ArrayList<Report> {
+
+        public String header() {
+
+            String[] columns = new String[] {
+                    "label",
+                    "file_path",
+                    "sequences",
+                    "total_length",
+                    "total_length_exc_gaps",
+                    "gc%",
+                    "bases_masked",
+                    "perc_masked",
+                    "#_unclassified",
+                    "len_unclassied",
+                    "%_unclassified",
+                    "len_total_interspersed",
+                    "%_total_interspersed",
+                    "#_small_rna",
+                    "len_small_rna",
+                    "%_small_rna",
+                    "#_satellites",
+                    "len_satellites",
+                    "%_satellites",
+                    "nb_simple",
+                    "len_simple",
+                    "%_simple",
+                    "nb_low_complexity",
+                    "len_low_complexity",
+                    "%_low_complexity"
+            };
+
+            return StringUtils.join(columns, "|");
+        }
+
+        @Override
+        public String toString() {
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.append(this.header()).append("\n");
+
+            for(Report report : this) {
+                sb.append(report.toString()).append("\n");
+            }
+
+            return sb.toString();
+        }
+
+        public void save(File outputFile) throws IOException {
+
+            FileUtils.write(outputFile, this.toString());
         }
     }
 }
