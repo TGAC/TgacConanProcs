@@ -5,11 +5,10 @@ import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
-import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
-import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
+import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 import uk.ac.tgac.conan.core.util.PathUtils;
 
 import java.io.File;
@@ -26,36 +25,33 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
 
     public static final String EXE = "RepeatMasker";
 
-    public RepeatMaskerV4_0() {
-        this(new Args());
+    public RepeatMaskerV4_0(ConanProcessService conanProcessService) {
+        this(conanProcessService, new Args());
     }
 
-    public RepeatMaskerV4_0(Args args) {
+    public RepeatMaskerV4_0(ConanProcessService conanProcessService, Args args) {
         super(EXE, args, new Params());
 
-        String pwdFull = new File(".").getAbsolutePath();
-        String pwd = pwdFull.substring(0, pwdFull.length() - 2);
-
-        // Be careful here... if the user changes the outputdir after initialisation of the process this will fail!!
-        this.addPreCommand("cd " + this.getArgs().getOutputDir().getAbsolutePath());
-        this.addPostCommand("cd " + pwd);
+        this.conanProcessService = conanProcessService;
     }
 
     public Args getArgs() {
         return (Args)this.getProcessArgs();
     }
 
-
-    @Override
-    public boolean execute(ExecutionContext executionContext)
-            throws InterruptedException, ProcessExecutionException {
+    public void init() {
 
         // Ensure the output directory exists
         if (!this.getArgs().outputDir.exists()) {
             this.getArgs().outputDir.mkdirs();
         }
 
-        return super.execute(executionContext);
+        String pwdFull = new File(".").getAbsolutePath();
+        String pwd = pwdFull.substring(0, pwdFull.length() - 2);
+
+        // Be careful here... if the user executes this twice then we'll end up adding these pre/post commands twice as well!!
+        this.addPreCommand("cd " + this.getArgs().getOutputDir().getAbsolutePath());
+        this.addPostCommand("cd " + pwd);
     }
 
     @Override
@@ -365,13 +361,13 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
                     .create();
 
             this.lowOnly = new ParameterBuilder()
-                    .shortName("low")
+                    .shortName("noint")
                     .isFlag(true)
                     .description("Only masks low complex/simple repeats (no interspersed repeats)")
                     .create();
 
             this.intOnly = new ParameterBuilder()
-                    .shortName("int")
+                    .shortName("nolow")
                     .isFlag(true)
                     .description("Only masks interspersed repeats (no low complex/simple repeat)")
                     .create();

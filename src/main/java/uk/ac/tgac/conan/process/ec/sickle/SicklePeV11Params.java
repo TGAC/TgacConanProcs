@@ -19,7 +19,6 @@ package uk.ac.tgac.conan.process.ec.sickle;
 
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
-import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 
 import java.util.Arrays;

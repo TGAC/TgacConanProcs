@@ -8,6 +8,7 @@ import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
@@ -27,8 +28,13 @@ public class RepeatModelerV1_0 extends AbstractConanProcess {
 
     public static final String EXE = "RepeatModeler";
 
-    public RepeatModelerV1_0(Args args) {
+    public RepeatModelerV1_0(ConanProcessService conanProcessService) {
+        this(conanProcessService, new Args());
+    }
+
+    public RepeatModelerV1_0(ConanProcessService conanProcessService, Args args) {
         super(EXE, args, new Params());
+        this.setConanProcessService(conanProcessService);
     }
 
     @Override
@@ -49,6 +55,11 @@ public class RepeatModelerV1_0 extends AbstractConanProcess {
 
         Args args = this.getArgs();
 
+        // Make sure the db directory exists
+        if (!args.getDbDir().exists()) {
+            args.getDbDir().mkdirs();
+        }
+
         StringBuilder sb = new StringBuilder();
 
         String pwdFull = new File(".").getAbsolutePath();
@@ -58,14 +69,17 @@ public class RepeatModelerV1_0 extends AbstractConanProcess {
         sb.append("ln -s -f " + args.getInput().getAbsolutePath() + " " + new File(args.getOutputDir(), "genome.fa").getAbsolutePath()).append("; ");
 
         // Change dir to where we need to be
-        sb.append("cd " + args.getDbDir()).append("; ");
+        sb.append("cd " + args.getDbDir().getAbsolutePath()).append("; ");
 
         // Build Database
         sb.append("BuildDatabase -dir " + args.getOutputDir().getAbsolutePath() + " -name " + args.getDbName() +
                 " -engine " + args.getEngine().toArgString()).append("; ");
 
+        // Change dir to where we need to be
+        sb.append("cd " + args.getOutputDir().getAbsolutePath()).append("; ");
+
         // Run Repeat Modeller
-        sb.append(EXE + " -database " + args.getDbName() + " -engine " + args.getEngine().toArgString()).append("; ");
+        sb.append(EXE + " -database " + args.getDbDir().getAbsolutePath() + "/" + args.getDbName() + " -engine " + args.getEngine().toArgString()).append("; ");
 
         // Change dir back
         sb.append("cd " + pwd);
@@ -144,13 +158,23 @@ public class RepeatModelerV1_0 extends AbstractConanProcess {
 
         public File getLatestRepeatModelerDir() {
 
-            File[] dirs = this.getOutputDir().listFiles(new FileFilter() {
+            return this.getLatestRepeatModelerDir(this.outputDir);
+        }
+
+        public File getLatestRepeatModelerDir(File outputDir) {
+
+            File[] dirs = outputDir.listFiles(new FileFilter() {
                 public boolean accept(File file) {
                     return file.isDirectory() && file.getName().startsWith("RM_");
                 }
             });
+
+            if (dirs == null || dirs.length == 0)
+                return null;
+
             long lastMod = Long.MIN_VALUE;
             File choice = null;
+
             for (File file : dirs) {
                 if (file.lastModified() > lastMod) {
                     choice = file;
@@ -169,7 +193,12 @@ public class RepeatModelerV1_0 extends AbstractConanProcess {
 
         public File getMaskedOutputFile() {
 
-            File rmDir = this.getLatestRepeatModelerDir();
+            return this.getMaskedOutputFile(this.outputDir);
+        }
+
+        public File getMaskedOutputFile(File outputDir) {
+
+            File rmDir = this.getLatestRepeatModelerDir(outputDir);
 
             return rmDir == null ? null : new File(rmDir, "consensi.fa.masked");
         }

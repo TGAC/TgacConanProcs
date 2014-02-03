@@ -8,7 +8,7 @@ import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
-import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
+import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,13 +25,14 @@ public class BedtoolsMaskFastaV2_17 extends AbstractConanProcess {
     public static final String EXE = "bedtools";
     public static final String MODE = "maskfasta";
 
-    public BedtoolsMaskFastaV2_17() {
-        this(new Args());
+    public BedtoolsMaskFastaV2_17(ConanProcessService conanProcessService) {
+        this(conanProcessService, new Args());
     }
 
-    public BedtoolsMaskFastaV2_17(Args args) {
+    public BedtoolsMaskFastaV2_17(ConanProcessService conanProcessService, Args args) {
         super(EXE, args, new Params());
         this.setMode(MODE);
+        this.setConanProcessService(conanProcessService);
     }
 
     public Args getArgs() {

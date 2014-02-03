@@ -18,8 +18,6 @@
 package uk.ac.tgac.conan.process.ec.sickle;
 
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
-import uk.ac.ebi.fgpt.conan.core.param.FlagParameter;
-import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;

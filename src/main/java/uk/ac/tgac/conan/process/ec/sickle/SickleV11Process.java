@@ -18,12 +18,9 @@
 package uk.ac.tgac.conan.process.ec.sickle;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 import uk.ac.tgac.conan.process.ec.AbstractErrorCorrector;
 import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorArgs;
-
-import java.util.Map;
 
 /**
  * User: maplesod

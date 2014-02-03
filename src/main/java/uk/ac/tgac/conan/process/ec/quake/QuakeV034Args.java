@@ -33,9 +33,7 @@ import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorPairedEndArgs;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * User: maplesod

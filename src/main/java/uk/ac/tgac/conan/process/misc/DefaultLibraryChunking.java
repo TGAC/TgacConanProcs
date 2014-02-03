@@ -1,7 +1,6 @@
 package uk.ac.tgac.conan.process.misc;
 
 import org.apache.commons.io.FilenameUtils;
-import uk.ac.ebi.fgpt.conan.core.pipeline.AbstractConanPipeline;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.model.context.ExecutionResult;
 import uk.ac.ebi.fgpt.conan.model.context.ExitStatus;

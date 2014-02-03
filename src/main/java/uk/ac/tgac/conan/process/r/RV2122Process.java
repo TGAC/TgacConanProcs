@@ -18,9 +18,6 @@
 package uk.ac.tgac.conan.process.r;
 
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
-import uk.ac.ebi.fgpt.conan.model.param.ParamMapEntry;
-
-import java.util.List;
 
 /**
  * User: maplesod
