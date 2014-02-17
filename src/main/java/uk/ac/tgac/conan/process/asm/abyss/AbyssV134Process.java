@@ -20,7 +20,9 @@ package uk.ac.tgac.conan.process.asm.abyss;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.ebi.fgpt.conan.model.param.CommandLineFormat;
 import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asm.AbstractAssembler;
 import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
@@ -48,11 +50,6 @@ public class AbyssV134Process extends AbstractAssembler {
 
     public AbyssV134Process(AbstractAssemblerArgs args) {
         super(EXE, args, new AbyssV134Params());
-    }
-
-    @Override
-    public String getCommand() {
-        return this.getCommand(this.getProcessArgs(), false);
     }
 
     @Override
@@ -158,6 +155,11 @@ public class AbyssV134Process extends AbstractAssembler {
 
         this.addPreCommand("cd " + this.getArgs().getOutputDir().getAbsolutePath());
         this.addPostCommand("cd " + pwd);
+    }
+
+    @Override
+    public String getCommand() throws ConanParameterException {
+        return super.getCommand(CommandLineFormat.KEY_VALUE_PAIR);
     }
 
     @Override

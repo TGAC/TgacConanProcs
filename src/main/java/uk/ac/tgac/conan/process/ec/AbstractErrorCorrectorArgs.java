@@ -17,14 +17,15 @@
  **/
 package uk.ac.tgac.conan.process.ec;
 
-import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
+import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
+import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractErrorCorrectorArgs implements ProcessArgs, ErrorCorrectorArgsCreator {
+public abstract class AbstractErrorCorrectorArgs extends AbstractProcessArgs implements ErrorCorrectorArgsCreator {
 
     public static final int DEFAULT_MIN_LENGTH = 60;
 
@@ -36,7 +37,9 @@ public abstract class AbstractErrorCorrectorArgs implements ProcessArgs, ErrorCo
 
     private File outputDir;
 
-    public AbstractErrorCorrectorArgs() {
+    public AbstractErrorCorrectorArgs(ProcessParams params) {
+
+        super(params);
 
         this.minLength = DEFAULT_MIN_LENGTH;
         this.qualityThreshold = 30;
@@ -92,6 +95,30 @@ public abstract class AbstractErrorCorrectorArgs implements ProcessArgs, ErrorCo
 
     public void setOutputDir(File outputDir) {
         this.outputDir = outputDir;
+    }
+
+    public Library getOutputLibrary(Library inputLibrary) {
+
+        Library modLib = inputLibrary.copy();
+
+        List<File> files = this.getCorrectedFiles();
+
+        if (modLib.isPairedEnd()) {
+            if (files.size() < 2 || files.size() > 3) {
+                throw new IllegalArgumentException("Paired end library: " + modLib.getName() + " from " + this.getName() + " does not have two or three files");
+            }
+
+            modLib.setFiles(files.get(0), files.get(1));
+        }
+        else {
+            if (files.size() != 1) {
+                throw new IllegalArgumentException("Single end library: " + modLib.getName() + " from " + this.getName() + " does not have one file");
+            }
+
+            modLib.setFiles(files.get(0), null);
+        }
+
+        return modLib;
     }
 
     public abstract AbstractErrorCorrectorArgs copy();

@@ -4,8 +4,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import uk.ac.tgac.conan.process.kmer.jellyfish.JellyfishCountV11Args;
-import uk.ac.tgac.conan.process.kmer.jellyfish.JellyfishCountV11Process;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
 
@@ -18,7 +17,7 @@ import static org.junit.Assert.assertTrue;
  * Time: 15:06
  * To change this template use File | Settings | File Templates.
  */
-public class KatCompV1ProcessTest {
+public class KatCompV1Test {
 
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
@@ -34,13 +33,13 @@ public class KatCompV1ProcessTest {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "kat comp -o kat_comp.out -t 32 " + pwd + "/reads.jf31_0 " + pwd + "/asm.jf31_0";
+        correctCommand = "kat comp --output=kat_comp.out --threads=32 " + pwd + "/reads.jf31_0 " + pwd + "/asm.jf31_0";
     }
 
     @Test
-    public void testKatCompCommand() {
+    public void testKatCompCommand() throws ConanParameterException {
 
-        KatCompV1Process jf = new KatCompV1Process(createKatCompArgs());
+        KatCompV1 jf = new KatCompV1(createKatCompArgs());
 
         String command = jf.getCommand();
 
@@ -48,9 +47,9 @@ public class KatCompV1ProcessTest {
     }
 
 
-    protected KatCompV1Args createKatCompArgs() {
+    protected KatCompV1.Args createKatCompArgs() {
 
-        KatCompV1Args args = new KatCompV1Args();
+        KatCompV1.Args args = new KatCompV1.Args();
         args.setJellyfishHash1(new File("reads.jf31_0"));
         args.setJellyfishHash2(new File("asm.jf31_0"));
         args.setOutputPrefix("kat_comp.out");

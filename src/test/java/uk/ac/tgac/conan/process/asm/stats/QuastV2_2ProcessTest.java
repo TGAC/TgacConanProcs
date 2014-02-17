@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -52,13 +53,13 @@ public class QuastV2_2ProcessTest {
 
         this.testDir = temp.getRoot().getAbsolutePath();
 
-        correctCommand = "quast.py --output " + testDir + " --threads 16 --est-ref-size 50000000 --scaffolds " +
+        correctCommand = "quast.py --output=" + testDir + " --threads=16 --est-ref-size=50000000 --scaffolds " +
                 pwd + "/file1.fa " + pwd + "/file2.fa";
     }
 
     private QuastV2_2Process createProcess() {
 
-        List<File> inputFiles = new ArrayList<File>();
+        List<File> inputFiles = new ArrayList<>();
 
         inputFiles.add(new File("file1.fa"));
         inputFiles.add(new File("file2.fa"));
@@ -74,7 +75,7 @@ public class QuastV2_2ProcessTest {
     }
 
     @Test
-    public void testCommand() {
+    public void testCommand() throws ConanParameterException {
 
         QuastV2_2Process process = createProcess();
 

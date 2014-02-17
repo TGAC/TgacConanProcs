@@ -18,6 +18,7 @@
 package uk.ac.tgac.conan.process.r;
 
 import org.junit.Test;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 public class RV2122ProcessTest {
 
     @Test
-    public void testRV2122() {
+    public void testRV2122() throws ConanParameterException {
 
         List<String> rArgs = new ArrayList<String>();
         rArgs.add("arg1");
@@ -47,7 +48,7 @@ public class RV2122ProcessTest {
         RV2122Process task = new RV2122Process(args);
 
         String command = task.getCommand();
-        String correct = "Rscript  script.R  arg1 arg2  > output.txt";
+        String correct = "Rscript script.R arg1 arg2 > output.txt";
 
         assertTrue(command != null && !command.isEmpty());
         assertTrue(correct != null && !correct.isEmpty());

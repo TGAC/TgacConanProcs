@@ -17,11 +17,12 @@
  **/
 package uk.ac.tgac.conan.process.asm.stats;
 
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
 
 import java.io.File;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -84,9 +85,9 @@ public class CegmaV2_4Args implements ProcessArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
+    public ParamMap getArgMap() {
 
-        Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
+        ParamMap pvp = new DefaultParamMap();
 
         if (this.genomeFile != null) {
             pvp.put(params.getGenomeFile(), this.genomeFile.getAbsolutePath());
@@ -102,23 +103,23 @@ public class CegmaV2_4Args implements ProcessArgs {
     }
 
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) {
+    public void setFromArgMap(ParamMap pvp) {
         for (Map.Entry<ConanParameter, String> entry : pvp.entrySet()) {
 
             if (!entry.getKey().validateParameterValue(entry.getValue())) {
                 throw new IllegalArgumentException("Parameter invalid: " + entry.getKey() + " : " + entry.getValue());
             }
 
-            String param = entry.getKey().getName();
+            ConanParameter param = entry.getKey();
             String val = entry.getValue();
 
-            if (param.equals(this.params.getGenomeFile().getName())) {
+            if (param.equals(this.params.getGenomeFile())) {
                 this.genomeFile = new File(val);
             }
-            else if (param.equals(this.params.getOutputPrefix().getName())) {
+            else if (param.equals(this.params.getOutputPrefix())) {
                 this.outputPrefix = new File(val);
             }
-            else if (param.equals(this.params.getThreads().getName())) {
+            else if (param.equals(this.params.getThreads())) {
                 this.threads = Integer.parseInt(val);
             }
             else {

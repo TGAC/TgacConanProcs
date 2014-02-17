@@ -101,16 +101,16 @@ public class CegmaV2_4Process extends AbstractConanProcess {
         sb.append(" ");
         for (Map.Entry<ConanParameter, String> param : this.getProcessArgs().getArgMap().entrySet()) {
 
-            if (param.getKey().getName().equals("genome") && this.modifiedGenomeFile != null) {
+            if (param.getKey().getLongName().equals("genome") && this.modifiedGenomeFile != null) {
                 sb.append("--");
-                sb.append(param.getKey());
+                sb.append(param.getKey().getLongName());
                 sb.append(" ");
                 sb.append(this.modifiedGenomeFile.getAbsolutePath());
                 sb.append(" ");
             }
             else {
                 sb.append("--");
-                sb.append(param.getKey());
+                sb.append(param.getKey().getLongName());
                 if (!param.getKey().isBoolean()) {
                     sb.append(" ");
                     sb.append(param.getValue());

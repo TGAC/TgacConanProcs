@@ -17,9 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.ec.musket;
 
-import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
-import uk.ac.ebi.fgpt.conan.core.param.FlagParameter;
-import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
+import uk.ac.ebi.fgpt.conan.core.param.*;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 
@@ -46,19 +44,20 @@ public class MusketV106Params implements ProcessParams {
 
     public MusketV106Params() {
 
-        this.kmer = new DefaultConanParameter(
-                "k",
-                "(specify two paramters: k-mer size and estimated total number of k-mers for this k-mer size) The " +
+        this.kmer = new ParameterBuilder()
+                .isOption(true)
+                .isOptional(false)
+                .shortName("k")
+                .description("(specify two paramters: k-mer size and estimated total number of k-mers for this k-mer size) The " +
                         "second values  specifies the (possible) number of " +
                         "distinct k-mers in the input datasets (e.g. estimated number of k-mers: 67108864, 134217728, " +
                         "268435456 or 536870912). This second value does not affect the correctness of the program, " +
                         "but balances the memory consumption between Bloom filters and hash tables, thus affecting the " +
-                        "overall memory footprint of the program. Please feel free to specify this value.",
-                false,
-                false
-        );
+                        "overall memory footprint of the program. Please feel free to specify this value.")
+                .argValidator(ArgValidator.OFF)
+                .create();
 
-        this.outputPrefix = new DefaultConanParameter(
+        this.outputPrefix = new PathParameter(
                 "omulti",
                 "When this option is used, each input file will have its own output file. For each input file, all " +
                         "corrected reads in the file will be ouput to a file with prefix #str (the value of this " +
@@ -67,9 +66,7 @@ public class MusketV106Params implements ProcessParams {
                         "infile2_2.fa\" will create 4 output files with names \"myout.0\", \"myout.1\", \"myout.2\" " +
                         "and \"myout.3\". File \"myout.0\" corresponds to file \"infile_1.fa\" and \"myout.1\" " +
                         "corresponds to \"infile_2.fa\", and so on",
-                false,
-                true
-        );
+                true);
 
         this.threads = new NumericParameter(
                 "p",
@@ -105,12 +102,14 @@ public class MusketV106Params implements ProcessParams {
                 true
         );
 
-        this.readFiles = new DefaultConanParameter(
-                "input",
-                "The input files to error correct separated by spaces",
-                false,
-                false
-        );
+        this.readFiles = new ParameterBuilder()
+                .isOption(false)
+                .isOptional(false)
+                .longName("input")
+                .description("The input files to error correct separated by spaces")
+                .argIndex(0)
+                .argValidator(ArgValidator.OFF)
+                .create();
     }
 
     public ConanParameter getKmer() {

@@ -2,8 +2,6 @@ package uk.ac.tgac.conan.process.asm;
 
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.Organism;
-import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
-import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOProcess;
 
 import java.io.File;
 import java.util.List;

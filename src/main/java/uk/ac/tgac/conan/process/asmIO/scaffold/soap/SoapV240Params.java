@@ -1,9 +1,6 @@
 package uk.ac.tgac.conan.process.asmIO.scaffold.soap;
 
-import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
-import uk.ac.ebi.fgpt.conan.core.param.FlagParameter;
-import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
-import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
+import uk.ac.ebi.fgpt.conan.core.param.*;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 
@@ -41,12 +38,11 @@ public class SoapV240Params implements ProcessParams {
                 "The config file of reads",
                 false);
 
-        this.outputPrefix = new DefaultConanParameter(
-                "o",
-                "outputGraph: prefix of output graph file name",
-                false,
-                false,
-                true);
+        this.outputPrefix = new ParameterBuilder()
+                .shortName("o")
+                .description("outputGraph: prefix of output graph file name")
+                .argValidator(ArgValidator.PATH)
+                .create();
 
         this.kmer = new NumericParameter(
                 "K",

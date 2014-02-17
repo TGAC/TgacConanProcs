@@ -21,7 +21,9 @@ import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.util.StringJoiner;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.Organism;
@@ -30,7 +32,6 @@ import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -121,9 +122,9 @@ public class SoapDeNovoV204Args extends AbstractAssemblerArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
+    public ParamMap getArgMap() {
 
-        Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
+        ParamMap pvp = new DefaultParamMap();
 
         if (this.outputPrefix != null) {
             pvp.put(params.getPrefix(), this.outputPrefix);
@@ -161,38 +162,38 @@ public class SoapDeNovoV204Args extends AbstractAssemblerArgs {
     }
 
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) {
+    public void setFromArgMap(ParamMap pvp) {
         for (Map.Entry<ConanParameter, String> entry : pvp.entrySet()) {
 
             if (!entry.getKey().validateParameterValue(entry.getValue())) {
                 throw new IllegalArgumentException("Parameter invalid: " + entry.getKey() + " : " + entry.getValue());
             }
 
-            String param = entry.getKey().getName();
+            ConanParameter param = entry.getKey();
             String val = entry.getValue();
 
-            if (param.equals(this.params.getPrefix().getName())) {
+            if (param.equals(this.params.getPrefix())) {
                 this.outputPrefix = val;
             }
-            else if (param.equals(this.params.getKmer().getName())) {
+            else if (param.equals(this.params.getKmer())) {
                 this.setKmer(Integer.parseInt(val));
             }
-            else if (param.equals(this.params.getKmerFreqCutoff().getName())) {
+            else if (param.equals(this.params.getKmerFreqCutoff())) {
                 this.setCoverageCutoff(Integer.parseInt(val));
             }
-            else if (param.equals(this.params.getThreads().getName())) {
+            else if (param.equals(this.params.getThreads())) {
                 this.setThreads(Integer.parseInt(val));
             }
-            else if (param.equals(this.params.getMemory().getName())) {
+            else if (param.equals(this.params.getMemory())) {
                 this.setMemory(Integer.parseInt(val));
             }
-            else if (param.equals(this.params.getFillGaps().getName())) {
+            else if (param.equals(this.params.getFillGaps())) {
                 this.setFillGaps(Boolean.parseBoolean(val));
             }
-            else if (param.equals(this.params.getResolveRepeats().getName())) {
+            else if (param.equals(this.params.getResolveRepeats())) {
                 this.setResolveRepeats(Boolean.parseBoolean(val));
             }
-            else if (param.equals(this.params.getConfigFile().getName())) {
+            else if (param.equals(this.params.getConfigFile())) {
                 this.setConfigFile(new File(val));
             }
             else {

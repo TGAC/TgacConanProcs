@@ -17,11 +17,12 @@
  **/
 package uk.ac.tgac.conan.process.latex;
 
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
 
 import java.io.File;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -63,8 +64,8 @@ public class PdfLatex2012Args implements ProcessArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
-        Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
+    public ParamMap getArgMap() {
+        ParamMap pvp = new DefaultParamMap();
 
         if (this.texFile != null) {
             pvp.put(params.getTexFile(), this.texFile.getAbsolutePath());
@@ -78,18 +79,18 @@ public class PdfLatex2012Args implements ProcessArgs {
     }
 
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) {
+    public void setFromArgMap(ParamMap pvp) {
         for (Map.Entry<ConanParameter, String> entry : pvp.entrySet()) {
 
             if (!entry.getKey().validateParameterValue(entry.getValue())) {
                 throw new IllegalArgumentException("Parameter invalid: " + entry.getKey() + " : " + entry.getValue());
             }
 
-            String param = entry.getKey().getName();
+            ConanParameter param = entry.getKey();
 
-            if (param.equals(this.params.getTexFile().getName())) {
+            if (param.equals(this.params.getTexFile())) {
                 this.texFile = new File(entry.getValue());
-            } else if (param.equals(this.params.getOutputDir().getName())) {
+            } else if (param.equals(this.params.getOutputDir())) {
                 this.outputDir = new File(entry.getValue());
             }else {
                 throw new IllegalArgumentException("Unknown param found: " + param);

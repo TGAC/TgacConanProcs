@@ -17,8 +17,8 @@
  **/
 package uk.ac.tgac.conan.process.asm.abyss;
 
-import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
 import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
+import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 
@@ -52,17 +52,18 @@ public class AbyssV134Params implements ProcessParams {
         this.coverageCutoff = new NumericParameter(
                 "c",
                 "remove contigs with mean k-mer coverage less than this threshold",
-                false);
+                true);
 
         this.threads = new NumericParameter(
                 "np",
                 "the number of processes of an MPI assembly",
-                false);
+                true);
 
-        this.name = new DefaultConanParameter(
-                "name",
-                "The name of this assembly. The resulting contigs will be stored in ${name}-contigs.fa",
-                false, false, false);
+        this.name = new ParameterBuilder()
+                .longName("name")
+                .description("The name of this assembly. The resulting contigs will be stored in ${name}-contigs.fa")
+                .isOptional(false)
+                .create();
     }
 
     public ConanParameter getLibs() {

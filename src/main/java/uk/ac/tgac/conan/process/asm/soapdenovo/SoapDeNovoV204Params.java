@@ -17,7 +17,6 @@
  **/
 package uk.ac.tgac.conan.process.asm.soapdenovo;
 
-import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
 import uk.ac.ebi.fgpt.conan.core.param.FlagParameter;
 import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
 import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
@@ -52,7 +51,7 @@ public class SoapDeNovoV204Params implements ProcessParams {
                 "configFile: the config file of solexa reads",
                 false);
 
-        this.prefix = new DefaultConanParameter(
+        this.prefix = new PathParameter(
                 "o",
                 "outputGraph: prefix of output graph file name",
                 false);

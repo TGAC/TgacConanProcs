@@ -36,12 +36,6 @@ public class RV2122Process extends AbstractConanProcess {
         super(EXE, args, new RV2122Params());
     }
 
-
-    @Override
-    public String getCommand() {
-        return this.getCommand(this.getProcessArgs(), false);
-    }
-
     @Override
     public String getName() {
         return "R_V2.12.2";

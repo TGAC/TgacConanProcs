@@ -19,7 +19,8 @@ package uk.ac.tgac.conan.process.ec.sickle;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.ebi.fgpt.conan.core.param.FilePair;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
+import uk.ac.tgac.conan.core.data.FilePair;
 
 import java.io.File;
 
@@ -43,14 +44,14 @@ public class SickleV11ProcessTest {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 1);
 
-        correctPeCommand = "sickle pe --qual-threshold=50  --length-threshold=50   --qual-type=sanger  --pe-file1=" + pwd + "1.fq  --pe-file2=" + pwd + "2.fq  " +
-                "--output-pe1=" + pwd + "1.out.fq  --output-pe2=" + pwd + "2.out.fq  --output-single=" + pwd + "se.out.fq";
+        correctPeCommand = "sickle pe --qual-threshold=50 --length-threshold=50 --discard-n --qual-type=sanger --pe-file1=" + pwd + "1.fq --pe-file2=" + pwd + "2.fq " +
+                "--output-pe1=" + pwd + "1.out.fq --output-pe2=" + pwd + "2.out.fq --output-single=" + pwd + "se.out.fq";
 
-        correctSeCommand = "sickle se --qual-threshold=50  --length-threshold=50   --qual-type=sanger  --fastq-file=" + pwd + "se.fq  --output-file=" + "se.out.fq";
+        correctSeCommand = "sickle se --qual-threshold=50 --length-threshold=50 --discard-n --qual-type=sanger --fastq-file=" + pwd + "se.fq --output-file=" + "se.out.fq";
     }
 
     @Test
-    public void testSickleV11Pe() {
+    public void testSickleV11Pe() throws ConanParameterException {
 
         SicklePeV11Args args = new SicklePeV11Args();
         args.setPairedEndInputFiles(new FilePair(new File("1.fq"), new File("2.fq")));
@@ -69,7 +70,7 @@ public class SickleV11ProcessTest {
     }
 
     @Test
-    public void testSickleV11Se() {
+    public void testSickleV11Se() throws ConanParameterException {
 
         SickleSeV11Args args = new SickleSeV11Args();
         args.setSingleEndInputFile(new File("se.fq"));

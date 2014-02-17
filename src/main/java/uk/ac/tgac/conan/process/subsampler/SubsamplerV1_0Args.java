@@ -17,11 +17,12 @@
  **/
 package uk.ac.tgac.conan.process.subsampler;
 
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
 
 import java.io.File;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SubsamplerV1_0Args implements ProcessArgs {
@@ -120,9 +121,9 @@ public class SubsamplerV1_0Args implements ProcessArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
+    public ParamMap getArgMap() {
 
-        Map<ConanParameter, String> pvp = new LinkedHashMap<ConanParameter, String>();
+        ParamMap pvp = new DefaultParamMap();
 
         if (this.append) {
             pvp.put(params.getAppend(), Boolean.toString(this.append));
@@ -160,38 +161,38 @@ public class SubsamplerV1_0Args implements ProcessArgs {
     }
 
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) {
+    public void setFromArgMap(ParamMap pvp) {
         for (Map.Entry<ConanParameter, String> entry : pvp.entrySet()) {
 
             if (!entry.getKey().validateParameterValue(entry.getValue())) {
                 throw new IllegalArgumentException("Parameter invalid: " + entry.getKey() + " : " + entry.getValue());
             }
 
-            String param = entry.getKey().getName();
+            ConanParameter param = entry.getKey();
             String val = entry.getValue();
 
-            if (param.equals(this.params.getAppend().getName())) {
+            if (param.equals(this.params.getAppend())) {
                 this.append = Boolean.parseBoolean(val);
             }
-            else if (param.equals(this.params.getInputFile().getName())) {
+            else if (param.equals(this.params.getInputFile())) {
                 this.inputFile = new File(val);
             }
-            else if (param.equals(this.params.getOutputFile().getName())) {
+            else if (param.equals(this.params.getOutputFile())) {
                 this.outputFile = new File(val);
             }
-            else if (param.equals(this.params.getLogFile().getName())) {
+            else if (param.equals(this.params.getLogFile())) {
                 this.logFile = new File(val);
             }
-            else if (param.equals(this.params.getMaxReadLength().getName())) {
+            else if (param.equals(this.params.getMaxReadLength())) {
                 this.maxReadLength = Integer.parseInt(val);
             }
-            else if (param.equals(this.params.getMaxNameLength().getName())) {
+            else if (param.equals(this.params.getMaxNameLength())) {
                 this.maxNameLength = Integer.parseInt(val);
             }
-            else if (param.equals(this.params.getProbability().getName())) {
+            else if (param.equals(this.params.getProbability())) {
                 this.probability = Double.parseDouble(val);
             }
-            else if (param.equals(this.params.getSeed().getName())) {
+            else if (param.equals(this.params.getSeed())) {
                 this.seed = Long.parseLong(val);
             }
             else {

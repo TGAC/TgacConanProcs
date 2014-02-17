@@ -18,13 +18,9 @@
 package uk.ac.tgac.conan.process.ec.sickle;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 import uk.ac.tgac.conan.process.ec.AbstractErrorCorrector;
-import uk.ac.tgac.conan.process.ec.ErrorCorrectorCreator;
 import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorArgs;
-
-import java.util.Map;
 
 /**
  * User: maplesod
@@ -86,29 +82,13 @@ public class SickleV11Process extends AbstractErrorCorrector {
         super(EXE,
                 args,
                 args.isPairedEnd() ? JobType.PAIRED_END.getParameters() : JobType.SINGLE_END.getParameters());
+
+        this.setMode(args.isPairedEnd()? JobType.PAIRED_END.getMode() : JobType.SINGLE_END.getMode());
     }
 
     @Override
     public AbstractErrorCorrectorArgs getArgs() {
         return (AbstractErrorCorrectorArgs) this.getProcessArgs();
-    }
-
-    @Override
-    public String getCommand() {
-
-        String mode = this.getArgs().isPairedEnd() ? JobType.PAIRED_END.getMode() : JobType.SINGLE_END.getMode();
-
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<ConanParameter, String> param : this.getArgs().getArgMap().entrySet()) {
-
-            if (!param.getKey().isBoolean()) {
-                sb.append(" ");
-                sb.append(param.getValue());
-            }
-            sb.append(" ");
-        }
-
-        return EXE + " " + mode + " " + sb.toString().trim();
     }
 
     @Override

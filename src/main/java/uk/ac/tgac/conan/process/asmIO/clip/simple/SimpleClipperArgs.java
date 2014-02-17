@@ -18,12 +18,13 @@
 package uk.ac.tgac.conan.process.asmIO.clip.simple;
 
 import org.kohsuke.MetaInfServices;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -68,8 +69,8 @@ public class SimpleClipperArgs extends AbstractAssemblyIOArgs {
     }
 
     @Override
-    public Map<ConanParameter, String> getArgMap() {
-        Map<ConanParameter, String> pvp = new HashMap<ConanParameter, String>();
+    public ParamMap getArgMap() {
+        ParamMap pvp = new DefaultParamMap();
 
         if (this.getInputFile() != null)
             pvp.put(params.getInputFile(), this.getInputFile().getAbsolutePath());
@@ -83,8 +84,9 @@ public class SimpleClipperArgs extends AbstractAssemblyIOArgs {
         return pvp;
     }
 
+
     @Override
-    public void setFromArgMap(Map<ConanParameter, String> pvp) {
+    public void setFromArgMap(ParamMap pvp) {
 
         for (Map.Entry<ConanParameter, String> entry : pvp.entrySet()) {
 
@@ -92,13 +94,13 @@ public class SimpleClipperArgs extends AbstractAssemblyIOArgs {
                 throw new IllegalArgumentException("Parameter invalid: " + entry.getKey() + " : " + entry.getValue());
             }
 
-            String param = entry.getKey().getName();
+            ConanParameter param = entry.getKey();
 
-            if (param.equals(this.params.getInputFile().getName())) {
+            if (param.equals(this.params.getInputFile())) {
                 this.setInputFile(new File(entry.getValue()));
-            } else if (param.equals(this.params.getOutputFile().getName())) {
+            } else if (param.equals(this.params.getOutputFile())) {
                 this.setOutputFile(new File(entry.getValue()));
-            } else if (param.equals(this.params.getMinLen().getName())) {
+            } else if (param.equals(this.params.getMinLen())) {
                 this.setMinLen(Integer.parseInt(entry.getValue()));
             } else {
                 throw new IllegalArgumentException("Unknown param found: " + param);

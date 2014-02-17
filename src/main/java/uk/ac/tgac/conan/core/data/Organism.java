@@ -31,14 +31,23 @@ public class Organism {
     private static final String KEY_ATTR_PLOIDY = "ploidy";
     private static final String KEY_ATTR_EST_GENOME_SIZE = "est_genome_size";
     private static final String KEY_ATTR_EST_GC_PERC = "est_gc_percentage";
+    private static final String KEY_ATTR_MIN_INTRON_SIZE = "min_intron_size";
+    private static final String KEY_ATTR_MAX_INTRON_SIZE = "max_intron_size";
+
+    public static final int DEFAULT_PLOIDY = 1; // Haploid
+    public static final int DEFAULT_MIN_INTRON_SIZE = 0;
+    public static final int DEFAULT_MAX_INTRON_SIZE = 1000000;
+
 
     private String name;
     private int ploidy;
     private int estGenomeSize;
     private double estGcPercentage;
+    private int minIntronSize;
+    private int maxIntronSize;
 
     public Organism() {
-        this("Something", 1, 0, 0.0);
+        this("Something", DEFAULT_PLOIDY, 0, 0.0);
     }
 
     public Organism(String name, int ploidy, int estGenomeSize, double estGcPercentage) {
@@ -46,6 +55,8 @@ public class Organism {
         this.ploidy = ploidy;
         this.estGenomeSize = estGenomeSize;
         this.estGcPercentage = estGcPercentage;
+        this.minIntronSize = DEFAULT_MIN_INTRON_SIZE;
+        this.maxIntronSize = DEFAULT_MAX_INTRON_SIZE;
     }
 
     public Organism(Element ele) {
@@ -54,11 +65,19 @@ public class Organism {
         this.name = XmlHelper.getTextValue(ele, KEY_ELEM_NAME);
 
         // Optional
-        this.ploidy = ele.hasAttribute(KEY_ATTR_PLOIDY) ? XmlHelper.getIntValue(ele, KEY_ATTR_PLOIDY) : 1;
+        this.ploidy = ele.hasAttribute(KEY_ATTR_PLOIDY) ? XmlHelper.getIntValue(ele, KEY_ATTR_PLOIDY) : DEFAULT_PLOIDY;
+
         this.estGenomeSize = ele.hasAttribute(KEY_ATTR_EST_GENOME_SIZE) ?
                 XmlHelper.getIntValue(ele, KEY_ATTR_EST_GENOME_SIZE) : 0;
+
         this.estGcPercentage = ele.hasAttribute(KEY_ATTR_EST_GC_PERC) ?
                 XmlHelper.getDoubleValue(ele, KEY_ATTR_EST_GC_PERC) : 0.0;
+
+        this.minIntronSize = ele.hasAttribute(KEY_ATTR_MIN_INTRON_SIZE) ?
+                XmlHelper.getIntValue(ele, KEY_ATTR_MIN_INTRON_SIZE) : DEFAULT_MIN_INTRON_SIZE;
+
+        this.maxIntronSize = ele.hasAttribute(KEY_ATTR_MAX_INTRON_SIZE) ?
+                XmlHelper.getIntValue(ele, KEY_ATTR_MAX_INTRON_SIZE) : DEFAULT_MAX_INTRON_SIZE;
     }
 
     public String getName() {
@@ -91,5 +110,21 @@ public class Organism {
 
     public void setEstGcPercentage(double estGcPercentage) {
         this.estGcPercentage = estGcPercentage;
+    }
+
+    public int getMinIntronSize() {
+        return minIntronSize;
+    }
+
+    public void setMinIntronSize(int minIntronSize) {
+        this.minIntronSize = minIntronSize;
+    }
+
+    public int getMaxIntronSize() {
+        return maxIntronSize;
+    }
+
+    public void setMaxIntronSize(int maxIntronSize) {
+        this.maxIntronSize = maxIntronSize;
     }
 }

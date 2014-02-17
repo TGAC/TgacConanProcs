@@ -20,7 +20,6 @@ package uk.ac.tgac.conan.process.ec.musket;
 import org.kohsuke.MetaInfServices;
 import uk.ac.tgac.conan.process.ec.AbstractErrorCorrector;
 import uk.ac.tgac.conan.process.ec.AbstractErrorCorrectorArgs;
-import uk.ac.tgac.conan.process.ec.ErrorCorrectorCreator;
 
 import java.io.File;
 
@@ -57,16 +56,6 @@ public class MusketV106Process extends AbstractErrorCorrector {
         this.addPostCommand("cd " + pwd);
     }
 
-    @Override
-    public String getCommand() {
-
-        String command = this.getCommand(this.getProcessArgs(), true, "-", " ");
-
-        // Musket doesn't expect a param name for the input files, so remove that if present.
-        String modCommand = command.replaceAll("-input", "");
-
-        return modCommand;
-    }
 
     @Override
     public AbstractErrorCorrector create(AbstractErrorCorrectorArgs args) {

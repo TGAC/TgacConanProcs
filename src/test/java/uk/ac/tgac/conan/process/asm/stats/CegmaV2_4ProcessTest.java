@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,7 +81,7 @@ public class CegmaV2_4ProcessTest {
     }
 
     @Test
-    public void testFullCommand() throws IOException {
+    public void testFullCommand() throws IOException, ConanParameterException {
 
         CegmaV2_4Process process = createProcess();
 

@@ -17,21 +17,17 @@
  **/
 package uk.ac.tgac.conan.process.asm.stats;
 
-import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
-import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
+import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
+import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
+import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
-import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * User: maplesod
  * Date: 22/04/13
  * Time: 18:30
  */
-public class CegmaV2_4Params implements ProcessParams {
+public class CegmaV2_4Params extends AbstractProcessParams {
 
     private ConanParameter genomeFile;
     private ConanParameter outputPrefix;
@@ -39,24 +35,29 @@ public class CegmaV2_4Params implements ProcessParams {
 
     public CegmaV2_4Params() {
 
-        this.genomeFile = new PathParameter(
-                "genome",
-                "fasta file of the query sequence",
-                false
-        );
+        this.genomeFile = new ParameterBuilder()
+                .shortName("g")
+                .longName("genome")
+                .description("fasta file of the query sequence")
+                .isOptional(false)
+                .argValidator(ArgValidator.PATH)
+                .create();
 
-        this.outputPrefix = new PathParameter(
-                "output",
-                "ouput file prefix",
-                false
-        );
+        this.outputPrefix = new ParameterBuilder()
+                .shortName("o")
+                .longName("output")
+                .description("ouput file prefix")
+                .isOptional(false)
+                .argValidator(ArgValidator.PATH)
+                .create();
 
-
-        this.threads = new NumericParameter(
-                "threads",
-                "Specify number of processor threads to use",
-                true
-        );
+        this.threads = new ParameterBuilder()
+                .shortName("T")
+                .longName("threads")
+                .description("Specify number of processor threads to use")
+                .isOptional(true)
+                .argValidator(ArgValidator.DIGITS)
+                .create();
 
     }
 
@@ -73,13 +74,11 @@ public class CegmaV2_4Params implements ProcessParams {
     }
 
     @Override
-    public List<ConanParameter> getConanParameters() {
-        return new ArrayList<ConanParameter>(Arrays.asList(
-                new ConanParameter[]{
-                        this.genomeFile,
-                        this.outputPrefix,
-                        this.threads
-                }
-        ));
+    public ConanParameter[] getConanParametersAsArray() {
+        return new ConanParameter[]{
+                this.genomeFile,
+                this.outputPrefix,
+                this.threads
+        };
     }
 }

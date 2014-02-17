@@ -20,12 +20,10 @@ package uk.ac.tgac.conan.process.asm.allpaths;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
-import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asm.AbstractAssembler;
 import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
-import uk.ac.tgac.conan.process.asm.Assembler;
 
 import java.io.File;
 import java.io.IOException;

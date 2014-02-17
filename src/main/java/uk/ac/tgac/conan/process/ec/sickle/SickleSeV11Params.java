@@ -17,7 +17,8 @@
  **/
 package uk.ac.tgac.conan.process.ec.sickle;
 
-import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
+import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
+import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 
 import java.util.Arrays;
@@ -37,15 +38,19 @@ public class SickleSeV11Params extends SickleV11Params {
 
         super();
 
-        this.inputFile = new PathParameter(
-                "fastq-file",
-                "Input fastq file (required)",
-                false);
+        this.inputFile = new ParameterBuilder()
+                .longName("fastq-file")
+                .description("Input fastq file (required)")
+                .isOptional(false)
+                .argValidator(ArgValidator.PATH)
+                .create();
 
-        this.outputFile = new PathParameter(
-                "output-file",
-                "Output trimmed fastq file (required)",
-                false);
+        this.outputFile = new ParameterBuilder()
+                .longName("output-file")
+                .description("Output trimmed fastq file (required)")
+                .isOptional(false)
+                .argValidator(ArgValidator.PATH)
+                .create();
     }
 
 

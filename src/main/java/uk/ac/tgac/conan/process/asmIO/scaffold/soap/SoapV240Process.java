@@ -5,9 +5,6 @@ import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOArgs;
 import uk.ac.tgac.conan.process.asmIO.AbstractAssemblyIOProcess;
-import uk.ac.tgac.conan.process.asmIO.degap.gapcloser.GapCloserV112Args;
-import uk.ac.tgac.conan.process.asmIO.scaffold.sspace.SSpaceBasicV2Args;
-import uk.ac.tgac.conan.process.asmIO.scaffold.sspace.SSpaceBasicV2Params;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,11 +40,6 @@ public class SoapV240Process extends AbstractAssemblyIOProcess {
     @Override
     public String getAssemblyIOProcessType() {
         return TYPE;
-    }
-
-    @Override
-    public String getCommand() {
-        return this.getCommand(this.getProcessArgs(), true, "-", " ");
     }
 
     @Override

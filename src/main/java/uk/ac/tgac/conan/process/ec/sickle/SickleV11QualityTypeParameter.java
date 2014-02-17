@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.ec.sickle;
 
+import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
 
 public class SickleV11QualityTypeParameter extends DefaultConanParameter {
@@ -31,7 +32,14 @@ public class SickleV11QualityTypeParameter extends DefaultConanParameter {
     }
 
     public SickleV11QualityTypeParameter() {
-        super("qual-type", "Type of quality values (illumina, phred, sanger) (required)", false, false, false);
+        super();
+        this.name = "qual-type";
+        this.longName = "qual-type";
+        this.description = "Type of quality values (illumina, phred, sanger) (required)";
+        this.isOption = true;
+        this.isOptional = false;
+        this.isFlag = false;
+        this.argValidator = ArgValidator.OFF;
     }
 
     @Override
