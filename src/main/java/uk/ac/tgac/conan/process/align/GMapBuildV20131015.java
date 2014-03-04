@@ -8,6 +8,8 @@ import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
+import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,12 +25,12 @@ public class GMapBuildV20131015 extends AbstractConanProcess {
 
     public static final String EXE = "gmap_build";
 
-    public GMapBuildV20131015() {
-        this(new Args());
+    public GMapBuildV20131015(ConanExecutorService conanExecutorService) {
+        this(conanExecutorService, new Args());
     }
 
-    public GMapBuildV20131015(Args args) {
-        super(EXE, args, new Params());
+    public GMapBuildV20131015(ConanExecutorService conanExecutorService, Args args) {
+        super(EXE, args, new Params(), conanExecutorService);
     }
 
     public Args getArgs() {
@@ -270,7 +272,7 @@ public class GMapBuildV20131015 extends AbstractConanProcess {
                 pvp.put(params.getMdFlag(), this.mdFlag.getAbsolutePath());
             }
 
-            if (this.compression != null) {
+            if (this.compression != null && !this.compression.isEmpty()) {
                 pvp.put(params.getCompression(), this.compression);
             }
 

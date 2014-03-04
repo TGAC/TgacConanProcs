@@ -1,13 +1,18 @@
 package uk.ac.tgac.conan.process.align;
 
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
+import uk.ac.ebi.fgpt.conan.model.param.CommandLineFormat;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
+import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,16 +28,21 @@ public class ExonerateV2_2 extends AbstractConanProcess {
 
     public static final String EXE = "exonerate";
 
-    public ExonerateV2_2() {
-        this(new Args());
+    public ExonerateV2_2(ConanExecutorService conanExecutorService) {
+        this(conanExecutorService, new Args());
     }
 
-    public ExonerateV2_2(Args args) {
-        super(EXE, args, new Params());
+    public ExonerateV2_2(ConanExecutorService conanExecutorService, Args args) {
+        super(EXE, args, new Params(), conanExecutorService);
     }
 
     public Args getArgs() {
         return (Args)this.getProcessArgs();
+    }
+
+    @Override
+    public String getCommand() throws ConanParameterException {
+        return super.getCommand(CommandLineFormat.POSIX_SPACE);
     }
 
 
@@ -42,6 +52,11 @@ public class ExonerateV2_2 extends AbstractConanProcess {
     }
 
     public static class Args extends AbstractProcessArgs {
+
+        public static final int DEFAULT_SCORE = 100;
+        public static final double DEFAULT_PERCENT = 0.0;
+        public static final int DEFAULT_MAX_INTRON = 200000;
+
 
         public static enum Model {
             UNGAPPED,
@@ -72,6 +87,7 @@ public class ExonerateV2_2 extends AbstractConanProcess {
 
         private File query;
         private File target;
+        private File output;
         private Model model;
         private int score;
         private double percent;
@@ -82,6 +98,7 @@ public class ExonerateV2_2 extends AbstractConanProcess {
         private boolean showQueryGff;
         private boolean showTargetGff;
         private String ryo;
+        private int maxIntron;
 
         public Args() {
 
@@ -89,9 +106,10 @@ public class ExonerateV2_2 extends AbstractConanProcess {
 
             this.query = null;
             this.target = null;
+            this.output = null;
             this.model = null;
-            this.score = 100;
-            this.percent = 0.0;
+            this.score = DEFAULT_SCORE;
+            this.percent = DEFAULT_PERCENT;
             this.showAlignment = true;
             this.showSugar = false;
             this.showCigar = false;
@@ -99,6 +117,7 @@ public class ExonerateV2_2 extends AbstractConanProcess {
             this.showQueryGff = false;
             this.showTargetGff = false;
             this.ryo = "";
+            this.maxIntron = DEFAULT_MAX_INTRON;
         }
 
         public Params getParams() {
@@ -119,6 +138,14 @@ public class ExonerateV2_2 extends AbstractConanProcess {
 
         public void setTarget(File target) {
             this.target = target;
+        }
+
+        public File getOutput() {
+            return output;
+        }
+
+        public void setOutput(File output) {
+            this.output = output;
         }
 
         public Model getModel() {
@@ -201,6 +228,14 @@ public class ExonerateV2_2 extends AbstractConanProcess {
             this.ryo = ryo;
         }
 
+        public int getMaxIntron() {
+            return maxIntron;
+        }
+
+        public void setMaxIntron(int maxIntron) {
+            this.maxIntron = maxIntron;
+        }
+
         @Override
         protected void setOptionFromMapEntry(ConanParameter param, String value) {
 
@@ -242,6 +277,9 @@ public class ExonerateV2_2 extends AbstractConanProcess {
             else if (param.equals(params.getRyo())) {
                 this.ryo = value;
             }
+            else if (param.equals(params.getMaxIntron())) {
+                this.maxIntron = Integer.parseInt(value);
+            }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
             }
@@ -250,6 +288,19 @@ public class ExonerateV2_2 extends AbstractConanProcess {
         @Override
         protected void setArgFromMapEntry(ConanParameter param, String value) {
 
+        }
+
+        @Override
+        protected void setRedirectFromMapEntry(ConanParameter param, String value) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getOutput())) {
+                this.output = new File(value);
+            }
+            else {
+                throw new IllegalArgumentException("Unknown param found: " + param);
+            }
         }
 
         @Override
@@ -272,15 +323,19 @@ public class ExonerateV2_2 extends AbstractConanProcess {
                 pvp.put(params.getTarget(), this.target.getAbsolutePath());
             }
 
+            if (this.output != null) {
+                pvp.put(params.getOutput(), this.output.getAbsolutePath());
+            }
+
             if (this.model != null) {
                 pvp.put(params.getModel(), this.model.toArgString());
             }
 
-            if (this.score != 100) {
+            if (this.score != DEFAULT_SCORE) {
                 pvp.put(params.getScore(), Integer.toString(this.score));
             }
 
-            if (this.percent != 0.0) {
+            if (this.percent != DEFAULT_PERCENT) {
                 pvp.put(params.getPercent(), Double.toString(this.percent));
             }
 
@@ -312,6 +367,10 @@ public class ExonerateV2_2 extends AbstractConanProcess {
                 pvp.put(params.getRyo(), this.ryo);
             }
 
+            if (this.maxIntron != DEFAULT_MAX_INTRON) {
+                pvp.put(params.getMaxIntron(), Integer.toString(this.maxIntron));
+            }
+
             return pvp;
         }
     }
@@ -320,6 +379,7 @@ public class ExonerateV2_2 extends AbstractConanProcess {
 
         private ConanParameter query;
         private ConanParameter target;
+        private ConanParameter output;
         private ConanParameter model;
         private ConanParameter score;
         private ConanParameter percent;
@@ -330,6 +390,7 @@ public class ExonerateV2_2 extends AbstractConanProcess {
         private ConanParameter showQueryGff;
         private ConanParameter showTargetGff;
         private ConanParameter ryo;
+        private ConanParameter maxIntron;
 
 
         public Params() {
@@ -349,6 +410,13 @@ public class ExonerateV2_2 extends AbstractConanProcess {
                     .shortName("t")
                     .longName("target")
                     .description("Specify target sequences as a fasta format file.  *** This argument is mandatory ***")
+                    .argValidator(ArgValidator.PATH)
+                    .create();
+
+            this.output = new ParameterBuilder()
+                    .type(DefaultConanParameter.ParamType.REDIRECTION)
+                    .isOptional(false)
+                    .description("Redirected output to file")
                     .argValidator(ArgValidator.PATH)
                     .create();
 
@@ -425,6 +493,12 @@ public class ExonerateV2_2 extends AbstractConanProcess {
                     .description("Roll-your-own printf-esque output format")
                     .argValidator(ArgValidator.OFF)
                     .create();
+
+            this.maxIntron = new ParameterBuilder()
+                    .longName("maxintron")
+                    .description("Maximum intron length")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
         }
 
 
@@ -434,6 +508,10 @@ public class ExonerateV2_2 extends AbstractConanProcess {
 
         public ConanParameter getTarget() {
             return target;
+        }
+
+        public ConanParameter getOutput() {
+            return output;
         }
 
         public ConanParameter getModel() {
@@ -476,11 +554,16 @@ public class ExonerateV2_2 extends AbstractConanProcess {
             return ryo;
         }
 
+        public ConanParameter getMaxIntron() {
+            return maxIntron;
+        }
+
         @Override
         public ConanParameter[] getConanParametersAsArray() {
             return new ConanParameter[] {
                     this.query,
                     this.target,
+                    this.output,
                     this.model,
                     this.score,
                     this.percent,
@@ -490,7 +573,8 @@ public class ExonerateV2_2 extends AbstractConanProcess {
                     this.showVulgar,
                     this.showQueryGff,
                     this.showTargetGff,
-                    this.ryo
+                    this.ryo,
+                    this.maxIntron
             };
         }
     }
