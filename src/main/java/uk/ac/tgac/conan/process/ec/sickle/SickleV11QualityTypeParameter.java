@@ -36,7 +36,7 @@ public class SickleV11QualityTypeParameter extends DefaultConanParameter {
         this.name = "qual-type";
         this.longName = "qual-type";
         this.description = "Type of quality values (illumina, phred, sanger) (required)";
-        this.isOption = true;
+        this.paramType = ParamType.OPTION;
         this.isOptional = false;
         this.isFlag = false;
         this.argValidator = ArgValidator.OFF;

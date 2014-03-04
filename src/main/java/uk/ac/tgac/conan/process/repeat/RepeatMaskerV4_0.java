@@ -10,6 +10,7 @@ import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 import uk.ac.tgac.conan.core.util.PathUtils;
 
@@ -29,14 +30,12 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
 
     public static final String EXE = "RepeatMasker";
 
-    public RepeatMaskerV4_0(ConanProcessService conanProcessService) {
-        this(conanProcessService, new Args());
+    public RepeatMaskerV4_0(ConanExecutorService conanExecutorService) {
+        this(conanExecutorService, new Args());
     }
 
-    public RepeatMaskerV4_0(ConanProcessService conanProcessService, Args args) {
-        super(EXE, args, new Params());
-
-        this.conanProcessService = conanProcessService;
+    public RepeatMaskerV4_0(ConanExecutorService conanExecutorService, Args args) {
+        super(EXE, args, new Params(), conanExecutorService);
     }
 
     public Args getArgs() {

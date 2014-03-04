@@ -29,7 +29,7 @@ public class AbyssV134InputLibsParameter extends DefaultConanParameter {
 
         this.name = "lib";
         this.description = "Required.  The input libraries to assemble with abyss.  Can include paired end and single end.  Will run paired end assemblies in parallel.";
-        this.isOption = true;
+        this.paramType = ParamType.OPTION;
         this.isOptional = false;
         this.isFlag = false;
         this.argValidator = ArgValidator.OFF;

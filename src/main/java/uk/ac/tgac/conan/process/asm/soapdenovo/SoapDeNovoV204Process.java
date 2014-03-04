@@ -38,7 +38,8 @@ public class SoapDeNovoV204Process extends AbstractAssembler {
     private static Logger log = LoggerFactory.getLogger(SoapDeNovoV204Process.class);
 
 
-    public static final String EXE = "SOAPdenovo-127mer all";
+    public static final String EXE = "SOAPdenovo-127mer";
+    public static final String MODE = "all";
     public static final String NAME = "SoapDeNovo_V2.04";
 
     public SoapDeNovoV204Process() {
@@ -47,6 +48,7 @@ public class SoapDeNovoV204Process extends AbstractAssembler {
 
     public SoapDeNovoV204Process(AbstractAssemblerArgs args) {
         super(EXE, args, new SoapDeNovoV204Params());
+        this.setMode(MODE);
     }
 
     protected SoapDeNovoV204Args getSoapDeNovoArgs() {
