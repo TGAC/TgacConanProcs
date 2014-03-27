@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.ac.tgac.conan</groupId>
-    <artifactId>tgac-conan</artifactId>
-    <version>0.8.1</version>
+    <artifactId>tgac-conan-process-wrappers</artifactId>
+    <version>0.8.2</version>
 
-    <name>TGAC conan procs</name>
-    <description>This project contains Conan procs which might be reused in many conan pipelines.</description>
+    <name>TGAC conan process wrappers</name>
+    <description>This project contains wrappers for external tools which might be reused in many conan pipelines.</description>
     <packaging>jar</packaging>
 
     <properties>

@@ -41,7 +41,7 @@ public class QuastV2_2Args implements ProcessArgs {
     private List<String> labels;
     private File outputDir;
     private int threads;
-    private int estimatedGenomeSize;
+    private long estimatedGenomeSize;
     private boolean scaffolds;
 
     public QuastV2_2Args() {
@@ -85,11 +85,11 @@ public class QuastV2_2Args implements ProcessArgs {
         this.threads = threads;
     }
 
-    public int getEstimatedGenomeSize() {
+    public long getEstimatedGenomeSize() {
         return estimatedGenomeSize;
     }
 
-    public void setEstimatedGenomeSize(int estimatedGenomeSize) {
+    public void setEstimatedGenomeSize(long estimatedGenomeSize) {
         this.estimatedGenomeSize = estimatedGenomeSize;
     }
 
@@ -126,7 +126,7 @@ public class QuastV2_2Args implements ProcessArgs {
         pvp.put(params.getThreads(), Integer.toString(this.threads));
 
         if (this.estimatedGenomeSize > -1) {
-            pvp.put(params.getEstimatedGenomeSize(), Integer.toString(this.estimatedGenomeSize));
+            pvp.put(params.getEstimatedGenomeSize(), Long.toString(this.estimatedGenomeSize));
         }
 
         if (this.scaffolds) {
