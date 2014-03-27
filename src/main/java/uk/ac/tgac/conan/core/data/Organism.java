@@ -41,7 +41,7 @@ public class Organism {
 
     private String name;
     private int ploidy;
-    private int estGenomeSize;
+    private long estGenomeSize;
     private double estGcPercentage;
     private int minIntronSize;
     private int maxIntronSize;
@@ -50,7 +50,7 @@ public class Organism {
         this("Something", DEFAULT_PLOIDY, 0, 0.0);
     }
 
-    public Organism(String name, int ploidy, int estGenomeSize, double estGcPercentage) {
+    public Organism(String name, int ploidy, long estGenomeSize, double estGcPercentage) {
         this.name = name;
         this.ploidy = ploidy;
         this.estGenomeSize = estGenomeSize;
@@ -96,11 +96,11 @@ public class Organism {
         this.ploidy = ploidy;
     }
 
-    public int getEstGenomeSize() {
+    public long getEstGenomeSize() {
         return estGenomeSize;
     }
 
-    public void setEstGenomeSize(int estGenomeSize) {
+    public void setEstGenomeSize(long estGenomeSize) {
         this.estGenomeSize = estGenomeSize;
     }
 

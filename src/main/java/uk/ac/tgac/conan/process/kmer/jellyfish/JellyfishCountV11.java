@@ -309,10 +309,12 @@ public class JellyfishCountV11 extends AbstractConanProcess {
                     "Length of mer",
                     false);
 
-            this.hashSize = new NumericParameter(
-                    "s",
-                    "Hash size",
-                    false);
+            this.hashSize = new ParameterBuilder()
+                    .isOptional(false)
+                    .shortName("s")
+                    .description("Hash size")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
 
             this.threads = new NumericParameter(
                     "t",

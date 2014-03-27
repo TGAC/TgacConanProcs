@@ -6,8 +6,9 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 
 /**
  * Created by maplesod on 03/02/14.
