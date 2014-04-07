@@ -25,7 +25,7 @@ import java.io.IOException;
  */
 public class SamtoolsViewV0_1 extends AbstractConanProcess {
 
-    public static final String EXE = "exonerate";
+    public static final String EXE = "samtools";
 
     public SamtoolsViewV0_1(ConanExecutorService conanExecutorService) {
         this(conanExecutorService, new Args());
@@ -33,6 +33,7 @@ public class SamtoolsViewV0_1 extends AbstractConanProcess {
 
     public SamtoolsViewV0_1(ConanExecutorService conanExecutorService, Args args) {
         super(EXE, args, new Params(), conanExecutorService);
+        this.setMode("view");
     }
 
     public Args getArgs() {
@@ -52,28 +53,85 @@ public class SamtoolsViewV0_1 extends AbstractConanProcess {
 
     public static class Args extends AbstractProcessArgs {
 
+        private File input;
+        private File output;
+
+        private boolean outputBam;
+        private boolean inputSam;
 
         public Args() {
 
             super(new Params());
 
+            this.input = null;
+            this.output = null;
+            this.outputBam = false;
+            this.inputSam = false;
         }
 
         public Params getParams() {
             return (Params)this.params;
         }
 
+        public File getInput() {
+            return input;
+        }
+
+        public void setInput(File input) {
+            this.input = input;
+        }
+
+        public File getOutput() {
+            return output;
+        }
+
+        public void setOutput(File output) {
+            this.output = output;
+        }
+
+        public boolean isOutputBam() {
+            return outputBam;
+        }
+
+        public void setOutputBam(boolean outputBam) {
+            this.outputBam = outputBam;
+        }
+
+        public boolean isInputSam() {
+            return inputSam;
+        }
+
+        public void setInputSam(boolean inputSam) {
+            this.inputSam = inputSam;
+        }
 
         @Override
         protected void setOptionFromMapEntry(ConanParameter param, String value) {
 
             Params params = this.getParams();
 
+            if (param.equals(params.getOutputBam())) {
+                this.outputBam = Boolean.parseBoolean(value);
+            }
+            else if (param.equals(params.getInputSam())) {
+                this.inputSam = Boolean.parseBoolean(value);
+            }
+            else {
+                throw new IllegalArgumentException("Unknown param found: " + param);
+            }
         }
 
         @Override
         protected void setArgFromMapEntry(ConanParameter param, String value) {
 
+            Params params = this.getParams();
+
+            if (param.equals(params.getInput())) {
+                this.input = new File(value);
+            }
+            else {
+                throw new IllegalArgumentException("Unknown param found: " + param);
+            }
         }
 
         @Override
@@ -81,6 +139,12 @@ public class SamtoolsViewV0_1 extends AbstractConanProcess {
 
             Params params = this.getParams();
 
+            if (param.equals(params.getOutput())) {
+                this.output = new File(value);
+            }
+            else {
+                throw new IllegalArgumentException("Unknown param found: " + param);
+            }
         }
 
         @Override
@@ -95,6 +159,22 @@ public class SamtoolsViewV0_1 extends AbstractConanProcess {
 
             ParamMap pvp = new DefaultParamMap();
 
+            if (this.input != null) {
+                pvp.put(params.getInput(), this.input.getAbsolutePath());
+            }
+
+            if (this.output != null) {
+                pvp.put(params.getOutput(), this.output.getAbsolutePath());
+            }
+
+            if (this.inputSam) {
+                pvp.put(params.getInputSam(), Boolean.toString(this.inputSam));
+            }
+
+            if (this.outputBam) {
+                pvp.put(params.getOutputBam(), Boolean.toString(this.outputBam));
+            }
+
             return pvp;
         }
     }
@@ -102,16 +182,67 @@ public class SamtoolsViewV0_1 extends AbstractConanProcess {
     public static class Params extends AbstractProcessParams {
 
 
+        private ConanParameter input;
+        private ConanParameter output;
+        private ConanParameter inputSam;
+        private ConanParameter outputBam;
+
         public Params() {
 
+            this.input = new ParameterBuilder()
+                    .isOption(false)
+                    .isOptional(false)
+                    .argIndex(0)
+                    .description("Input file to convert, either SAM or BAM format")
+                    .argValidator(ArgValidator.PATH)
+                    .create();
+
+            this.output = new ParameterBuilder()
+                    .isOption(false)
+                    .isOptional(false)
+                    .type(DefaultConanParameter.ParamType.REDIRECTION)
+                    .description("The output file, will be either BAM or SAM format depending on input and selected options")
+                    .argValidator(ArgValidator.PATH)
+                    .create();
+
+            this.inputSam = new ParameterBuilder()
+                    .isFlag(true)
+                    .shortName("S")
+                    .description("input is SAM")
+                    .argValidator(ArgValidator.OFF)
+                    .create();
+
+            this.outputBam = new ParameterBuilder()
+                    .isFlag(true)
+                    .shortName("b")
+                    .description("output BAM")
+                    .argValidator(ArgValidator.OFF)
+                    .create();
         }
 
+        public ConanParameter getInput() {
+            return input;
+        }
 
+        public ConanParameter getOutput() {
+            return output;
+        }
+
+        public ConanParameter getInputSam() {
+            return inputSam;
+        }
+
+        public ConanParameter getOutputBam() {
+            return outputBam;
+        }
 
         @Override
         public ConanParameter[] getConanParametersAsArray() {
             return new ConanParameter[] {
-
+                 input,
+                 output,
+                 inputSam,
+                 outputBam
             };
         }
     }
