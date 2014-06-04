@@ -33,9 +33,9 @@ import java.util.List;
  * Time: 15:49
  */
 @MetaInfServices(uk.ac.tgac.conan.process.asm.AssemblerArgsCreator.class)
-public class VelvetV11Args extends AbstractAssemblerArgs {
+public class VelvetV12Args extends AbstractAssemblerArgs {
 
-    private VelvetV11Params params = new VelvetV11Params();
+    private VelvetV12Params params = new VelvetV12Params();
 
     @Override
     public AbstractAssemblerArgs copy() {
@@ -44,7 +44,7 @@ public class VelvetV11Args extends AbstractAssemblerArgs {
 
     @Override
     public AbstractAssemblerArgs create(int k, List<Library> libs, File outputDir, int threads, int memory, int coverage, Organism organism) {
-        VelvetV11Args args = new VelvetV11Args();
+        VelvetV12Args args = new VelvetV12Args();
         args.setKmer(k);
         args.setOutputDir(outputDir);
         args.setLibraries(libs);
@@ -55,9 +55,11 @@ public class VelvetV11Args extends AbstractAssemblerArgs {
         return args;
     }
 
+
+
     @Override
     public String getName() {
-        return VelvetV11Process.NAME;  //To change body of implemented methods use File | Settings | File Templates.
+        return VelvetV12Process.NAME;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

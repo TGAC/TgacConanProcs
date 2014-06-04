@@ -17,10 +17,24 @@
  **/
 package uk.ac.tgac.conan.process.asm.velvet;
 
+import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
+import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
+
+import java.util.List;
+
 /**
  * User: maplesod
  * Date: 13/03/13
  * Time: 15:49
  */
-public class VelvetV11Params {
+public class VelvetV12Params implements ProcessParams {
+
+    private ConanParameter libs;
+    private ConanParameter kmer;
+    private ConanParameter coverageCutoff;
+
+    @Override
+    public List<ConanParameter> getConanParameters() {
+        return null;
+    }
 }
