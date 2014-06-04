@@ -337,16 +337,16 @@ public class TrinityV20130814 extends AbstractConanProcess {
             // Execute chunks in parallel if requested, otherwise run linearly
             if (args.getParallelJobs() > 1) {
 
-                this.chunkCommands(assembliesDir, new File(commandsFileName), jobPrefix);
+                this.chunkCommands(assembliesDir, new File(commandsFileName), jobPrefix, executionContext);
 
             } else {
 
                 String command = GG_CHUNK_EXECUTOR + " -i " + commandsFileName;
 
                 this.conanExecutorService.executeProcess(
-                        command,
+                        this.loadTrinity(executionContext) + command,
                         this.getLogDir(),
-                        jobPrefix + "-6-assemble",
+                        jobPrefix + "-5-assemble",
                         4,
                         2048,
                         false);
@@ -354,16 +354,23 @@ public class TrinityV20130814 extends AbstractConanProcess {
 
             // Collect results from each command and combine into a single transcript file and increment accessions as we go
 
+            File transcriptsFile = args.getOutputTranscripts();
             String combineCommand = "find " + assembliesDir.getAbsolutePath() + "/Dir_* -name \"*inity.fasta\" | " + GG_ACC_INC + " > " +
-                    args.getOutput().getAbsolutePath() + "/Trinity_GG.fasta";
+                    transcriptsFile.getAbsolutePath();
 
             this.conanExecutorService.executeProcess(
                     this.loadTrinity(executionContext) + combineCommand,
                     this.getLogDir(),
-                    jobPrefix + "-7-combine_transcripts",
+                    jobPrefix + "-6-combine_transcripts",
                     1,
                     100,
                     false);
+
+            // Check we have some output, otherwise chances are there was some problem assembling the sequences
+            if (transcriptsFile.length() == 0) {
+                throw new ProcessExecutionException(1, "No transcripts gathered.  Please check your trinity configuration and rerun.  " +
+                        "If alignments and prep have completed successfully then just rerun using the \"-st ASSEMBLE\" option to avoid unnecessary work.");
+            }
         }
 
         // Done.  Path to output transcripts can be accessed using the "args.getOutputTranscripts()" method.
@@ -371,7 +378,8 @@ public class TrinityV20130814 extends AbstractConanProcess {
 
 
 
-    private void chunkCommands(File assembliesDir, File commandsFile, String jobPrefix) throws IOException, ProcessExecutionException, InterruptedException {
+    private void chunkCommands(File assembliesDir, File commandsFile, String jobPrefix, ExecutionContext executionContext)
+            throws IOException, ProcessExecutionException, InterruptedException {
 
         Args args = this.getArgs();
 
@@ -419,9 +427,9 @@ public class TrinityV20130814 extends AbstractConanProcess {
             " 2>&1";
 
             ExecutionResult result = this.conanExecutorService.executeProcess(
-                    command,
+                    this.loadTrinity(executionContext) + command,
                     this.getLogDir(),
-                    jobPrefix + "-6-assemble-" + i++,
+                    jobPrefix + "-5-assemble-" + i++,
                     4,
                     2048,
                     true);
@@ -432,7 +440,7 @@ public class TrinityV20130814 extends AbstractConanProcess {
         // Wait for chunks to finish
         this.conanExecutorService.executeScheduledWait(
                 jobIds,
-                jobPrefix + "-6-assemble-*",
+                jobPrefix + "-5-assemble-*",
                 ExitStatus.Type.COMPLETED_ANY,
                 jobPrefix + "_chunk_assembly_wait",
                 this.getLogDir());
