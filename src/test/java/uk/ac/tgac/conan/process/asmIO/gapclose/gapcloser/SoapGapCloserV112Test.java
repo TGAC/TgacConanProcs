@@ -19,7 +19,7 @@ package uk.ac.tgac.conan.process.asmIO.gapclose.gapcloser;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.tgac.conan.process.asmIO.gapclose.GapCloserV112;
+import uk.ac.tgac.conan.process.asmIO.gapclose.SoapGapCloserV112;
 
 import java.io.File;
 
@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  * Date: 28/02/13
  * Time: 16:40
  */
-public class GapCloserV112Test {
+public class SoapGapCloserV112Test {
 
     private String pwd;
 
@@ -44,14 +44,14 @@ public class GapCloserV112Test {
     @Test
     public void testGapCloserV112() throws Exception {
 
-        GapCloserV112.Args args = new GapCloserV112.Args();
+        SoapGapCloserV112.Args args = new SoapGapCloserV112.Args();
         args.setOutputFile(new File("output.fa"));
         args.setInputFile(new File("input.fa"));
         args.setThreads(8);
         args.setOverlap(29);
         args.setLibraryFile(new File("libFile.cfg"));
 
-        GapCloserV112 gc = new GapCloserV112(null, args);
+        SoapGapCloserV112 gc = new SoapGapCloserV112(null, args);
 
         String command = gc.getCommand();
         String correct = "GapCloser " +

@@ -18,9 +18,11 @@
 package uk.ac.tgac.conan.process.asmIO;
 
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
+import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -67,6 +69,17 @@ public abstract class AbstractAssemblyEnhancer extends AbstractConanProcess impl
     }
 
     @Override
+    public File getOutputDir() {
+        return this.getAssemblyEnhancerArgs().getOutputDir();
+    }
+
+    @Override
+    public File getOutputFile() {
+        return this.getAssemblyEnhancerArgs().getOutputFile();
+    }
+
+    @Override
     public void setup() {
     }
+
 }

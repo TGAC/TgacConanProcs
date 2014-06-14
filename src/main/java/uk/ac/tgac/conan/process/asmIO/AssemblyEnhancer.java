@@ -17,16 +17,19 @@
  **/
 package uk.ac.tgac.conan.process.asmIO;
 
+import uk.ac.ebi.fgpt.conan.model.ConanProcess;
+import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.tgac.conan.process.asm.AssemblerArgs;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
  * All process args that relate to processes that modify an assembly should implement this interface.  It can be used by
  * SPI to automatically create an assembly IO process
  */
-public interface AssemblyEnhancer {
+public interface AssemblyEnhancer extends ConanProcess {
 
     /**
     * This can be used to do any setup work between running the constructor and executing the process.  For example,
@@ -55,4 +58,22 @@ public interface AssemblyEnhancer {
      * @return
      */
     AssemblyEnhancerType getAssemblyEnhancerType();
+
+    /**
+     * Returns the arguments associated to this assembly enhancer
+     * @return
+     */
+    AssemblyEnhancerArgs getAssemblyEnhancerArgs();
+
+    /**
+     * Gets the output directory for this assembly enhancer
+     * @return
+     */
+    File getOutputDir();
+
+    /**
+     * Gets the output file for this assembly enhancer
+     * @return
+     */
+    File getOutputFile();
 }

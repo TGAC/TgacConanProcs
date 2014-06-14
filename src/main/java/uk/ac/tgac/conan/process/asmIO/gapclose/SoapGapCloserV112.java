@@ -46,24 +46,24 @@ import java.util.List;
  * Time: 13:44
  */
 @MetaInfServices(AssemblyEnhancer.class)
-public class GapCloserV112 extends AbstractAssemblyEnhancer {
+public class SoapGapCloserV112 extends AbstractAssemblyEnhancer {
 
-    private static Logger log = LoggerFactory.getLogger(GapCloserV112.class);
+    private static Logger log = LoggerFactory.getLogger(SoapGapCloserV112.class);
 
 
     public static final String EXE = "GapCloser";
-    public static final String NAME = "GapCloser_V1.12";
+    public static final String NAME = "SOAP_GapCloser_V1.12";
     public static final AssemblyEnhancerType TYPE = AssemblyEnhancerType.GAP_CLOSER;
 
-    public GapCloserV112() {
+    public SoapGapCloserV112() {
         this(null);
     }
 
-    public GapCloserV112(ConanExecutorService ces) {
+    public SoapGapCloserV112(ConanExecutorService ces) {
         this(ces, new Args());
     }
 
-    public GapCloserV112(ConanExecutorService ces, Args args) {
+    public SoapGapCloserV112(ConanExecutorService ces, Args args) {
         super(NAME, TYPE, EXE, args, new Params(), ces);
     }
 
