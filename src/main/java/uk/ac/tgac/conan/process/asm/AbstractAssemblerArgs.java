@@ -17,7 +17,8 @@
  **/
 package uk.ac.tgac.conan.process.asm;
 
-import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
+import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
+import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.Organism;
 
@@ -25,10 +26,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractAssemblerArgs implements ProcessArgs, AssemblerArgsCreator {
+public abstract class AbstractAssemblerArgs extends AbstractProcessArgs implements AssemblerArgs {
 
     public static final int DEFAULT_KMER = 65;
 
+    private String name;
     private int kmer;
     private int coverageCutoff;
     private int memory;
@@ -40,20 +42,27 @@ public abstract class AbstractAssemblerArgs implements ProcessArgs, AssemblerArg
 
 
 
-    protected AbstractAssemblerArgs() {
+    protected AbstractAssemblerArgs(ProcessParams params, String name) {
+        super(params);
+        this.name = name;
         this.kmer = DEFAULT_KMER;
         this.coverageCutoff = 0;
         this.memory = 0;
         this.threads = 0;
         this.outputDir = new File(".");
-        this.libraries = new ArrayList<Library>();
+        this.libraries = new ArrayList<>();
         this.desiredCoverage = 75;
         this.organism = null;
     }
 
-    public abstract AbstractAssemblerArgs copy();
-
-
+    /**
+     * Gets the name of this process
+     * @return
+     */
+    @Override
+    public String getName() {
+        return this.name;
+    }
 
     public int getKmer() {
         return kmer;
@@ -117,5 +126,16 @@ public abstract class AbstractAssemblerArgs implements ProcessArgs, AssemblerArg
 
     public void setMemory(int memory) {
         this.memory = memory;
+    }
+
+    @Override
+    public void initialise(int k, List<Library> libs, File outputDir, int threads, int memory, int coverage, Organism organism) {
+        this.setKmer(k);
+        this.setOutputDir(outputDir);
+        this.setLibraries(libs);
+        this.setThreads(threads);
+        this.setMemory(memory);
+        this.setDesiredCoverage(coverage);
+        this.setOrganism(organism);
     }
 }

@@ -15,11 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package uk.ac.tgac.conan.process.asm;
+package uk.ac.tgac.conan.process.asmIO;
 
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.core.data.Organism;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,37 +26,29 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 /**
- * User: maplesod
- * Date: 30/01/13
- * Time: 18:49
+ * Uses ServiceLoader and SPI to create a specific AssemblyIOProcess based on a tool name and a set of common properties
  */
-public class AssemblerFactory {
+public class AssemblyEnhancerFactory {
 
-    public static Assembler create(String toolName) throws IOException {
-        return create(toolName, null);
-    }
 
-    public static Assembler create(String toolName, ConanExecutorService ces) throws IOException {
-        return create(toolName, 61, null, null, 1, 0, -1, null, ces);
-    }
-
-    public static Assembler create(String toolName,
-                                                   int k,
-                                                   List<Library> libs,
+    public static AssemblyEnhancer create(String toolName,
+                                                   File inputFile,
                                                    File outputDir,
+                                                   String outputPrefix,
+                                                   List<Library> libs,
                                                    int threads,
                                                    int memory,
-                                                   int coverage,
-                                                   Organism organism,
+                                                   String otherArgs,
                                                    ConanExecutorService ces) throws IOException {
 
-        AssemblerArgs actualArgs = null;
+        AssemblyEnhancerArgs actualArgs = null;
 
-        ServiceLoader<AssemblerArgs> argLoader = ServiceLoader.load(AssemblerArgs.class);
+        ServiceLoader<AssemblyEnhancerArgs> foundAsmIOArgsClasses = ServiceLoader.load(AssemblyEnhancerArgs.class);
 
-        for(AssemblerArgs args : argLoader) {
+        for(AssemblyEnhancerArgs args : foundAsmIOArgsClasses) {
+
             if (args.getName().equalsIgnoreCase(toolName.trim())) {
-                args.initialise(k, libs, outputDir, threads, memory, coverage, organism);
+                args.initialise(inputFile, outputDir, outputPrefix, libs, threads, memory, otherArgs);
                 actualArgs = args;
                 break;
             }
@@ -66,12 +57,13 @@ public class AssemblerFactory {
         if (actualArgs == null)
             return null;
 
-        ServiceLoader<Assembler> procLoader = ServiceLoader.load(Assembler.class);
+        ServiceLoader<AssemblyEnhancer> procLoader = ServiceLoader.load(AssemblyEnhancer.class);
 
-        for(Assembler assembler : procLoader) {
-            if (assembler.getName().equalsIgnoreCase(toolName.trim())) {
-                assembler.initialise(actualArgs, ces);
-                return assembler;
+        for(AssemblyEnhancer proc : procLoader) {
+
+            if (proc.getName().equalsIgnoreCase(toolName.trim())) {
+                proc.initialise(actualArgs, ces);
+                return proc;
             }
         }
 

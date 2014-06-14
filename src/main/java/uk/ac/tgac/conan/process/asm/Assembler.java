@@ -1,6 +1,7 @@
 package uk.ac.tgac.conan.process.asm;
 
 import uk.ac.ebi.fgpt.conan.model.ConanProcess;
+import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
@@ -73,6 +74,12 @@ public interface Assembler extends ConanProcess {
     boolean hasKParam();
 
     /**
+     * Returns true if this assembler optimises the K value itself
+     * @return
+     */
+    boolean isKOptimiser();
+
+    /**
      * Given a list of libraries, this method checks to see if this assembler can process them correctly
      * @param libraries List of libraries to check
      * @return True if this assembler thinks it can process the provided libraries, false otherwise
@@ -84,5 +91,14 @@ public interface Assembler extends ConanProcess {
      * it can be used to add any pre or post commands that are necessary for this assembler.
      * @throws IOException
      */
-    void initialise() throws IOException;
+    void setup() throws IOException;
+
+    /**
+     * This can be used to do any setup work between running the constructor and executing the process.  For example,
+     * it can be used to add any pre or post commands that are necessary for this assembler.
+     * @param
+     * @param
+     * @throws IOException
+     */
+    void initialise(AssemblerArgs args, ConanExecutorService ces) throws IOException;
 }
