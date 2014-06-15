@@ -54,6 +54,10 @@ public class AbyssV134 extends AbstractAssembler {
     public static final String EXE = "abyss-pe";
     public static final String NAME = "Abyss_V1.3.4";
 
+    public AbyssV134() {
+        this(null);
+    }
+
     public AbyssV134(ConanExecutorService ces) {
         this(ces, new Args());
     }
