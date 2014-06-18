@@ -24,6 +24,7 @@ public abstract class AbstractAssembler extends AbstractConanProcess implements 
         this.name = name;
     }
 
+    @Override
     public AbstractAssemblerArgs getAssemblerArgs() {
         return (AbstractAssemblerArgs)this.getProcessArgs();
     }

@@ -18,6 +18,9 @@
 package uk.ac.tgac.conan.process.asm.tools;
 
 import org.kohsuke.MetaInfServices;
+import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
+import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
@@ -26,12 +29,11 @@ import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.Organism;
 import uk.ac.tgac.conan.core.data.SeqFile;
-import uk.ac.tgac.conan.process.asm.AbstractAssembler;
-import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
+import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -92,73 +94,140 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
     }
 
     @Override
-    public boolean hasKParam() {
-        return true;
-    }
-
-    @Override
-    public boolean isKOptimiser() {
-        return true;
-    }
-
-
-    protected String createLibString(Library lib, boolean additionalLib) {
-
-        StringBuilder sb = new StringBuilder();
-
-        if (lib.getFile1Type() == SeqFile.FileType.FASTQ) {
-            sb.append("-fastq");
-        }
-        else if (lib.getFile1Type() == SeqFile.FileType.FASTA) {
-            sb.append("-fasta");
-        }
-        else {
-            throw new IllegalArgumentException("Unknown library file type: " + lib.getFile1Type());
-        }
-
-        sb.append(" ");
-
-        if (lib.getReadLength() < 1000) {
-            if (additionalLib) {
-                sb.append(lib.isPairedEnd() ? "-shortPaired" : "-short");
-            }
-            else {
-                sb.append(lib.isPairedEnd() ? "-shortPaired2" : "-short2");
-            }
-        }
-        else {
-            sb.append(lib.isPairedEnd() ? "-longPaired" : "-long");
-        }
-
-        sb.append(" ");
-
-        if (lib.isPairedEnd()) {
-            if (lib.getFiles().size() == 1) {
-                sb.append("-interleaved");
-            } else if (lib.getFiles().size() == 2) {
-                sb.append("-separate");
-            }
-            else {
-                throw new IllegalArgumentException("Incorrectly constructed library");
-            }
-        }
-
-        sb.append(" ");
-
-        for(File f : lib.getFiles()) {
-            sb.append(f.getAbsolutePath()).append(" ");
-        }
-
-        return sb.toString();
+    public AssemblerType getType() {
+        return AssemblerType.DE_BRUIJN_OPTIMISER;
     }
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends AbstractAssemblerArgs {
+    public static class Args extends DeBruijnOptimiserAssemblerArgs {
+
+        public static final String DEFAULT_OUTPUT_PREFIX = "out";
+        public static final int DEFAULT_INITIAL_K = 32;
+        public static final int DEFAULT_K_STEP = 10;
+        public static final int DEFAULT_INITIAL_K_CUTOFF = 0;
+        public static final int DEFAULT_MIN_K_COVERAGE = 2;
+        public static final double DEFAULT_K_EXT_LEVEL = 10.0;
+        public static final double DEFAULT_MAX_DIFF_BUBBLE_CRUSH = 0.1;
+        public static final double DEFAULT_MAX_DIFF_BRANCH_CUT = 0.5;
+        public static final int DEFAULT_THREADS = 1;
+        public static final int DEFAULT_MEM_LIMIT = 16;
+
+
+        private String outputPrefix;
+        private List<Library> input;
+        private int initialK;
+        private int kStep;
+        private int initialKCutoff;
+        private int minKCoverage;
+        private double kExtensionLevel;
+        private double maxDiffBubbleCrush;
+        private double maxDiffBranchCut;
+        private int threads;
+        private int memoryLimit;
 
         public Args() {
             super(new Params(), NAME);
+
+            this.outputPrefix = DEFAULT_OUTPUT_PREFIX;
+            this.input = new ArrayList<>();
+            this.initialK = DEFAULT_INITIAL_K;
+            this.kStep = DEFAULT_K_STEP;
+            this.initialKCutoff = DEFAULT_INITIAL_K_CUTOFF;
+            this.minKCoverage = DEFAULT_MIN_K_COVERAGE;
+            this.kExtensionLevel = DEFAULT_K_EXT_LEVEL;
+            this.maxDiffBubbleCrush = DEFAULT_MAX_DIFF_BUBBLE_CRUSH;
+            this.maxDiffBranchCut = DEFAULT_MAX_DIFF_BRANCH_CUT;
+            this.threads = DEFAULT_THREADS;
+            this.memoryLimit = DEFAULT_MEM_LIMIT;
         }
 
+        public String getOutputPrefix() {
+            return outputPrefix;
+        }
+
+        public void setOutputPrefix(String outputPrefix) {
+            this.outputPrefix = outputPrefix;
+        }
+
+        public List<Library> getInput() {
+            return input;
+        }
+
+        public void setInput(List<Library> input) {
+            this.input = input;
+        }
+
+        public int getInitialK() {
+            return initialK;
+        }
+
+        public void setInitialK(int initialK) {
+            this.initialK = initialK;
+        }
+
+        public int getkStep() {
+            return kStep;
+        }
+
+        public void setkStep(int kStep) {
+            this.kStep = kStep;
+        }
+
+        public int getInitialKCutoff() {
+            return initialKCutoff;
+        }
+
+        public void setInitialKCutoff(int initialKCutoff) {
+            this.initialKCutoff = initialKCutoff;
+        }
+
+        public int getMinKCoverage() {
+            return minKCoverage;
+        }
+
+        public void setMinKCoverage(int minKCoverage) {
+            this.minKCoverage = minKCoverage;
+        }
+
+        public double getkExtensionLevel() {
+            return kExtensionLevel;
+        }
+
+        public void setkExtensionLevel(double kExtensionLevel) {
+            this.kExtensionLevel = kExtensionLevel;
+        }
+
+        public double getMaxDiffBubbleCrush() {
+            return maxDiffBubbleCrush;
+        }
+
+        public void setMaxDiffBubbleCrush(double maxDiffBubbleCrush) {
+            this.maxDiffBubbleCrush = maxDiffBubbleCrush;
+        }
+
+        public double getMaxDiffBranchCut() {
+            return maxDiffBranchCut;
+        }
+
+        public void setMaxDiffBranchCut(double maxDiffBranchCut) {
+            this.maxDiffBranchCut = maxDiffBranchCut;
+        }
+
+        public int getThreads() {
+            return threads;
+        }
+
+        public void setThreads(int threads) {
+            this.threads = threads;
+        }
+
+        public int getMemoryLimit() {
+            return memoryLimit;
+        }
+
+        public void setMemoryLimit(int memoryLimit) {
+            this.memoryLimit = memoryLimit;
+        }
 
         @Override
         public void parse(String args) throws IOException {
@@ -167,12 +236,55 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
 
         @Override
         public ParamMap getArgMap() {
-            return null;
+
+            Params params = (Params)this.params;
+            ParamMap pvp = new DefaultParamMap();
+
+            if (this.outputPrefix != null) {
+                pvp.put(params.getOutputPrefix(), this.outputPrefix);
+            }
+
+            return pvp;
         }
 
         @Override
         protected void setOptionFromMapEntry(ConanParameter param, String value) {
 
+            Params params = (Params)this.params;
+
+            if (param.equals(params.getOutputPrefix())) {
+                this.outputPrefix = value;
+            }
+            else if (param.equals(params.getInitialK())) {
+                this.setInitialK(Integer.parseInt(value));
+            }
+            else if (param.equals(params.getkStep())) {
+                this.setkStep(Integer.parseInt(value));
+            }
+            else if (param.equals(params.getThreads())) {
+                this.setThreads(Integer.parseInt(value));
+            }
+            else if (param.equals(params.getMemoryLimit())) {
+                this.setMemoryLimit(Integer.parseInt(value));
+            }
+            else if (param.equals(params.getInitialKCutoff())) {
+                this.setInitialKCutoff(Integer.parseInt(value));
+            }
+            else if (param.equals(params.getMinKCoverage())) {
+                this.setMinKCoverage(Integer.parseInt(value));
+            }
+            else if (param.equals(params.getkExtensionLevel())) {
+                this.setkExtensionLevel(Double.parseDouble(value));
+            }
+            else if (param.equals(params.getMaxDiffBubbleCrush())) {
+                this.setMaxDiffBubbleCrush(Double.parseDouble(value));
+            }
+            else if (param.equals(params.getMaxDiffBranchCut())) {
+                this.setMaxDiffBranchCut(Double.parseDouble(value));
+            }
+            else {
+                throw new IllegalArgumentException("Unknown param found: " + param);
+            }
         }
 
         @Override
@@ -188,14 +300,148 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
 
     public static class Params extends AbstractProcessParams {
 
+        private ConanParameter outputPrefix;
+        private ConanParameter files;
+        private ConanParameter initialK;
+        private ConanParameter kStep;
+        private ConanParameter initialKCutoff;
+        private ConanParameter minKCoverage;
+        private ConanParameter kExtensionLevel;
+        private ConanParameter maxDiffBubbleCrush;
+        private ConanParameter maxDiffBranchCut;
+        private ConanParameter threads;
+        private ConanParameter memoryLimit;
 
         public Params() {
+
             super();
+
+            this.outputPrefix = new ParameterBuilder()
+                    .shortName("o")
+                    .description("prefix of output files (default out, length <= 200)")
+                    .create();
+
+            this.files = new ParameterBuilder()
+                    .shortName("f")
+                    .description("reads file (fasta or fastq, number <= 100)")
+                    .argValidator(ArgValidator.DEFAULT)
+                    .create();
+
+            this.initialK = new ParameterBuilder()
+                    .shortName("k")
+                    .description("initial k-mer size (default 32)")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.kStep = new ParameterBuilder()
+                    .shortName("s")
+                    .description("step size of k-mer extension (>= 1, default 10)")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.initialKCutoff = new ParameterBuilder()
+                    .shortName("n")
+                    .description("initial k-mer coverage cutoff (default 0, 0 means auto)")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.minKCoverage = new ParameterBuilder()
+                    .shortName("c")
+                    .description("minimun k-mer coverage (default 2)")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.kExtensionLevel = new ParameterBuilder()
+                    .shortName("a")
+                    .description("k-mer extension safety level (default 10.0)")
+                    .argValidator(ArgValidator.FLOAT)
+                    .create();
+
+            this.maxDiffBubbleCrush = new ParameterBuilder()
+                    .shortName("u")
+                    .description("maximum difference for bubble crush (identity, default 0.1)")
+                    .argValidator(ArgValidator.FLOAT)
+                    .create();
+
+            this.maxDiffBranchCut = new ParameterBuilder()
+                    .shortName("d")
+                    .description("maximum difference for branch cutting (coverage ratio, default 0.5)")
+                    .argValidator(ArgValidator.FLOAT)
+                    .create();
+
+            this.threads = new ParameterBuilder()
+                    .shortName("t")
+                    .description("number of threads (<= 100, default 1)")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.memoryLimit = new ParameterBuilder()
+                    .shortName("m")
+                    .description("memory limit for making kmer distribution (GB, >=1, default 16)")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+        }
+
+        public ConanParameter getOutputPrefix() {
+            return outputPrefix;
+        }
+
+        public ConanParameter getFiles() {
+            return files;
+        }
+
+        public ConanParameter getInitialK() {
+            return initialK;
+        }
+
+        public ConanParameter getkStep() {
+            return kStep;
+        }
+
+        public ConanParameter getInitialKCutoff() {
+            return initialKCutoff;
+        }
+
+        public ConanParameter getMinKCoverage() {
+            return minKCoverage;
+        }
+
+        public ConanParameter getkExtensionLevel() {
+            return kExtensionLevel;
+        }
+
+        public ConanParameter getMaxDiffBubbleCrush() {
+            return maxDiffBubbleCrush;
+        }
+
+        public ConanParameter getMaxDiffBranchCut() {
+            return maxDiffBranchCut;
+        }
+
+        public ConanParameter getThreads() {
+            return threads;
+        }
+
+        public ConanParameter getMemoryLimit() {
+            return memoryLimit;
         }
 
         @Override
         public ConanParameter[] getConanParametersAsArray() {
-            return new ConanParameter[0];
+
+            return new ConanParameter[] {
+                    this.outputPrefix,
+                    this.files,
+                    this.initialK,
+                    this.kStep,
+                    this.initialKCutoff,
+                    this.minKCoverage,
+                    this.kExtensionLevel,
+                    this.maxDiffBubbleCrush,
+                    this.maxDiffBranchCut,
+                    this.threads,
+                    this.memoryLimit
+            };
         }
     }
 }

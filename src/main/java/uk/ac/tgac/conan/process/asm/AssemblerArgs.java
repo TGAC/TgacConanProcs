@@ -21,13 +21,18 @@ public interface AssemblerArgs extends ProcessArgs {
      *
      * @return
      */
-    void initialise(int k,
+    void initialise(
                              List<Library> libs,
                              File outputDir,
                              int threads,
                              int memory,
-                             int coverage,
                              Organism organism);
+
+    /**
+     * The type of assembler supported by these args.
+     * @return
+     */
+    AssemblerType getType();
 
     /**
      * Gets the name of this process

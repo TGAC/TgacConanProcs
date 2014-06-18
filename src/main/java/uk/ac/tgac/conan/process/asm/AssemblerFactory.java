@@ -57,7 +57,7 @@ public class AssemblerFactory {
 
         for(AssemblerArgs args : argLoader) {
             if (args.getName().equalsIgnoreCase(toolName.trim())) {
-                args.initialise(k, libs, outputDir, threads, memory, coverage, organism);
+                args.initialise(libs, outputDir, threads, memory, organism);
                 actualArgs = args;
                 break;
             }

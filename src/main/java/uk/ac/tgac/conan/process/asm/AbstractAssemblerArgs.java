@@ -28,30 +28,21 @@ import java.util.List;
 
 public abstract class AbstractAssemblerArgs extends AbstractProcessArgs implements AssemblerArgs {
 
-    public static final int DEFAULT_KMER = 65;
-
     private String name;
-    private int kmer;
-    private int coverageCutoff;
     private int memory;
     private int threads;
     private File outputDir;
     private List<Library> libraries;
     private Organism organism;
-    private int desiredCoverage;
-
 
 
     protected AbstractAssemblerArgs(ProcessParams params, String name) {
         super(params);
         this.name = name;
-        this.kmer = DEFAULT_KMER;
-        this.coverageCutoff = 0;
         this.memory = 0;
         this.threads = 0;
         this.outputDir = new File(".");
         this.libraries = new ArrayList<>();
-        this.desiredCoverage = 75;
         this.organism = null;
     }
 
@@ -62,22 +53,6 @@ public abstract class AbstractAssemblerArgs extends AbstractProcessArgs implemen
     @Override
     public String getName() {
         return this.name;
-    }
-
-    public int getKmer() {
-        return kmer;
-    }
-
-    public void setKmer(int kmer) {
-        this.kmer = kmer;
-    }
-
-    public int getCoverageCutoff() {
-        return coverageCutoff;
-    }
-
-    public void setCoverageCutoff(int coverageCutoff) {
-        this.coverageCutoff = coverageCutoff;
     }
 
     public int getThreads() {
@@ -104,14 +79,6 @@ public abstract class AbstractAssemblerArgs extends AbstractProcessArgs implemen
         this.libraries = libraries;
     }
 
-    public int getDesiredCoverage() {
-        return desiredCoverage;
-    }
-
-    public void setDesiredCoverage(int desiredCoverage) {
-        this.desiredCoverage = desiredCoverage;
-    }
-
     public Organism getOrganism() {
         return organism;
     }
@@ -129,13 +96,11 @@ public abstract class AbstractAssemblerArgs extends AbstractProcessArgs implemen
     }
 
     @Override
-    public void initialise(int k, List<Library> libs, File outputDir, int threads, int memory, int coverage, Organism organism) {
-        this.setKmer(k);
+    public void initialise(List<Library> libs, File outputDir, int threads, int memory, Organism organism) {
         this.setOutputDir(outputDir);
         this.setLibraries(libs);
         this.setThreads(threads);
         this.setMemory(memory);
-        this.setDesiredCoverage(coverage);
         this.setOrganism(organism);
     }
 }

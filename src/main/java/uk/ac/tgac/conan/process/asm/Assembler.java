@@ -17,7 +17,7 @@ public interface Assembler extends ConanProcess {
      * Return the process args as an AbstractAssemblerArgs type (all Assemblers should support AbstractAssemblerArgs).
      * @return
      */
-    AbstractAssemblerArgs getArgs();
+    AbstractAssemblerArgs getAssemblerArgs();
 
     /**
      * Whether this assembler produces unitigs or not
@@ -68,16 +68,10 @@ public interface Assembler extends ConanProcess {
     boolean doesSubsampling();
 
     /**
-     * Returns true if this assembler allows the user to modify the 'K' i.e. "kmer" length
+     * Returns the type of assembler that this is
      * @return
      */
-    boolean hasKParam();
-
-    /**
-     * Returns true if this assembler optimises the K value itself
-     * @return
-     */
-    boolean isKOptimiser();
+    AssemblerType getType();
 
     /**
      * Given a list of libraries, this method checks to see if this assembler can process them correctly

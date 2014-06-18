@@ -25,9 +25,7 @@ import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.Organism;
 import uk.ac.tgac.conan.core.data.SeqFile;
-import uk.ac.tgac.conan.process.asm.AbstractAssembler;
-import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
+import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -89,13 +87,8 @@ public class VelvetV12 extends AbstractAssembler {
     }
 
     @Override
-    public boolean hasKParam() {
-        return true;
-    }
-
-    @Override
-    public boolean isKOptimiser() {
-        return true;
+    public AssemblerType getType() {
+        return AssemblerType.DE_BRUIJN;
     }
 
     protected String createLibString(Library lib, boolean additionalLib) {
@@ -159,7 +152,7 @@ public class VelvetV12 extends AbstractAssembler {
             libString.append(this.createLibString(args.getLibraries().get(i), i == 0)).append(" ");
         }
 
-        final String velvetHCmd = "velveth-127 " + args.getOutputDir().getAbsolutePath() + " " + args.getKmer() + " -create_binary " + libString.toString();
+        final String velvetHCmd = "velveth-127 " + args.getOutputDir().getAbsolutePath() + " " + args.getK() + " -create_binary " + libString.toString();
 
         StringBuilder insString = new StringBuilder();
 
@@ -173,7 +166,7 @@ public class VelvetV12 extends AbstractAssembler {
     }
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends AbstractAssemblerArgs {
+    public static class Args extends DeBruijnAssemblerArgs {
 
         public Args() {
             super(new Params(), NAME);

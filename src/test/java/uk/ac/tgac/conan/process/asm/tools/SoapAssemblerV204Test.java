@@ -77,7 +77,7 @@ public class SoapAssemblerV204Test {
 
         SoapAssemblerV204.Args args = new SoapAssemblerV204.Args();
         args.setConfigFile(libFile);
-        args.setKmer(63);
+        args.setK(63);
         args.setOutputPrefix("OUTPUT_FILE");
         args.setThreads(32);
         args.setOutputDir(temp.getRoot());

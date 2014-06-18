@@ -25,9 +25,7 @@ import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.Organism;
 import uk.ac.tgac.conan.core.data.SeqFile;
-import uk.ac.tgac.conan.process.asm.AbstractAssembler;
-import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
+import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,14 +88,10 @@ public class SpadesV31 extends AbstractAssembler {
     }
 
     @Override
-    public boolean hasKParam() {
-        return true;
+    public AssemblerType getType() {
+        return AssemblerType.DE_BRUIJN_OPTIMISER;
     }
 
-    @Override
-    public boolean isKOptimiser() {
-        return true;
-    }
 
     protected String createLibString(Library lib, boolean additionalLib) {
 
@@ -149,32 +143,9 @@ public class SpadesV31 extends AbstractAssembler {
         return sb.toString();
     }
 
-    @Override
-    public String getCommand() {
-
-        Args args = (Args)this.getArgs();
-
-        StringBuilder libString = new StringBuilder();
-
-        for(int i = 0; i < args.getLibraries().size(); i++) {
-            libString.append(this.createLibString(args.getLibraries().get(i), i == 0)).append(" ");
-        }
-
-        final String velvetHCmd = "velveth-127 " + args.getOutputDir().getAbsolutePath() + " " + args.getKmer() + " -create_binary " + libString.toString();
-
-        StringBuilder insString = new StringBuilder();
-
-        for(int i = 0; i < args.getLibraries().size(); i++) {
-            insString.append("-ins_length" + (i != 0 ? i : "") + " " + args.getLibraries().get(i).getAverageInsertSize()).append(" ");
-        }
-
-        final String velvetGCmd = "velvetg-127 " + args.getOutputDir().getAbsolutePath() + " -cov_cutoff auto " + insString.toString() + " -exp_cov auto";
-
-        return velvetHCmd + "; " + velvetGCmd;
-    }
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends AbstractAssemblerArgs {
+    public static class Args extends DeBruijnOptimiserAssemblerArgs {
 
         public Args() {
             super(new Params(), NAME);

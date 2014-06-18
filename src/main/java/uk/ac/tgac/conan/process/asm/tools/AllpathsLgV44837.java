@@ -26,9 +26,7 @@ import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.Organism;
-import uk.ac.tgac.conan.process.asm.AbstractAssembler;
-import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
+import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -134,19 +132,9 @@ public class AllpathsLgV44837 extends AbstractAssembler {
     }
 
 
-    /**
-     * Actually ALLPATHS does have a K param but apparently we shouldn't mess about with it according to the ALLPATHs
-     * documentation
-     * @return
-     */
     @Override
-    public boolean hasKParam() {
-        return false;
-    }
-
-    @Override
-    public boolean isKOptimiser() {
-        return false;
+    public AssemblerType getType() {
+        return AssemblerType.DE_BRUIJN_FIXED;
     }
 
 
@@ -497,11 +485,13 @@ public class AllpathsLgV44837 extends AbstractAssembler {
 
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends AbstractAssemblerArgs {
+    public static class Args extends DeBrujinFixedAssemblerArgs implements Subsampler {
 
+        private int desiredCoverage;
 
         public Args() {
             super(new Params(), NAME);
+            desiredCoverage = -1;
         }
 
 
@@ -528,6 +518,15 @@ public class AllpathsLgV44837 extends AbstractAssembler {
         @Override
         public void setFromArgMap(ParamMap pvp) {
             //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public void setDesiredCoverage(int desiredCoverage) {
+            this.desiredCoverage = desiredCoverage;
+        }
+
+        @Override
+        public int getDesiredCoverage() {
+            return desiredCoverage;
         }
     }
 

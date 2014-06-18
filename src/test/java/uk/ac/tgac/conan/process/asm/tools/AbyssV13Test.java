@@ -27,7 +27,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.asm.tools.AbyssV134;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ import static org.junit.Assert.assertTrue;
  * Time: 11:17
  */
 @RunWith(MockitoJUnitRunner.class)
-public class AbyssV134Test {
+public class AbyssV13Test {
 
     private String pwd;
 
@@ -65,6 +64,9 @@ public class AbyssV134Test {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
+        /*correctCommand = "abyss-pe --directory=" + pwd + " name=OUTPUT_FILE k=61 np=16 lib='peLib1' " +
+                "peLib1='" + pwd + "/tools/mass/LIB1896_R1.r95.fastq " + pwd + "/tools/mass/LIB1896_R2.r95.fastq'";*/
+
         correctCommand = "abyss-pe name=OUTPUT_FILE k=61 np=16 lib='peLib1' " +
                 "peLib1='" + pwd + "/tools/mass/LIB1896_R1.r95.fastq " + pwd + "/tools/mass/LIB1896_R2.r95.fastq'";
 
@@ -87,23 +89,23 @@ public class AbyssV134Test {
         return libs;
     }
 
-    private AbyssV134 createProcess() {
+    private AbyssV13 createProcess() {
         List<Library> libs = this.createLocalPETestLibrary();
 
-        AbyssV134.Args args = new AbyssV134.Args();
+        AbyssV13.Args args = new AbyssV13.Args();
         args.setLibraries(libs);
-        args.setKmer(61);
+        args.setK(61);
         args.setOutputName("OUTPUT_FILE");
         args.setThreads(16);
         args.setOutputDir(temp.getRoot());
 
-        return new AbyssV134(null, args);
+        return new AbyssV13(null, args);
     }
 
     @Test
     public void testAbyssV134Command() throws Exception {
 
-        AbyssV134 abyss = createProcess();
+        AbyssV13 abyss = createProcess();
 
         String command = abyss.getCommand();
 
@@ -116,7 +118,7 @@ public class AbyssV134Test {
     @Test
     public void testAbyssV134FullCommand() throws Exception {
 
-        AbyssV134 abyss = createProcess();
+        AbyssV13 abyss = createProcess();
         abyss.setup();
 
         String fullCommand = abyss.getFullCommand();

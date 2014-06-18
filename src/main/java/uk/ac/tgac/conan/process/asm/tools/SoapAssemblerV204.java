@@ -33,9 +33,7 @@ import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.ebi.fgpt.conan.util.StringJoiner;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
-import uk.ac.tgac.conan.process.asm.AbstractAssembler;
-import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
+import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -93,13 +91,8 @@ public class SoapAssemblerV204 extends AbstractAssembler {
     }
 
     @Override
-    public boolean hasKParam() {
-        return true;
-    }
-
-    @Override
-    public boolean isKOptimiser() {
-        return false;
+    public AssemblerType getType() {
+        return AssemblerType.DE_BRUIJN;
     }
 
     @Override
@@ -119,7 +112,7 @@ public class SoapAssemblerV204 extends AbstractAssembler {
         return EXE + " pregraph" +
                 " -s " + args.getConfigFile() +
                 " -o graph" +
-                " -K " + args.getKmer() +
+                " -K " + args.getK() +
                 " -p " + args.getThreads() +
                 " -a " + args.getMemory() +
                 (args.resolveRepeats ? " -R" : "") +
@@ -184,7 +177,7 @@ public class SoapAssemblerV204 extends AbstractAssembler {
     }
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends AbstractAssemblerArgs {
+    public static class Args extends DeBruijnAssemblerArgs {
 
         private static Logger log = LoggerFactory.getLogger(SoapAssemblerV204.class);
 
@@ -202,13 +195,7 @@ public class SoapAssemblerV204 extends AbstractAssembler {
             this.resolveRepeats = false;
             this.fillGaps = false;
             this.configFile = null;
-
-            StringJoiner nameJoiner = new StringJoiner("-");
-            nameJoiner.add("soap-2.04");
-            nameJoiner.add(this.getKmer() != 0 && this.getKmer() != DEFAULT_KMER, "", "k" + Integer.toString(this.getKmer()));
-            nameJoiner.add(this.getCoverageCutoff() != 0, "", "cc" + Integer.toString(this.getCoverageCutoff()));
-
-            this.outputPrefix = nameJoiner.toString();
+            this.outputPrefix = "soap_out";
         }
 
 
@@ -267,8 +254,8 @@ public class SoapAssemblerV204 extends AbstractAssembler {
                 pvp.put(params.getPrefix(), this.outputPrefix);
             }
 
-            if (this.getKmer() > 0) {
-                pvp.put(params.getKmer(), Integer.toString(this.getKmer()));
+            if (this.getK() > 0) {
+                pvp.put(params.getKmer(), Integer.toString(this.getK()));
             }
 
             if (this.getCoverageCutoff() > 0) {
@@ -307,7 +294,7 @@ public class SoapAssemblerV204 extends AbstractAssembler {
                 this.outputPrefix = value;
             }
             else if (param.equals(params.getKmer())) {
-                this.setKmer(Integer.parseInt(value));
+                this.setK(Integer.parseInt(value));
             }
             else if (param.equals(params.getKmerFreqCutoff())) {
                 this.setCoverageCutoff(Integer.parseInt(value));

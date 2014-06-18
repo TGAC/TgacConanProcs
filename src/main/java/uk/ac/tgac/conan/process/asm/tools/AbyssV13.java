@@ -19,8 +19,6 @@ package uk.ac.tgac.conan.process.asm.tools;
 
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fgpt.conan.core.param.*;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.CommandLineFormat;
@@ -28,13 +26,10 @@ import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
-import uk.ac.ebi.fgpt.conan.util.StringJoiner;
 import uk.ac.tgac.conan.core.data.FilePair;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
-import uk.ac.tgac.conan.process.asm.AbstractAssembler;
-import uk.ac.tgac.conan.process.asm.AbstractAssemblerArgs;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
+import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -47,28 +42,25 @@ import java.util.*;
  * Time: 12:12
  */
 @MetaInfServices(uk.ac.tgac.conan.process.asm.Assembler.class)
-public class AbyssV134 extends AbstractAssembler {
-
-    private static Logger log = LoggerFactory.getLogger(AbyssV134.class);
+public class AbyssV13 extends AbstractAssembler {
 
     public static final String EXE = "abyss-pe";
-    public static final String NAME = "Abyss_V1.3.4";
+    public static final String NAME = "Abyss_V1.3";
 
-    public AbyssV134() {
+    public AbyssV13() {
         this(null);
     }
 
-    public AbyssV134(ConanExecutorService ces) {
+    public AbyssV13(ConanExecutorService ces) {
         this(ces, new Args());
     }
 
-    public AbyssV134(ConanExecutorService ces, AbstractAssemblerArgs args) {
+    public AbyssV13(ConanExecutorService ces, AbstractAssemblerArgs args) {
         super(NAME, EXE, args, new Params(), ces);
     }
 
-    @Override
-    public AbstractAssemblerArgs getArgs() {
-        return (AbstractAssemblerArgs) this.getProcessArgs();
+    public Args getArgs() {
+        return (Args) this.getAssemblerArgs();
     }
 
     @Override
@@ -168,13 +160,8 @@ public class AbyssV134 extends AbstractAssembler {
     }
 
     @Override
-    public boolean hasKParam() {
-        return true;
-    }
-
-    @Override
-    public boolean isKOptimiser() {
-        return false;
+    public AssemblerType getType() {
+        return AssemblerType.DE_BRUIJN;
     }
 
     @Override
@@ -192,7 +179,7 @@ public class AbyssV134 extends AbstractAssembler {
     }
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends AbstractAssemblerArgs {
+    public static class Args extends DeBruijnAssemblerArgs {
 
         private int nbContigPairs;
         private String outputName;
@@ -201,13 +188,7 @@ public class AbyssV134 extends AbstractAssembler {
             super(new Params(), NAME);
 
             this.nbContigPairs = 10;
-
-            StringJoiner nameJoiner = new StringJoiner("-");
-            nameJoiner.add("abyss_1.3.4");
-            nameJoiner.add(this.getKmer() != 0 && this.getKmer() != DEFAULT_KMER, "", "k" + Integer.toString(this.getKmer()));
-            nameJoiner.add(this.getCoverageCutoff() != 0, "", "cc" + Integer.toString(this.getCoverageCutoff()));
-
-            this.outputName = nameJoiner.toString();
+            this.outputName = "abyss";
         }
 
         public Params getParams() {
@@ -241,6 +222,10 @@ public class AbyssV134 extends AbstractAssembler {
             Params params = this.getParams();
             ParamMap pvp = new DefaultParamMap();
 
+            /*if (this.getOutputDir() != null) {
+                pvp.put(params.getOutputDir(), this.getOutputDir().getAbsolutePath());
+            } */
+
             if (this.outputName != null) {
                 pvp.put(params.getName(), this.outputName);
             }
@@ -249,8 +234,8 @@ public class AbyssV134 extends AbstractAssembler {
                 pvp.put(params.getNbContigPairs(), Integer.toString(this.nbContigPairs));
             }
 
-            if (this.getKmer() > 0) {
-                pvp.put(params.getKmer(), Integer.toString(this.getKmer()));
+            if (this.getK() > 11) {
+                pvp.put(params.getKmer(), Integer.toString(this.getK()));
             }
 
             if (this.getCoverageCutoff() > 0) {
@@ -273,11 +258,14 @@ public class AbyssV134 extends AbstractAssembler {
 
             Params params = this.getParams();
 
-            if (param.equals(params.getName())) {
+            /*if (param.equals(params.getOutputDir())) {
+                this.setOutputDir(new File(val));
+            }
+            else */if (param.equals(params.getName())) {
                 this.outputName = val;
             }
             else if (param.equals(params.getKmer())) {
-                this.setKmer(Integer.parseInt(val));
+                this.setK(Integer.parseInt(val));
             }
             else if (param.equals(params.getCoverageCutoff())) {
                 this.setCoverageCutoff(Integer.parseInt(val));
@@ -305,6 +293,7 @@ public class AbyssV134 extends AbstractAssembler {
 
     public static class Params extends AbstractProcessParams {
 
+        private ConanParameter outputDir;
         private ConanParameter libs;
         private ConanParameter nbContigPairs;
         private ConanParameter kmer;
@@ -313,6 +302,14 @@ public class AbyssV134 extends AbstractAssembler {
         private ConanParameter name;
 
         public Params() {
+
+            this.outputDir = new ParameterBuilder()
+                    .longName("directory")
+                    .shortName("C")
+                    .description("Change to the directory dir and store the results there.")
+                    .argValidator(ArgValidator.PATH)
+                    //.isOptional(false)
+                    .create();
 
             this.libs = new InputLibsParameter();
 
@@ -343,6 +340,9 @@ public class AbyssV134 extends AbstractAssembler {
                     .create();
         }
 
+        public ConanParameter getOutputDir() {
+            return outputDir;
+        }
 
         public ConanParameter getLibs() {
             return libs;
@@ -371,6 +371,7 @@ public class AbyssV134 extends AbstractAssembler {
         @Override
         public ConanParameter[] getConanParametersAsArray() {
             return new ConanParameter[] {
+                    this.outputDir,
                     this.libs,
                     this.nbContigPairs,
                     this.kmer,
