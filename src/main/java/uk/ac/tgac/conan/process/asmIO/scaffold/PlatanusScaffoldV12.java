@@ -18,14 +18,19 @@
 package uk.ac.tgac.conan.process.asmIO.scaffold;
 
 import org.kohsuke.MetaInfServices;
+import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
+import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
+import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asmIO.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by maplesod on 14/06/14.
@@ -47,7 +52,9 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
     }
 
     public PlatanusScaffoldV12(ConanExecutorService ces, Args args) {
+
         super(NAME, TYPE, EXE, args, new Params(), ces);
+        this.setMode(MODE);
     }
 
     public Args getArgs() {
@@ -57,10 +64,26 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
     @MetaInfServices(AssemblyEnhancerArgs.class)
     public static class Args extends AbstractAssemblyEnhancerArgs {
 
+        public static final int DEFAULT_MAPPING_SEED_LENGTH = 32;
+        public static final int DEFAULT_MIN_OVERLAP_LENGTH = 32;
+        public static final int DEFAULT_MIN_LINKS = 3;
+        public static final double DEFAULT_MAX_DIFF_BUBBLE_CRUSH = 0.1;
+
+        private File bubbleFile;
+        private int mappingSeedLength;
+        private int minOverlapLength;
+        private int minLinks;
+        private double maxDiffBubbleCrush;
+
         public Args() {
 
             super(new Params(), NAME, TYPE);
 
+            this.bubbleFile = null;
+            this.mappingSeedLength = DEFAULT_MAPPING_SEED_LENGTH;
+            this.minOverlapLength = DEFAULT_MIN_OVERLAP_LENGTH;
+            this.minLinks = DEFAULT_MIN_LINKS;
+            this.maxDiffBubbleCrush = DEFAULT_MAX_DIFF_BUBBLE_CRUSH;
         }
 
         protected Params getParams() {
@@ -75,6 +98,38 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
         @Override
         protected void setOptionFromMapEntry(ConanParameter param, String value) {
 
+            Params params = (Params)this.params;
+
+            if (param.equals(params.getOutputPrefix())) {
+
+                File op = new File(value).getAbsoluteFile();
+                this.setOutputDir(op.getParentFile());
+                this.setOutputPrefix(op.getName());
+            }
+            else if (param.equals(params.getContigFile())) {
+                this.setInputFile(new File(value));
+            }
+            else if (param.equals(params.getBubbleFile())) {
+                this.bubbleFile = new File(value);
+            }
+            else if (param.equals(params.getThreads())) {
+                this.setThreads(Integer.parseInt(value));
+            }
+            else if (param.equals(params.getMappingSeedLength())) {
+                this.mappingSeedLength = Integer.parseInt(value);
+            }
+            else if (param.equals(params.getMinOverlapLength())) {
+                this.minOverlapLength = Integer.parseInt(value);
+            }
+            else if (param.equals(params.getMinLinks())) {
+                this.minLinks = Integer.parseInt(value);
+            }
+            else if (param.equals(params.getMaxDiffBubbleCrush())) {
+                this.maxDiffBubbleCrush = Double.parseDouble(value);
+            }
+            else {
+                throw new IllegalArgumentException("Unknown param found: " + param);
+            }
         }
 
         @Override
@@ -89,15 +144,154 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
 
         @Override
         public ParamMap getArgMap() {
-            return null;
+
+            Params params = (Params)this.params;
+            ParamMap pvp = new DefaultParamMap();
+
+            if (this.getOutputPrefix() != null) {
+                pvp.put(params.getOutputPrefix(), new File(this.getOutputDir(), this.getOutputPrefix()).getAbsolutePath());
+            }
+
+            if (this.getInputFile() != null) {
+                pvp.put(params.getContigFile(), this.getInputFile().getAbsolutePath());
+            }
+
+            if (this.bubbleFile != null) {
+                pvp.put(params.getBubbleFile(), this.bubbleFile.getAbsolutePath());
+            }
+
+            if (this.mappingSeedLength != DEFAULT_MAPPING_SEED_LENGTH) {
+                pvp.put(params.getMappingSeedLength(), Integer.toString(this.mappingSeedLength));
+            }
+
+            if (this.getThreads() != DEFAULT_THREADS) {
+                pvp.put(params.getThreads(), Integer.toString(this.getThreads()));
+            }
+
+            if (this.minOverlapLength != DEFAULT_MIN_OVERLAP_LENGTH) {
+                pvp.put(params.getMinOverlapLength(), Integer.toString(this.minOverlapLength));
+            }
+
+            if (this.minLinks != DEFAULT_MIN_LINKS) {
+                pvp.put(params.getMinOverlapLength(), Integer.toString(this.minLinks));
+            }
+
+            if (this.maxDiffBubbleCrush != DEFAULT_MAX_DIFF_BUBBLE_CRUSH) {
+                pvp.put(params.getMaxDiffBubbleCrush(), Double.toString(this.maxDiffBubbleCrush));
+            }
+
+            return pvp;
         }
     }
 
     public static class Params extends AbstractProcessParams {
 
+        private ConanParameter outputPrefix;
+        private ConanParameter contigFile;
+        private ConanParameter bubbleFile;
+        private ConanParameter mappingSeedLength;
+        private ConanParameter minOverlapLength;
+        private ConanParameter minLinks;
+        private ConanParameter maxDiffBubbleCrush;
+        private ConanParameter threads;
+
+        public Params() {
+
+            super();
+
+            this.outputPrefix = new ParameterBuilder()
+                    .shortName("o")
+                    .description("prefix of output file (default out, length <= 200)")
+                    .create();
+
+            this.contigFile = new ParameterBuilder()
+                    .shortName("c")
+                    .description("contig_file (fasta format)")
+                    .argValidator(ArgValidator.PATH)
+                    .create();
+
+            this.bubbleFile = new ParameterBuilder()
+                    .shortName("b")
+                    .description("bubble_seq_file (fasta format)")
+                    .argValidator(ArgValidator.PATH)
+                    .create();
+
+            this.mappingSeedLength = new ParameterBuilder()
+                    .shortName("s")
+                    .description("mapping seed length (default 32)")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.minOverlapLength = new ParameterBuilder()
+                    .shortName("v")
+                    .description("minimum overlap length (default 32)")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.minLinks = new ParameterBuilder()
+                    .shortName("l")
+                    .description("minimum number of link (default 3)")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.maxDiffBubbleCrush = new ParameterBuilder()
+                    .shortName("u")
+                    .description("maximum difference for bubble crush (identity, default 0.1)")
+                    .argValidator(ArgValidator.FLOAT)
+                    .create();
+
+            this.threads = new ParameterBuilder()
+                    .shortName("t")
+                    .description("number of threads (<= 1, default 1)")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+        }
+
+        public ConanParameter getOutputPrefix() {
+            return outputPrefix;
+        }
+
+        public ConanParameter getContigFile() {
+            return contigFile;
+        }
+
+        public ConanParameter getBubbleFile() {
+            return bubbleFile;
+        }
+
+        public ConanParameter getMappingSeedLength() {
+            return mappingSeedLength;
+        }
+
+        public ConanParameter getMinOverlapLength() {
+            return minOverlapLength;
+        }
+
+        public ConanParameter getMinLinks() {
+            return minLinks;
+        }
+
+        public ConanParameter getMaxDiffBubbleCrush() {
+            return maxDiffBubbleCrush;
+        }
+
+        public ConanParameter getThreads() {
+            return threads;
+        }
+
         @Override
         public ConanParameter[] getConanParametersAsArray() {
-            return new ConanParameter[0];
+
+            return new ConanParameter[] {
+                    this.outputPrefix,
+                    this.contigFile,
+                    this.bubbleFile,
+                    this.mappingSeedLength,
+                    this.minOverlapLength,
+                    this.minLinks,
+                    this.maxDiffBubbleCrush,
+                    this.threads
+            };
         }
     }
 }

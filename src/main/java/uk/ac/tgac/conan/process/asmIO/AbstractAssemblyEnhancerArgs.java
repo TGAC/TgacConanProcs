@@ -32,6 +32,8 @@ import java.util.List;
  */
 public abstract class AbstractAssemblyEnhancerArgs extends AbstractProcessArgs implements AssemblyEnhancerArgs {
 
+    public static final int DEFAULT_THREADS = 1;
+
     private String name;
     private AssemblyEnhancerType type;
     private File inputFile;
@@ -50,7 +52,7 @@ public abstract class AbstractAssemblyEnhancerArgs extends AbstractProcessArgs i
         this.outputDir = null;
         this.outputPrefix = "AMP";
         this.libraries = null;
-        this.threads = 1;
+        this.threads = DEFAULT_THREADS;
         this.memory = 0;
     }
 

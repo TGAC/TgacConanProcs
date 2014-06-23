@@ -244,6 +244,42 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
                 pvp.put(params.getOutputPrefix(), this.outputPrefix);
             }
 
+            if (this.initialK != DEFAULT_INITIAL_K) {
+                pvp.put(params.getInitialK(), Integer.toString(this.initialK));
+            }
+
+            if (this.kStep != DEFAULT_K_STEP) {
+                pvp.put(params.getkStep(), Integer.toString(this.kStep));
+            }
+
+            if (this.initialKCutoff != DEFAULT_INITIAL_K_CUTOFF) {
+                pvp.put(params.getInitialKCutoff(), Integer.toString(this.initialKCutoff));
+            }
+
+            if (this.threads != DEFAULT_THREADS) {
+                pvp.put(params.getThreads(), Integer.toString(this.threads));
+            }
+
+            if (this.memoryLimit != DEFAULT_MEM_LIMIT) {
+                pvp.put(params.getMemoryLimit(), Integer.toString(this.memoryLimit));
+            }
+
+            if (this.minKCoverage != DEFAULT_MIN_K_COVERAGE) {
+                pvp.put(params.getMinKCoverage(), Integer.toString(this.minKCoverage));
+            }
+
+            if (this.kExtensionLevel != DEFAULT_K_EXT_LEVEL) {
+                pvp.put(params.getkExtensionLevel(), Double.toString(this.kExtensionLevel));
+            }
+
+            if (this.maxDiffBubbleCrush != DEFAULT_MAX_DIFF_BUBBLE_CRUSH) {
+                pvp.put(params.getMaxDiffBubbleCrush(), Double.toString(this.maxDiffBubbleCrush));
+            }
+
+            if (this.maxDiffBranchCut != DEFAULT_MAX_DIFF_BRANCH_CUT) {
+                pvp.put(params.getMaxDiffBranchCut(), Double.toString(this.getMaxDiffBranchCut()));
+            }
+
             return pvp;
         }
 
