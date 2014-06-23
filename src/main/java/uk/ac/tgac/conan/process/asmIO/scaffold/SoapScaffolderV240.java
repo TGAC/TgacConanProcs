@@ -53,7 +53,7 @@ import java.util.Map;
 public class SoapScaffolderV240 extends AbstractAssemblyEnhancer {
 
     public static final String EXE = "SOAPdenovo-127mer";
-    public static final String NAME = "SoapDeNovo_V2.04";
+    public static final String NAME = "SOAP_Scaffold_V2.04";
     public static final AssemblyEnhancerType TYPE = AssemblyEnhancerType.SCAFFOLDER;
 
     public SoapScaffolderV240() {

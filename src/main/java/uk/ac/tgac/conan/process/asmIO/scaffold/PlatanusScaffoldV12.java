@@ -38,7 +38,7 @@ import java.util.List;
 @MetaInfServices(AssemblyEnhancer.class)
 public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
 
-    public static final String NAME = "Platanus_Assemble_V1.2";
+    public static final String NAME = "Platanus_Scaffold_V1.2";
     public static final String EXE = "platanus";
     public static final String MODE = "scaffold";
     public static final AssemblyEnhancerType TYPE = AssemblyEnhancerType.SCAFFOLDER;

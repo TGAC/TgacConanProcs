@@ -52,7 +52,7 @@ public class SoapAssemblerV204 extends AbstractAssembler {
 
 
     public static final String EXE = "SOAPdenovo-127mer";
-    public static final String NAME = "SoapDeNovo_V2.04";
+    public static final String NAME = "SOAP_Assemble_V2.04";
 
     public SoapAssemblerV204() {
         this(null);
