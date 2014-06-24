@@ -13,7 +13,6 @@ import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.ebi.fgpt.conan.utils.CommandExecutionException;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.Organism;
-import uk.ac.tgac.conan.process.asm.tools.AllpathsLgV44837;
 
 import java.io.File;
 import java.io.IOException;

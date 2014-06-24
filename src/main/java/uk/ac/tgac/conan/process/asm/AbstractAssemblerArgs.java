@@ -35,7 +35,6 @@ public abstract class AbstractAssemblerArgs extends AbstractProcessArgs implemen
     private List<Library> libraries;
     private Organism organism;
 
-
     protected AbstractAssemblerArgs(ProcessParams params, String name) {
         super(params);
         this.name = name;

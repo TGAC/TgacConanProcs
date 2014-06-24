@@ -160,8 +160,8 @@ public class AbyssV13 extends AbstractAssembler {
     }
 
     @Override
-    public AssemblerType getType() {
-        return AssemblerType.DE_BRUIJN;
+    public Assembler.Type getType() {
+        return Assembler.Type.DE_BRUIJN;
     }
 
     @Override

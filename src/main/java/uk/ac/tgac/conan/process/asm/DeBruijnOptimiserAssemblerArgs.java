@@ -14,8 +14,8 @@ public abstract class DeBruijnOptimiserAssemblerArgs extends AbstractAssemblerAr
     }
 
     @Override
-    public AssemblerType getType() {
-        return AssemblerType.DE_BRUIJN_OPTIMISER;
+    public Assembler.Type getType() {
+        return Assembler.Type.DE_BRUIJN_OPTIMISER;
     }
 
     public KmerRange getKmerRange() {

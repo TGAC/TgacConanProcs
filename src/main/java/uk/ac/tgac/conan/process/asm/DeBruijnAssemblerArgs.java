@@ -21,8 +21,8 @@ public abstract class DeBruijnAssemblerArgs extends AbstractAssemblerArgs {
     }
 
     @Override
-    public AssemblerType getType() {
-        return AssemblerType.DE_BRUIJN;
+    public Assembler.Type getType() {
+        return Assembler.Type.DE_BRUIJN;
     }
 
     public int getK() {

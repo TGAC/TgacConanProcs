@@ -22,17 +22,17 @@ public interface AssemblerArgs extends ProcessArgs {
      * @return
      */
     void initialise(
-                             List<Library> libs,
-                             File outputDir,
-                             int threads,
-                             int memory,
-                             Organism organism);
+            List<Library> libs,
+            File outputDir,
+            int threads,
+            int memory,
+            Organism organism);
 
     /**
      * The type of assembler supported by these args.
      * @return
      */
-    AssemblerType getType();
+    Assembler.Type getType();
 
     /**
      * Gets the name of this process

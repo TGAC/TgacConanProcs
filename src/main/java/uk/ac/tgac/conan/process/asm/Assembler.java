@@ -71,7 +71,7 @@ public interface Assembler extends ConanProcess {
      * Returns the type of assembler that this is
      * @return
      */
-    AssemblerType getType();
+    Type getType();
 
     /**
      * Given a list of libraries, this method checks to see if this assembler can process them correctly
@@ -95,4 +95,12 @@ public interface Assembler extends ConanProcess {
      * @throws IOException
      */
     void initialise(AssemblerArgs args, ConanExecutorService ces) throws IOException;
+
+
+    public enum Type {
+        DE_BRUIJN,
+        DE_BRUIJN_OPTIMISER,
+        DE_BRUIJN_AUTO,
+        OVERLAP_LAYOUT_CONSENSUS;
+    }
 }

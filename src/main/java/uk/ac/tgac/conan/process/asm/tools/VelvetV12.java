@@ -23,7 +23,6 @@ import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.core.data.Organism;
 import uk.ac.tgac.conan.core.data.SeqFile;
 import uk.ac.tgac.conan.process.asm.*;
 
@@ -87,8 +86,8 @@ public class VelvetV12 extends AbstractAssembler {
     }
 
     @Override
-    public AssemblerType getType() {
-        return AssemblerType.DE_BRUIJN;
+    public Assembler.Type getType() {
+        return Assembler.Type.DE_BRUIJN;
     }
 
     protected String createLibString(Library lib, boolean additionalLib) {

@@ -5,5 +5,7 @@ package uk.ac.tgac.conan.process.asm;
  */
 public interface Subsampler {
 
+    void setDesiredCoverage(int desiredCoverage);
+
     int getDesiredCoverage();
 }

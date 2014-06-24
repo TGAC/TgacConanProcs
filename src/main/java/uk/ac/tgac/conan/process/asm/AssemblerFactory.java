@@ -33,31 +33,17 @@ import java.util.ServiceLoader;
  */
 public class AssemblerFactory {
 
-    public static Assembler create(String toolName) throws IOException {
-        return create(toolName, null);
+    public static Assembler createGenericAssembler(String toolName) throws IOException {
+        return createGenericAssembler(toolName, null);
     }
 
-    public static Assembler create(String toolName, ConanExecutorService ces) throws IOException {
-        return create(toolName, 61, null, null, 1, 0, -1, null, ces);
-    }
-
-    public static Assembler create(String toolName,
-                                                   int k,
-                                                   List<Library> libs,
-                                                   File outputDir,
-                                                   int threads,
-                                                   int memory,
-                                                   int coverage,
-                                                   Organism organism,
-                                                   ConanExecutorService ces) throws IOException {
-
+    public static Assembler createGenericAssembler(String toolName, ConanExecutorService ces) throws IOException {
         AssemblerArgs actualArgs = null;
 
         ServiceLoader<AssemblerArgs> argLoader = ServiceLoader.load(AssemblerArgs.class);
 
         for(AssemblerArgs args : argLoader) {
             if (args.getName().equalsIgnoreCase(toolName.trim())) {
-                args.initialise(libs, outputDir, threads, memory, organism);
                 actualArgs = args;
                 break;
             }
@@ -76,6 +62,121 @@ public class AssemblerFactory {
         }
 
         return null;
+    }
+
+    public static Assembler createDeBruijnAssembler(String toolName,
+                            List<Library> libs,
+                            File outputDir,
+                            int threads,
+                            int memory,
+                            Organism organism,
+                            ConanExecutorService ces,
+                            int k,
+                            int coverageCutoff) throws IOException {
+
+        AssemblerArgs args = createAssemblerArgs(toolName);
+        args.initialise(libs, outputDir, threads, memory, organism);
+
+        if (args.getType() != Assembler.Type.DE_BRUIJN) {
+            throw new IllegalArgumentException("Assembler \"" + toolName + "\" is not a De Bruijn graph assembler that allows you to specify a specific K value");
+        }
+
+        DeBruijnAssemblerArgs dbgArgs = (DeBruijnAssemblerArgs)args;
+        dbgArgs.setK(k);
+        dbgArgs.setCoverageCutoff(coverageCutoff);
+
+        Assembler assembler = createAssembler(toolName, dbgArgs, ces);
+
+        if (assembler.getType() != Assembler.Type.DE_BRUIJN) {
+            throw new IllegalArgumentException("Assembler \"" + toolName + "\" is not a De Bruijn graph assembler that allows you to specify a specific K value");
+        }
+
+        return assembler;
+    }
+
+    public static Assembler createDeBruijnOptimiserAssembler(String toolName,
+                                                         List<Library> libs,
+                                                         File outputDir,
+                                                         int threads,
+                                                         int memory,
+                                                         Organism organism,
+                                                         ConanExecutorService ces,
+                                                         KmerRange range) throws IOException {
+
+        AssemblerArgs args = createAssemblerArgs(toolName);
+        args.initialise(libs, outputDir, threads, memory, organism);
+
+        if (args.getType() != Assembler.Type.DE_BRUIJN_OPTIMISER) {
+            throw new IllegalArgumentException("Assembler \"" + toolName + "\" is not a De Bruijn graph assembler that optimises K value ranges");
+        }
+
+        DeBruijnOptimiserAssemblerArgs dbgArgs = (DeBruijnOptimiserAssemblerArgs)args;
+        dbgArgs.setKmerRange(range);
+
+        Assembler assembler = createAssembler(toolName, dbgArgs, ces);
+
+        if (assembler.getType() != Assembler.Type.DE_BRUIJN_OPTIMISER) {
+            throw new IllegalArgumentException("Assembler \"" + toolName + "\" is not a De Bruijn graph assembler that optimises K value ranges");
+        }
+
+        return assembler;
+    }
+
+    public static Assembler createDeBruijnFixedAssembler(String toolName,
+                                                    List<Library> libs,
+                                                    File outputDir,
+                                                    int threads,
+                                                    int memory,
+                                                    Organism organism,
+                                                    ConanExecutorService ces) throws IOException {
+
+        AssemblerArgs args = createAssemblerArgs(toolName);
+        args.initialise(libs, outputDir, threads, memory, organism);
+
+        if (args.getType() != Assembler.Type.DE_BRUIJN_AUTO) {
+            throw new IllegalArgumentException("Assembler \"" + toolName + "\" is not a De Bruijn graph assembler that handles K values automatically");
+        }
+
+        DeBruijnAutoAssemblerArgs dbgArgs = (DeBruijnAutoAssemblerArgs)args;
+
+        Assembler assembler = createAssembler(toolName, dbgArgs, ces);
+
+        if (assembler.getType() != Assembler.Type.DE_BRUIJN_AUTO) {
+            throw new IllegalArgumentException("Assembler \"" + toolName + "\" is not a De Bruijn graph assembler that handles K values automatically");
+        }
+
+        return assembler;
+    }
+
+    protected static AssemblerArgs createAssemblerArgs(String toolName) {
+
+        ServiceLoader<AssemblerArgs> argLoader = ServiceLoader.load(AssemblerArgs.class);
+
+        for(AssemblerArgs args : argLoader) {
+            if (args.getName().equalsIgnoreCase(toolName.trim())) {
+                return args;
+            }
+        }
+
+        throw new IllegalArgumentException("Could not find the requested assembler: " + toolName);
+    }
+
+    protected static Assembler createAssembler(String toolName, AssemblerArgs args, ConanExecutorService ces)
+            throws IOException {
+
+        if (args == null)
+            throw new IllegalArgumentException("Provided assembler args are null");
+
+        ServiceLoader<Assembler> procLoader = ServiceLoader.load(Assembler.class);
+
+        for(Assembler assembler : procLoader) {
+            if (assembler.getName().equalsIgnoreCase(toolName.trim())) {
+                assembler.initialise(args, ces);
+                return assembler;
+            }
+        }
+
+        throw new IllegalArgumentException("Could not find the requested assembler: " + toolName);
     }
 
 }

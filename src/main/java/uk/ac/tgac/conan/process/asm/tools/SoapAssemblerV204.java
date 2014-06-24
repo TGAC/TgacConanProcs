@@ -33,7 +33,10 @@ import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.ebi.fgpt.conan.util.StringJoiner;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
-import uk.ac.tgac.conan.process.asm.*;
+import uk.ac.tgac.conan.process.asm.AbstractAssembler;
+import uk.ac.tgac.conan.process.asm.Assembler;
+import uk.ac.tgac.conan.process.asm.AssemblerArgs;
+import uk.ac.tgac.conan.process.asm.DeBruijnAssemblerArgs;
 
 import java.io.File;
 import java.io.IOException;
@@ -91,8 +94,8 @@ public class SoapAssemblerV204 extends AbstractAssembler {
     }
 
     @Override
-    public AssemblerType getType() {
-        return AssemblerType.DE_BRUIJN;
+    public Assembler.Type getType() {
+        return Assembler.Type.DE_BRUIJN;
     }
 
     @Override

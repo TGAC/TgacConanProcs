@@ -18,7 +18,6 @@
 package uk.ac.tgac.conan.process.asmIO;
 
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
-import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 

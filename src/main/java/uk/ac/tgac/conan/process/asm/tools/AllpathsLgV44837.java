@@ -25,7 +25,6 @@ import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.core.data.Organism;
 import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
@@ -39,10 +38,20 @@ import java.util.List;
  * Time: 15:24
  */
 @MetaInfServices(uk.ac.tgac.conan.process.asm.Assembler.class)
-public class AllpathsLgV44837 extends AbstractAssembler {
+public class AllpathsLgV44837 extends AbstractAssembler implements Subsampler {
 
     public static final String EXE = "RunAllPathsLG";
     public static final String NAME = "AllpathsLg_V44837";
+
+    @Override
+    public void setDesiredCoverage(int desiredCoverage) {
+        this.getArgs().setDesiredCoverage(desiredCoverage);
+    }
+
+    @Override
+    public int getDesiredCoverage() {
+        return this.getArgs().getDesiredCoverage();
+    }
 
     private static class GroupInfo {
         private File inGroupsPhred33;
@@ -133,8 +142,8 @@ public class AllpathsLgV44837 extends AbstractAssembler {
 
 
     @Override
-    public AssemblerType getType() {
-        return AssemblerType.DE_BRUIJN_FIXED;
+    public Assembler.Type getType() {
+        return Assembler.Type.DE_BRUIJN_AUTO;
     }
 
 
@@ -485,7 +494,7 @@ public class AllpathsLgV44837 extends AbstractAssembler {
 
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends DeBrujinFixedAssemblerArgs implements Subsampler {
+    public static class Args extends DeBruijnAutoAssemblerArgs {
 
         private int desiredCoverage;
 
@@ -524,7 +533,6 @@ public class AllpathsLgV44837 extends AbstractAssembler {
             this.desiredCoverage = desiredCoverage;
         }
 
-        @Override
         public int getDesiredCoverage() {
             return desiredCoverage;
         }

@@ -18,9 +18,7 @@
 package uk.ac.tgac.conan.process.asmIO;
 
 import uk.ac.ebi.fgpt.conan.model.ConanProcess;
-import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
 
 import java.io.File;
 import java.io.IOException;

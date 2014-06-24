@@ -33,7 +33,8 @@ import uk.ac.tgac.conan.process.asmIO.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: maplesod
