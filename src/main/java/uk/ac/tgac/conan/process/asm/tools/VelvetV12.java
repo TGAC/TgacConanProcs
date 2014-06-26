@@ -199,18 +199,9 @@ public class VelvetV12 extends AbstractAssembler {
 
     public static class Params extends AbstractProcessParams {
 
-        private ConanParameter libs;
-        private ConanParameter kmer;
-        private ConanParameter coverageCutoff;
-
         @Override
         public ConanParameter[] getConanParametersAsArray() {
             return new ConanParameter[0];
-        }
-
-        @Override
-        public List<ConanParameter> getConanParameters() {
-            return null;
         }
     }
 }
