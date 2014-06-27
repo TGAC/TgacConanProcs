@@ -78,7 +78,7 @@ public abstract class AbstractAssemblyEnhancer extends AbstractConanProcess impl
     }
 
     @Override
-    public void setup() {
+    public void setup() throws IOException {
     }
 
 }

@@ -30,7 +30,7 @@ import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asm.AbstractAssembler;
 import uk.ac.tgac.conan.process.asm.Assembler;
 import uk.ac.tgac.conan.process.asm.AssemblerArgs;
-import uk.ac.tgac.conan.process.asm.DeBruijnOptimiserAssemblerArgs;
+import uk.ac.tgac.conan.process.asm.GenericDeBruijnOptimiserArgs;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,7 +100,7 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
     }
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends DeBruijnOptimiserAssemblerArgs {
+    public static class Args extends GenericDeBruijnOptimiserArgs {
 
         public static final String DEFAULT_OUTPUT_PREFIX = "out";
         public static final int DEFAULT_INITIAL_K = 32;

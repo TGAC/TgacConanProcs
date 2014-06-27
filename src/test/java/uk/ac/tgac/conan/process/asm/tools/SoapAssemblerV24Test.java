@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
  * Time: 16:54
  */
 @RunWith(MockitoJUnitRunner.class)
-public class SoapAssemblerV204Test {
+public class SoapAssemblerV24Test {
 
 
     @Rule
@@ -65,30 +65,30 @@ public class SoapAssemblerV204Test {
         String testDir = temp.getRoot().getAbsolutePath();
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
-        correctCommand = "SOAPdenovo-127mer pregraph -s testlib.libs -o graph -K 63 -p 32 -a 0 -d 0; " +
-                "SOAPdenovo-127mer contig -g graph";
+        correctCommand = "SOAPdenovo-127mer pregraph -s testlib.libs -o graph -K 63 -p 32 -a 0 -R -d 0; " +
+                "SOAPdenovo-127mer contig -g graph -R";
 
         correctFullCommand = "cd " + testDir + "; " + correctCommand + " 2>&1; cd " + pwd;
     }
 
-    private SoapAssemblerV204 createProcess() {
+    private SoapAssemblerArgsV24 createProcess() {
 
         File libFile = new File("testlib.libs");
 
-        SoapAssemblerV204.Args args = new SoapAssemblerV204.Args();
+        SoapAssemblerArgsV24.Args args = new SoapAssemblerArgsV24.Args();
         args.setConfigFile(libFile);
         args.setK(63);
         args.setOutputPrefix("OUTPUT_FILE");
         args.setThreads(32);
         args.setOutputDir(temp.getRoot());
 
-        return new SoapAssemblerV204(null, args);
+        return new SoapAssemblerArgsV24(null, args);
     }
 
     @Test
     public void testSoapCommand() throws Exception {
 
-        SoapAssemblerV204 soap = createProcess();
+        SoapAssemblerArgsV24 soap = createProcess();
 
         String command = soap.getCommand();
 
@@ -101,7 +101,7 @@ public class SoapAssemblerV204Test {
     @Test
     public void testSoapFullCommand() throws InterruptedException, ProcessExecutionException, IOException, CommandExecutionException, ConanParameterException {
 
-        SoapAssemblerV204 soap = createProcess();
+        SoapAssemblerArgsV24 soap = createProcess();
         soap.setup();
 
         String fullCommand = soap.getFullCommand();

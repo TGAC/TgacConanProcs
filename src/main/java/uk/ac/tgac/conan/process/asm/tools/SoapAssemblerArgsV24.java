@@ -33,10 +33,7 @@ import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.ebi.fgpt.conan.util.StringJoiner;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
-import uk.ac.tgac.conan.process.asm.AbstractAssembler;
-import uk.ac.tgac.conan.process.asm.Assembler;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
-import uk.ac.tgac.conan.process.asm.DeBruijnAssemblerArgs;
+import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,23 +46,23 @@ import java.util.List;
  * Time: 15:57
  */
 @MetaInfServices(uk.ac.tgac.conan.process.asm.Assembler.class)
-public class SoapAssemblerV204 extends AbstractAssembler {
+public class SoapAssemblerArgsV24 extends AbstractAssembler implements DeBruijnArgs {
 
-    private static Logger log = LoggerFactory.getLogger(SoapAssemblerV204.class);
+    private static Logger log = LoggerFactory.getLogger(SoapAssemblerArgsV24.class);
 
 
     public static final String EXE = "SOAPdenovo-127mer";
-    public static final String NAME = "SOAP_Assemble_V2.04";
+    public static final String NAME = "SOAP_Assemble_V2.4";
 
-    public SoapAssemblerV204() {
+    public SoapAssemblerArgsV24() {
         this(null);
     }
 
-    public SoapAssemblerV204(ConanExecutorService ces) {
+    public SoapAssemblerArgsV24(ConanExecutorService ces) {
         this(ces, new Args());
     }
 
-    public SoapAssemblerV204(ConanExecutorService ces, Args args) {
+    public SoapAssemblerArgsV24(ConanExecutorService ces, Args args) {
         super(NAME, EXE, args, new Params(), ces);
     }
 
@@ -179,10 +176,20 @@ public class SoapAssemblerV204 extends AbstractAssembler {
         }
     }
 
-    @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends DeBruijnAssemblerArgs {
+    @Override
+    public void setDeBruijnArgs(GenericDeBruijnArgs commonArgs) {
+        super.setCommonArgs(commonArgs);
 
-        private static Logger log = LoggerFactory.getLogger(SoapAssemblerV204.class);
+        Args args = this.getArgs();
+
+        args.setK(commonArgs.getK());
+        args.setCoverageCutoff(commonArgs.getCoverageCutoff());
+    }
+
+    @MetaInfServices(AssemblerArgs.class)
+    public static class Args extends GenericDeBruijnArgs {
+
+        private static Logger log = LoggerFactory.getLogger(SoapAssemblerArgsV24.class);
 
         private int memory;
         private boolean resolveRepeats;
@@ -195,7 +202,7 @@ public class SoapAssemblerV204 extends AbstractAssembler {
             super(new Params(), NAME);
 
             this.memory = 0;
-            this.resolveRepeats = false;
+            this.resolveRepeats = true;
             this.fillGaps = false;
             this.configFile = null;
             this.outputPrefix = "soap_out";

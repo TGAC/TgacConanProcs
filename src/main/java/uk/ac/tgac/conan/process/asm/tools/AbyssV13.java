@@ -20,6 +20,7 @@ package uk.ac.tgac.conan.process.asm.tools;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.*;
+import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.CommandLineFormat;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
@@ -55,12 +56,12 @@ public class AbyssV13 extends AbstractAssembler {
         this(ces, new Args());
     }
 
-    public AbyssV13(ConanExecutorService ces, AbstractAssemblerArgs args) {
+    public AbyssV13(ConanExecutorService ces, AbstractProcessArgs args) {
         super(NAME, EXE, args, new Params(), ces);
     }
 
     public Args getArgs() {
-        return (Args) this.getAssemblerArgs();
+        return (Args) this.getProcessArgs();
     }
 
     @Override
@@ -88,7 +89,7 @@ public class AbyssV13 extends AbstractAssembler {
     }
 
     protected boolean containsPairedEndLib() {
-        for(Library lib : this.getArgs().getLibraries()) {
+        for(Library lib : this.getArgs().getLibs()) {
             if (lib.isPairedEnd()) {
                 return true;
             }
@@ -134,7 +135,7 @@ public class AbyssV13 extends AbstractAssembler {
     public File getUnitigsFile() {
 
         Args abyssV134Args = (Args)this.getArgs();
-        File unitigsFile = new File(abyssV134Args.getOutputDir(), abyssV134Args.getOutputName() + "-unitigs.fa");
+        File unitigsFile = new File(abyssV134Args.getOutputDir(), abyssV134Args.getName() + "-unitigs.fa");
         return unitigsFile;
     }
 
@@ -142,7 +143,7 @@ public class AbyssV13 extends AbstractAssembler {
     public File getContigsFile() {
 
         Args abyssV134Args = (Args)this.getArgs();
-        File unitigsFile = new File(abyssV134Args.getOutputDir(), abyssV134Args.getOutputName() + "-contigs.fa");
+        File unitigsFile = new File(abyssV134Args.getOutputDir(), abyssV134Args.getName() + "-contigs.fa");
         return unitigsFile;
     }
 
@@ -150,7 +151,7 @@ public class AbyssV13 extends AbstractAssembler {
     public File getScaffoldsFile() {
 
         Args abyssV134Args = (Args)this.getArgs();
-        File unitigsFile = new File(abyssV134Args.getOutputDir(), abyssV134Args.getOutputName() + "-scaffolds.fa");
+        File unitigsFile = new File(abyssV134Args.getOutputDir(), abyssV134Args.getName() + "-scaffolds.fa");
         return unitigsFile;
     }
 
@@ -178,21 +179,53 @@ public class AbyssV13 extends AbstractAssembler {
         return super.getCommand(CommandLineFormat.KEY_VALUE_PAIR);
     }
 
-    @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends DeBruijnAssemblerArgs {
 
+    @MetaInfServices(DeBruijnArgs.class)
+    public static class Args extends AbstractProcessArgs implements DeBruijnArgs {
+
+        public static final int DEFAULT_NB_CONTIG_PAIRS = 10;
+        public static final String DEFAULT_NAME = "abyss";
+        public static final int DEFAULT_K = 61;
+        public static final int DEFAULT_COVERAGE_CUTOFF = 0;
+        public static final int DEFAULT_THREADS = 1;
+
+        private File outputDir;
+        private List<Library> libs;
         private int nbContigPairs;
-        private String outputName;
+        private String name;
+        private int k;
+        private int coverageCutoff;
+        private int threads;
 
         public Args() {
-            super(new Params(), NAME);
+            super(new Params());
 
-            this.nbContigPairs = 10;
-            this.outputName = "abyss";
+            this.outputDir = new File("");
+            this.nbContigPairs = DEFAULT_NB_CONTIG_PAIRS;
+            this.name = DEFAULT_NAME;
+            this.k = DEFAULT_K;
+            this.coverageCutoff = DEFAULT_COVERAGE_CUTOFF;
+            this.threads = DEFAULT_THREADS;
         }
 
         public Params getParams() {
             return (Params)this.params;
+        }
+
+        public File getOutputDir() {
+            return outputDir;
+        }
+
+        public void setOutputDir(File outputDir) {
+            this.outputDir = outputDir;
+        }
+
+        public List<Library> getLibs() {
+            return libs;
+        }
+
+        public void setLibs(List<Library> libs) {
+            this.libs = libs;
         }
 
         public int getNbContigPairs() {
@@ -203,12 +236,46 @@ public class AbyssV13 extends AbstractAssembler {
             this.nbContigPairs = nbContigPairs;
         }
 
-        public String getOutputName() {
-            return outputName;
+        @Override
+        public String getProcessName() {
+            return NAME;
         }
 
-        public void setOutputName(String outputName) {
-            this.outputName = outputName;
+        @Override
+        public AbstractProcessArgs toConanArgs() {
+            return this;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getK() {
+            return k;
+        }
+
+        public void setK(int k) {
+            this.k = k;
+        }
+
+        public int getCoverageCutoff() {
+            return coverageCutoff;
+        }
+
+        public void setCoverageCutoff(int coverageCutoff) {
+            this.coverageCutoff = coverageCutoff;
+        }
+
+        public int getThreads() {
+            return threads;
+        }
+
+        public void setThreads(int threads) {
+            this.threads = threads;
         }
 
         @Override
@@ -222,12 +289,8 @@ public class AbyssV13 extends AbstractAssembler {
             Params params = this.getParams();
             ParamMap pvp = new DefaultParamMap();
 
-            /*if (this.getOutputDir() != null) {
-                pvp.put(params.getOutputDir(), this.getOutputDir().getAbsolutePath());
-            } */
-
-            if (this.outputName != null) {
-                pvp.put(params.getName(), this.outputName);
+            if (this.name != null) {
+                pvp.put(params.getName(), this.name);
             }
 
             if (this.nbContigPairs != 10) {
@@ -246,8 +309,8 @@ public class AbyssV13 extends AbstractAssembler {
                 pvp.put(params.getThreads(), Integer.toString(this.getThreads()));
             }
 
-            if (this.getLibraries() != null && !this.getLibraries().isEmpty()) {
-                pvp.put(params.getLibs(), new InputLibsArg(this.getLibraries()).toString());
+            if (this.getLibs() != null && !this.getLibs().isEmpty()) {
+                pvp.put(params.getLibs(), new InputLibsArg(this.getLibs()).toString());
             }
 
             return pvp;
@@ -258,11 +321,8 @@ public class AbyssV13 extends AbstractAssembler {
 
             Params params = this.getParams();
 
-            /*if (param.equals(params.getOutputDir())) {
-                this.setOutputDir(new File(val));
-            }
-            else */if (param.equals(params.getName())) {
-                this.outputName = val;
+            if (param.equals(params.getName())) {
+                this.name = val;
             }
             else if (param.equals(params.getKmer())) {
                 this.setK(Integer.parseInt(val));
@@ -277,7 +337,7 @@ public class AbyssV13 extends AbstractAssembler {
                 this.setThreads(Integer.parseInt(val));
             }
             else if (param.equals(params.getLibs())) {
-                this.setLibraries(InputLibsArg.parse(val).getLibs());
+                this.setLibs(InputLibsArg.parse(val).getLibs());
             }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
@@ -289,11 +349,33 @@ public class AbyssV13 extends AbstractAssembler {
 
         }
 
+        @Override
+        public GenericDeBruijnArgs getDeBruijnArgs() {
+
+            GenericDeBruijnArgs args = new GenericDeBruijnArgs();
+
+            args.setCoverageCutoff(this.coverageCutoff);
+            args.setK(this.k);
+            args.setThreads(this.threads);
+            args.setLibraries(this.libs);
+            args.setOutputDir(this.outputDir);
+
+            return args;
+        }
+
+        @Override
+        public void setDeBruijnArgs(GenericDeBruijnArgs args) {
+
+            this.outputDir = args.getOutputDir();
+            this.libs = args.getLibraries();
+            this.k = args.getK();
+            this.coverageCutoff = args.getCoverageCutoff();
+            this.threads = args.getThreads();
+        }
     }
 
     public static class Params extends AbstractProcessParams {
 
-        private ConanParameter outputDir;
         private ConanParameter libs;
         private ConanParameter nbContigPairs;
         private ConanParameter kmer;
@@ -302,14 +384,6 @@ public class AbyssV13 extends AbstractAssembler {
         private ConanParameter name;
 
         public Params() {
-
-            this.outputDir = new ParameterBuilder()
-                    .longName("directory")
-                    .shortName("C")
-                    .description("Change to the directory dir and store the results there.")
-                    .argValidator(ArgValidator.PATH)
-                    //.isOptional(false)
-                    .create();
 
             this.libs = new InputLibsParameter();
 
@@ -340,10 +414,6 @@ public class AbyssV13 extends AbstractAssembler {
                     .create();
         }
 
-        public ConanParameter getOutputDir() {
-            return outputDir;
-        }
-
         public ConanParameter getLibs() {
             return libs;
         }
@@ -371,7 +441,6 @@ public class AbyssV13 extends AbstractAssembler {
         @Override
         public ConanParameter[] getConanParametersAsArray() {
             return new ConanParameter[] {
-                    this.outputDir,
                     this.libs,
                     this.nbContigPairs,
                     this.kmer,

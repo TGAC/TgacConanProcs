@@ -21,6 +21,8 @@ import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fgpt.conan.core.param.*;
 import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
@@ -46,21 +48,23 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @MetaInfServices(AssemblyEnhancer.class)
-public class SoapScaffolderV240 extends AbstractAssemblyEnhancer {
+public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
+
+    private static Logger log = LoggerFactory.getLogger(SoapScaffolderV24.class);
 
     public static final String EXE = "SOAPdenovo-127mer";
-    public static final String NAME = "SOAP_Scaffold_V2.04";
+    public static final String NAME = "SOAP_Scaffold_V2.4";
     public static final AssemblyEnhancerType TYPE = AssemblyEnhancerType.SCAFFOLDER;
 
-    public SoapScaffolderV240() {
+    public SoapScaffolderV24() {
         this(null);
     }
 
-    public SoapScaffolderV240(ConanExecutorService ces) {
+    public SoapScaffolderV24(ConanExecutorService ces) {
         this(ces, new Args());
     }
 
-    public SoapScaffolderV240(ConanExecutorService ces, Args args) {
+    public SoapScaffolderV24(ConanExecutorService ces, Args args) {
         super(NAME, TYPE, EXE, args, new Params(), ces);
     }
 
@@ -119,29 +123,45 @@ public class SoapScaffolderV240 extends AbstractAssemblyEnhancer {
     }
 
     @Override
-    public boolean execute(ExecutionContext executionContext) throws ProcessExecutionException, InterruptedException {
+    public void setup() throws IOException {
+
+        String pwdFull = new File(".").getAbsolutePath();
+        String pwd = pwdFull.substring(0, pwdFull.length() - 2);
+
+        this.addPreCommand("cd " + ((Args)this.getProcessArgs()).getOutputDir().getAbsolutePath());
+        this.addPostCommand("cd " + pwd);
 
         Args args = this.getArgs();
 
         // Create the SSPACE lib configuration file from the library list
-        try {
-            if (args.getConfigFile() == null) {
-                args.setConfigFile(new File(args.getOutputDir(), "soap_gc.libs"));
-            }
-
+        if (args.getConfigFile() == null  && args.getLibraries() != null) {
+            args.setConfigFile(new File(args.getOutputDir(), "soap_scaff.libs"));
             args.createConfigFile(args.getLibraries(), args.getConfigFile());
         }
-        catch(IOException ioe) {
-            throw new ProcessExecutionException(-1, ioe);
+        else if (args.getConfigFile() == null && args.getLibraries() == null) {
+            throw new IOException("Cannot run SOAP without libraries or config file");
+        }
+        else if (args.getConfigFile() != null && args.getLibraries() != null) {
+            log.warn("SOAP denovo found both a config file and libraries.  Assuming config file was intended to be used.");
+        }
+    }
+
+    @Override
+    public boolean isOperational(ExecutionContext executionContext) {
+
+        String preCommand = "";
+
+        if (executionContext.getExternalProcessConfiguration() != null) {
+            String extPreCommand = executionContext.getExternalProcessConfiguration().getCommand(this.getName());
+
+            if (extPreCommand != null && !extPreCommand.isEmpty()) {
+                preCommand += extPreCommand + "; ";
+            }
         }
 
-        ExecutionContext executionContextCopy = executionContext.copy();
+        this.getConanProcessService().executableOnPath("prepare", preCommand, executionContext);
 
-        if (executionContextCopy.usingScheduler()) {
-            executionContextCopy.getScheduler().getArgs().setMonitorFile(new File(args.getOutputDir(), args.getOutputFile().getName() + ".scheduler.log"));
-        }
-
-        return super.execute(executionContextCopy);
+        return super.isOperational(executionContext);
     }
 
     @MetaInfServices(AssemblyEnhancerArgs.class)
@@ -409,7 +429,7 @@ public class SoapScaffolderV240 extends AbstractAssemblyEnhancer {
                 pvp.put(params.getCpus(), Integer.toString(this.getThreads()));
 
             if (this.getMemory() != DEFAULT_MEMORY)
-                pvp.put(params.getMemoryGb(), Integer.toString(this.getMemory()));
+                pvp.put(params.getMemoryGb(), Integer.toString(this.getMemory() / 1000));
 
             if (this.kmerFreqCutoff != DEFAULT_KMER_FREQ_CUTOFF)
                 pvp.put(params.getKmerFreqCutoff(), Integer.toString(this.kmerFreqCutoff));

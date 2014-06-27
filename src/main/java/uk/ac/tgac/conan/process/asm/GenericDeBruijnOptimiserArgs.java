@@ -5,11 +5,11 @@ import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 /**
  * Created by maplesod on 18/06/14.
  */
-public abstract class DeBruijnOptimiserAssemblerArgs extends AbstractAssemblerArgs {
+public abstract class GenericDeBruijnOptimiserArgs extends AbstractAssemblerArgs {
 
     private KmerRange kmerRange;
 
-    protected DeBruijnOptimiserAssemblerArgs(ProcessParams params, String name) {
+    protected GenericDeBruijnOptimiserArgs(ProcessParams params, String name) {
         super(params, name);
     }
 

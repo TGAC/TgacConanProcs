@@ -27,11 +27,10 @@ import uk.ac.tgac.conan.core.data.SeqFile;
 import uk.ac.tgac.conan.process.asm.AbstractAssembler;
 import uk.ac.tgac.conan.process.asm.Assembler;
 import uk.ac.tgac.conan.process.asm.AssemblerArgs;
-import uk.ac.tgac.conan.process.asm.DeBruijnOptimiserAssemblerArgs;
+import uk.ac.tgac.conan.process.asm.GenericDeBruijnOptimiserArgs;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * User: maplesod
@@ -147,7 +146,7 @@ public class SpadesV31 extends AbstractAssembler {
 
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends DeBruijnOptimiserAssemblerArgs {
+    public static class Args extends GenericDeBruijnOptimiserArgs {
 
         public Args() {
             super(new Params(), NAME);

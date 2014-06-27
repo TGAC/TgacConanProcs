@@ -1,5 +1,6 @@
 package uk.ac.tgac.conan.process.asm;
 
+import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.ConanProcess;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.tgac.conan.core.data.Library;
@@ -94,7 +95,7 @@ public interface Assembler extends ConanProcess {
      * @param
      * @throws IOException
      */
-    void initialise(AssemblerArgs args, ConanExecutorService ces) throws IOException;
+    void initialise(AbstractProcessArgs args, ConanExecutorService ces) throws IOException;
 
 
     public enum Type {

@@ -26,32 +26,20 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractAssemblerArgs extends AbstractProcessArgs implements AssemblerArgs {
+public abstract class AbstractAssemblerArgs {
 
-    private String name;
     private int memory;
     private int threads;
     private File outputDir;
     private List<Library> libraries;
     private Organism organism;
 
-    protected AbstractAssemblerArgs(ProcessParams params, String name) {
-        super(params);
-        this.name = name;
+    protected AbstractAssemblerArgs() {
         this.memory = 0;
         this.threads = 0;
         this.outputDir = new File(".");
         this.libraries = new ArrayList<>();
         this.organism = null;
-    }
-
-    /**
-     * Gets the name of this process
-     * @return
-     */
-    @Override
-    public String getName() {
-        return this.name;
     }
 
     public int getThreads() {
@@ -92,14 +80,5 @@ public abstract class AbstractAssemblerArgs extends AbstractProcessArgs implemen
 
     public void setMemory(int memory) {
         this.memory = memory;
-    }
-
-    @Override
-    public void initialise(List<Library> libs, File outputDir, int threads, int memory, Organism organism) {
-        this.setOutputDir(outputDir);
-        this.setLibraries(libs);
-        this.setThreads(threads);
-        this.setMemory(memory);
-        this.setOrganism(organism);
     }
 }

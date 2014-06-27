@@ -494,7 +494,7 @@ public class AllpathsLgV44837 extends AbstractAssembler implements Subsampler {
 
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends DeBruijnAutoAssemblerArgs {
+    public static class Args extends GenericDeBruijnAutoArgs {
 
         private int desiredCoverage;
 

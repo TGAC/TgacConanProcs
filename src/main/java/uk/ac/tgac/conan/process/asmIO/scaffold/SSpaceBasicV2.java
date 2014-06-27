@@ -21,6 +21,8 @@ import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.MetaInfServices;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fgpt.conan.core.param.*;
 import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
@@ -43,6 +45,8 @@ import java.util.List;
  */
 @MetaInfServices(AssemblyEnhancer.class)
 public class SSpaceBasicV2 extends AbstractAssemblyEnhancer {
+
+    private static Logger log = LoggerFactory.getLogger(SSpaceBasicV2.class);
 
     public static final String EXE = "SSPACE_Basic_v2.0.pl";
     public static final String NAME = "SSPACE_Basic_v2.0";
@@ -88,13 +92,7 @@ public class SSpaceBasicV2 extends AbstractAssemblyEnhancer {
             throw new ProcessExecutionException(-1, ioe);
         }
 
-        ExecutionContext executionContextCopy = executionContext.copy();
-
-        if (executionContextCopy.usingScheduler()) {
-            executionContextCopy.getScheduler().getArgs().setMonitorFile(new File(args.getOutputDir(), args.getOutputFile().getName() + ".scheduler.log"));
-        }
-
-        return super.execute(executionContextCopy);
+        return super.execute(executionContext);
     }
 
 
@@ -297,6 +295,7 @@ public class SSpaceBasicV2 extends AbstractAssemblyEnhancer {
 
             }
 
+            log.debug("Writing SSPACE config file to: " + libraryConfigFile.getAbsolutePath());
             FileUtils.writeLines(libraryConfigFile, lines);
         }
 

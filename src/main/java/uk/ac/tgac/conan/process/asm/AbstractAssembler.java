@@ -1,6 +1,7 @@
 package uk.ac.tgac.conan.process.asm;
 
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
+import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.tgac.conan.core.data.Library;
@@ -19,7 +20,7 @@ public abstract class AbstractAssembler extends AbstractConanProcess implements 
 
     protected String name;
 
-    protected AbstractAssembler(String name, String executable, AbstractAssemblerArgs args, ProcessParams params, ConanExecutorService conanExecutorService) {
+    protected AbstractAssembler(String name, String executable, AbstractProcessArgs args, ProcessParams params, ConanExecutorService conanExecutorService) {
         super(executable, args, params, conanExecutorService);
         this.name = name;
     }
@@ -62,7 +63,7 @@ public abstract class AbstractAssembler extends AbstractConanProcess implements 
     }
 
     @Override
-    public void initialise(AssemblerArgs args, ConanExecutorService ces) throws IOException {
+    public void initialise(AbstractProcessArgs args, ConanExecutorService ces) throws IOException {
         this.setProcessArgs(args);
         this.conanExecutorService = ces;
     }
@@ -71,4 +72,5 @@ public abstract class AbstractAssembler extends AbstractConanProcess implements 
     public String getName() {
         return name;
     }
+
 }

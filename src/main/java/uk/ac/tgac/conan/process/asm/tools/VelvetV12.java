@@ -28,7 +28,6 @@ import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * User: maplesod
@@ -165,7 +164,7 @@ public class VelvetV12 extends AbstractAssembler {
     }
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends DeBruijnAssemblerArgs {
+    public static class Args extends GenericDeBruijnArgs {
 
         public Args() {
             super(new Params(), NAME);

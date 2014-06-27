@@ -1,5 +1,6 @@
 package uk.ac.tgac.conan.process.asm;
 
+import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.Organism;
@@ -17,26 +18,10 @@ import java.util.List;
 public interface AssemblerArgs extends ProcessArgs {
 
     /**
-     * Creates an instance of an AbstractAssembler using Basic args
-     *
-     * @return
-     */
-    void initialise(
-            List<Library> libs,
-            File outputDir,
-            int threads,
-            int memory,
-            Organism organism);
-
-    /**
-     * The type of assembler supported by these args.
-     * @return
-     */
-    Assembler.Type getType();
-
-    /**
      * Gets the name of this process
      * @return
      */
-    String getName();
+    String getProcessName();
+
+    AbstractProcessArgs toConanArgs();
 }

@@ -93,14 +93,8 @@ public class SoapGapCloserV112 extends AbstractAssemblyEnhancer {
             args.setOutputFile(new File(args.getOutputDir(), "gc.fa"));
         }
 
-        ExecutionContext executionContextCopy = executionContext.copy();
-
-        if (executionContextCopy.usingScheduler()) {
-            executionContextCopy.getScheduler().getArgs().setMonitorFile(new File(args.getOutputDir(), args.getOutputFile().getName() + ".scheduler.log"));
-        }
-
         try {
-            return super.execute(executionContextCopy);
+            return super.execute(executionContext);
         }
         catch(ProcessExecutionException pee) {
             log.warn("Gap Closer threw an error.  This is probably not a problem, gap closer always finishes with an error condition but please check output.");
