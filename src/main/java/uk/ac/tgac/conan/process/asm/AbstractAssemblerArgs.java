@@ -1,55 +1,33 @@
-/**
- * RAMPART - Robust Automatic MultiPle AssembleR Toolkit
- * Copyright (C) 2013  Daniel Mapleson - TGAC
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
 package uk.ac.tgac.conan.process.asm;
 
 import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
-import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
+import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.core.data.Organism;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ServiceLoader;
 
-public abstract class AbstractAssemblerArgs {
+/**
+ * Created by dan on 29/06/14.
+ */
+public abstract class AbstractAssemblerArgs extends AbstractProcessArgs implements AssemblerArgs {
 
-    private int memory;
-    private int threads;
-    private File outputDir;
-    private List<Library> libraries;
-    private Organism organism;
+    private String processName;
+    protected File outputDir;
+    protected List<Library> libs;
+    protected int threads;
+    protected int maxMemUsageMB;
 
-    protected AbstractAssemblerArgs() {
-        this.memory = 0;
-        this.threads = 0;
-        this.outputDir = new File(".");
-        this.libraries = new ArrayList<>();
-        this.organism = null;
-    }
+    protected AbstractAssemblerArgs(ProcessParams params, String processName) {
 
-    public int getThreads() {
-        return threads;
-    }
+        super(params);
 
-    public void setThreads(int threads) {
-        this.threads = threads;
+        this.processName = processName;
+        this.outputDir = new File("");
+        this.libs = new ArrayList<>();
+        this.threads = 1;
+        this.maxMemUsageMB = 0;
     }
 
     public File getOutputDir() {
@@ -60,49 +38,37 @@ public abstract class AbstractAssemblerArgs {
         this.outputDir = outputDir;
     }
 
-    public List<Library> getLibraries() {
-        return libraries;
+    public List<Library> getLibs() {
+        return libs;
     }
 
-    public void setLibraries(List<Library> libraries) {
-        this.libraries = libraries;
+    public void setLibs(List<Library> libs) {
+        this.libs = libs;
     }
 
-    public Organism getOrganism() {
-        return organism;
+    public int getThreads() {
+        return threads;
     }
 
-    public void setOrganism(Organism organism) {
-        this.organism = organism;
+    public void setThreads(int threads) {
+        this.threads = threads;
     }
 
-    public int getMemory() {
-        return memory;
+    public int getMaxMemUsageMB() {
+        return maxMemUsageMB;
     }
 
-    public void setMemory(int memory) {
-        this.memory = memory;
+    public void setMaxMemUsageMB(int maxMemUsageMB) {
+        this.maxMemUsageMB = maxMemUsageMB;
     }
 
-    public abstract AssemblerArgs createProcessArgs(String toolName);
+    @Override
+    public String getProcessName() {
+        return processName;
+    }
 
-    public abstract Assembler createAssembler(String toolName, ConanExecutorService ces) throws IOException;
-
-    protected Assembler createAssembler(String toolName, AbstractProcessArgs args, ConanExecutorService ces)
-            throws IOException {
-
-        if (args == null)
-            throw new IllegalArgumentException("Provided assembler args are null");
-
-        ServiceLoader<Assembler> procLoader = ServiceLoader.load(Assembler.class);
-
-        for(Assembler assembler : procLoader) {
-            if (assembler.getName().equalsIgnoreCase(toolName.trim())) {
-                assembler.initialise(args, ces);
-                return assembler;
-            }
-        }
-
-        throw new IllegalArgumentException("Could not find the requested assembler: " + toolName);
+    @Override
+    public AbstractProcessArgs toConanArgs() {
+        return this;
     }
 }

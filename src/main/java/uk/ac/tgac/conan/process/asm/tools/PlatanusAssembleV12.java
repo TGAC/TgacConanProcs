@@ -27,13 +27,10 @@ import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
-import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User: maplesod
@@ -98,7 +95,7 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
     }
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends AbstractProcessArgs implements DeBruijnOptimiserArgs {
+    public static class Args extends AbstractAssemblerArgs implements DeBruijnOptimiserArgs {
 
         public static final String DEFAULT_OUTPUT_PREFIX = "platanus";
         public static final int DEFAULT_INITIAL_K = 32;
@@ -111,9 +108,7 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
         public static final int DEFAULT_THREADS = 1;
         public static final int DEFAULT_MEM_LIMIT = 16;
 
-        private File outputDir;
         private String outputPrefix;
-        private List<Library> input;
         private int initialK;
         private int kStep;
         private int initialKCutoff;
@@ -121,15 +116,11 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
         private double kExtensionLevel;
         private double maxDiffBubbleCrush;
         private double maxDiffBranchCut;
-        private int threads;
-        private int memoryLimit;
 
         public Args() {
-            super(new Params());
+            super(new Params(), NAME);
 
-            this.outputDir = new File("");
             this.outputPrefix = DEFAULT_OUTPUT_PREFIX;
-            this.input = new ArrayList<>();
             this.initialK = DEFAULT_INITIAL_K;
             this.kStep = DEFAULT_K_STEP;
             this.initialKCutoff = DEFAULT_INITIAL_K_CUTOFF;
@@ -137,20 +128,10 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
             this.kExtensionLevel = DEFAULT_K_EXT_LEVEL;
             this.maxDiffBubbleCrush = DEFAULT_MAX_DIFF_BUBBLE_CRUSH;
             this.maxDiffBranchCut = DEFAULT_MAX_DIFF_BRANCH_CUT;
-            this.threads = DEFAULT_THREADS;
-            this.memoryLimit = DEFAULT_MEM_LIMIT;
         }
 
         public Params getParams() {
             return (Params)this.params;
-        }
-
-        public File getOutputDir() {
-            return outputDir;
-        }
-
-        public void setOutputDir(File outputDir) {
-            this.outputDir = outputDir;
         }
 
         public String getOutputPrefix() {
@@ -159,14 +140,6 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
 
         public void setOutputPrefix(String outputPrefix) {
             this.outputPrefix = outputPrefix;
-        }
-
-        public List<Library> getInput() {
-            return input;
-        }
-
-        public void setInput(List<Library> input) {
-            this.input = input;
         }
 
         public int getInitialK() {
@@ -225,22 +198,9 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
             this.maxDiffBranchCut = maxDiffBranchCut;
         }
 
-        public int getThreads() {
-            return threads;
+        public int getMemLimitGB() {
+            return this.maxMemUsageMB / 1000;
         }
-
-        public void setThreads(int threads) {
-            this.threads = threads;
-        }
-
-        public int getMemoryLimit() {
-            return memoryLimit;
-        }
-
-        public void setMemoryLimit(int memoryLimit) {
-            this.memoryLimit = memoryLimit;
-        }
-
         @Override
         public void parse(String args) throws IOException {
 
@@ -272,8 +232,8 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
                 pvp.put(params.getThreads(), Integer.toString(this.threads));
             }
 
-            if (this.memoryLimit != DEFAULT_MEM_LIMIT) {
-                pvp.put(params.getMemoryLimit(), Integer.toString(this.memoryLimit));
+            if (this.getMemLimitGB() != DEFAULT_MEM_LIMIT) {
+                pvp.put(params.getMemoryLimit(), Integer.toString(this.getMemLimitGB()));
             }
 
             if (this.minKCoverage != DEFAULT_MIN_K_COVERAGE) {
@@ -313,7 +273,7 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
                 this.setThreads(Integer.parseInt(value));
             }
             else if (param.equals(params.getMemoryLimit())) {
-                this.setMemoryLimit(Integer.parseInt(value));
+                this.maxMemUsageMB = Integer.parseInt(value) * 1000;
             }
             else if (param.equals(params.getInitialKCutoff())) {
                 this.setInitialKCutoff(Integer.parseInt(value));
@@ -351,10 +311,10 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
             GenericDeBruijnOptimiserArgs args = new GenericDeBruijnOptimiserArgs();
 
             args.setOutputDir(this.outputDir);
-            args.setLibraries(this.input);
+            args.setLibraries(this.libs);
             args.setThreads(this.threads);
-            args.setMemory(this.memoryLimit * 1000);        // Convert to MB
-            args.setKmerRange(new KmerRange(this.initialK, KmerRange.getLastKmerFromLibs(this.input), this.kStep));
+            args.setMemory(this.maxMemUsageMB);
+            args.setKmerRange(new KmerRange(this.initialK, KmerRange.getLastKmerFromLibs(this.libs), this.kStep));
 
             return args;
         }
@@ -363,9 +323,9 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
         public void setDeBruijnOptimiserArgs(GenericDeBruijnOptimiserArgs args) {
 
             this.outputDir = args.getOutputDir();
-            this.input = args.getLibraries();
+            this.libs = args.getLibraries();
             this.threads = args.getThreads();
-            this.memoryLimit = args.getMemory() / 1000;     // Convert to GB
+            this.maxMemUsageMB = args.getMemory();
             this.initialK = args.getKmerRange().getFirstKmer();
             this.kStep = args.getKmerRange().getStepSize();
         }

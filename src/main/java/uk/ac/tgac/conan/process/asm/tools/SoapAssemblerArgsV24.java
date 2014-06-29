@@ -26,7 +26,6 @@ import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.FlagParameter;
 import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
 import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
-import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
@@ -106,6 +105,11 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
         return null;
     }
 
+    @Override
+    public void setLibraries(List<Library> libraries) {
+        this.getArgs().setLibs(libraries);
+    }
+
     protected String createPreGraphCommand() {
 
         Args args = this.getArgs();
@@ -115,7 +119,7 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
                 " -o graph" +
                 " -K " + args.getK() +
                 " -p " + args.getThreads() +
-                " -a " + args.getMemory() +
+                " -a " + args.getMemoryAssumptionGB() +
                 (args.resolveRepeats ? " -R" : "") +
                 " -d " + args.getCoverageCutoff();
     }
@@ -178,7 +182,7 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
     }
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends AbstractProcessArgs implements DeBruijnArgs {
+    public static class Args extends AbstractAssemblerArgs implements DeBruijnArgs {
 
         private static Logger log = LoggerFactory.getLogger(SoapAssemblerArgsV24.class);
 
@@ -186,12 +190,8 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
         public static final int DEFAULT_COVERAGE_CUTOFF = 0;
         public static final int DEFAULT_THREADS = 1;
 
-        private File outputDir;
-        private List<Library> libs;
         private int k;
         private int coverageCutoff;
-        private int threads;
-        private int memory;
         private boolean resolveRepeats;
         private boolean fillGaps;
         private String outputPrefix;
@@ -199,14 +199,10 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
 
 
         public Args() {
-            super(new Params());
+            super(new Params(), NAME);
 
-            this.outputDir = new File("");
-            this.libs = null;
             this.k = DEFAULT_K;
             this.coverageCutoff = DEFAULT_COVERAGE_CUTOFF;
-            this.threads = DEFAULT_THREADS;
-            this.memory = 0;
             this.resolveRepeats = true;
             this.fillGaps = false;
             this.configFile = null;
@@ -215,22 +211,6 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
 
         public Params getParams() {
             return (Params)this.params;
-        }
-
-        public File getOutputDir() {
-            return outputDir;
-        }
-
-        public void setOutputDir(File outputDir) {
-            this.outputDir = outputDir;
-        }
-
-        public List<Library> getLibs() {
-            return libs;
-        }
-
-        public void setLibs(List<Library> libs) {
-            this.libs = libs;
         }
 
         public int getK() {
@@ -247,22 +227,6 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
 
         public void setCoverageCutoff(int coverageCutoff) {
             this.coverageCutoff = coverageCutoff;
-        }
-
-        public int getThreads() {
-            return threads;
-        }
-
-        public void setThreads(int threads) {
-            this.threads = threads;
-        }
-
-        public int getMemory() {
-            return memory;
-        }
-
-        public void setMemory(int memory) {
-            this.memory = memory;
         }
 
         public boolean isResolveRepeats() {
@@ -297,6 +261,10 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
             this.configFile = configFile;
         }
 
+        public int getMemoryAssumptionGB() {
+            return this.maxMemUsageMB / 1000;
+        }
+
         @Override
         public void parse(String args) {
 
@@ -324,8 +292,8 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
                 pvp.put(params.getThreads(), Integer.toString(this.getThreads()));
             }
 
-            if (this.memory > 0) {
-                pvp.put(params.getMemory(), Integer.toString(this.memory));
+            if (this.getMemoryAssumptionGB() > 0) {
+                pvp.put(params.getMemory(), Integer.toString(this.getMemoryAssumptionGB()));
             }
 
             if (this.resolveRepeats) {
@@ -361,7 +329,7 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
                 this.setThreads(Integer.parseInt(value));
             }
             else if (param.equals(params.getMemory())) {
-                this.setMemory(Integer.parseInt(value));
+                this.maxMemUsageMB = Integer.parseInt(value) * 1000;
             }
             else if (param.equals(params.getFillGaps())) {
                 this.setFillGaps(Boolean.parseBoolean(value));
@@ -426,6 +394,7 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
             args.setCoverageCutoff(this.coverageCutoff);
             args.setK(this.k);
             args.setThreads(this.threads);
+            args.setMemory(this.maxMemUsageMB);
             args.setLibraries(this.libs);
             args.setOutputDir(this.outputDir);
 
@@ -440,16 +409,7 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
             this.k = args.getK();
             this.coverageCutoff = args.getCoverageCutoff();
             this.threads = args.getThreads();
-        }
-
-        @Override
-        public String getProcessName() {
-            return NAME;
-        }
-
-        @Override
-        public AbstractProcessArgs toConanArgs() {
-            return this;
+            this.maxMemUsageMB = args.getMemory();
         }
     }
 

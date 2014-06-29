@@ -8,7 +8,7 @@ import java.util.ServiceLoader;
 /**
  * Created by maplesod on 18/06/14.
  */
-public class GenericDeBruijnAutoArgs extends AbstractAssemblerArgs {
+public class GenericDeBruijnAutoArgs extends GenericAssemblerArgs {
 
     public GenericDeBruijnAutoArgs() {
         super();

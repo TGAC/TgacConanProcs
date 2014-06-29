@@ -20,7 +20,6 @@ package uk.ac.tgac.conan.process.asm.tools;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
-import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
@@ -171,6 +170,11 @@ public class AllpathsLgV44837 extends AbstractAssembler implements Subsampler {
         }
 
         return foundFragmentLib && foundJumpingLib;
+    }
+
+    @Override
+    public void setLibraries(List<Library> libraries) {
+        this.getArgs().setLibs(libraries);
     }
 
     @Override
@@ -496,53 +500,23 @@ public class AllpathsLgV44837 extends AbstractAssembler implements Subsampler {
 
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends AbstractProcessArgs implements DeBruijnAutoArgs {
+    public static class Args extends AbstractAssemblerArgs implements DeBruijnAutoArgs {
 
         public static final int DEFAULT_DESIRED_COVERAGE = -1;
         public static final int DEFAULT_THREADS = 1;
 
-        private File outputDir;
-        private List<Library> libs;
-        private int threads;
         private int desiredCoverage;
         private Organism organism;
 
         public Args() {
-            super(new Params());
+            super(new Params(), NAME);
 
-            this.outputDir = new File("");
-            this.libs = null;
-            this.threads = DEFAULT_THREADS;
             this.desiredCoverage = DEFAULT_DESIRED_COVERAGE;
             this.organism = null;
         }
 
         public Params getParams() {
             return (Params)this.params;
-        }
-
-        public File getOutputDir() {
-            return outputDir;
-        }
-
-        public void setOutputDir(File outputDir) {
-            this.outputDir = outputDir;
-        }
-
-        public List<Library> getLibs() {
-            return libs;
-        }
-
-        public void setLibs(List<Library> libs) {
-            this.libs = libs;
-        }
-
-        public int getThreads() {
-            return threads;
-        }
-
-        public void setThreads(int threads) {
-            this.threads = threads;
         }
 
         public void setDesiredCoverage(int desiredCoverage) {
@@ -591,9 +565,10 @@ public class AllpathsLgV44837 extends AbstractAssembler implements Subsampler {
 
             GenericDeBruijnAutoArgs args = new GenericDeBruijnAutoArgs();
 
-            args.setOutputDir(this.outputDir);
-            args.setLibraries(this.libs);
-            args.setThreads(this.threads);
+            args.setOutputDir(this.getOutputDir());
+            args.setLibraries(this.getLibs());
+            args.setThreads(this.getThreads());
+            args.setMemory(this.getMaxMemUsageMB());
             args.setOrganism(this.organism);
 
             return args;
@@ -605,17 +580,9 @@ public class AllpathsLgV44837 extends AbstractAssembler implements Subsampler {
             this.outputDir = args.getOutputDir();
             this.libs = args.getLibraries();
             this.threads = args.getThreads();
+            this.maxMemUsageMB = args.getMemory();
+
             this.organism = args.getOrganism();
-        }
-
-        @Override
-        public String getProcessName() {
-            return NAME;
-        }
-
-        @Override
-        public AbstractProcessArgs toConanArgs() {
-            return this;
         }
     }
 

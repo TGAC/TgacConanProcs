@@ -2,11 +2,6 @@ package uk.ac.tgac.conan.process.asm;
 
 import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.ProcessArgs;
-import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.core.data.Organism;
-
-import java.io.File;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,4 +19,5 @@ public interface AssemblerArgs extends ProcessArgs {
     String getProcessName();
 
     AbstractProcessArgs toConanArgs();
+
 }

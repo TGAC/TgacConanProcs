@@ -69,6 +69,11 @@ public abstract class AbstractAssembler extends AbstractConanProcess implements 
     }
 
     @Override
+    public void setLibraries(List<Library> libraries) {
+        this.getAssemblerArgs().setLibs(libraries);
+    }
+
+    @Override
     public String getName() {
         return name;
     }

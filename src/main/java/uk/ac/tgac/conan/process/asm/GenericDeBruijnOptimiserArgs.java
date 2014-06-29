@@ -8,7 +8,7 @@ import java.util.ServiceLoader;
 /**
  * Created by maplesod on 18/06/14.
  */
-public class GenericDeBruijnOptimiserArgs extends AbstractAssemblerArgs {
+public class GenericDeBruijnOptimiserArgs extends GenericAssemblerArgs {
 
     private KmerRange kmerRange;
 

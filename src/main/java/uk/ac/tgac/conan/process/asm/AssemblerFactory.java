@@ -20,6 +20,8 @@ package uk.ac.tgac.conan.process.asm;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ServiceLoader;
 
 /**
@@ -34,26 +36,46 @@ public class AssemblerFactory {
     }
 
     public static Assembler createGenericAssembler(String toolName, ConanExecutorService ces) throws IOException {
-        AssemblerArgs actualArgs = null;
 
-        ServiceLoader<AssemblerArgs> argLoader = ServiceLoader.load(AssemblerArgs.class);
+        AssemblerArgs args = createProcessArgs(toolName);
 
-        for(AssemblerArgs args : argLoader) {
-            if (args.getProcessName().equalsIgnoreCase(toolName.trim())) {
-                actualArgs = args;
-                break;
-            }
-        }
-
-        if (actualArgs == null)
+        if (args == null)
             return null;
 
         ServiceLoader<Assembler> procLoader = ServiceLoader.load(Assembler.class);
 
         for(Assembler assembler : procLoader) {
             if (assembler.getName().equalsIgnoreCase(toolName.trim())) {
-                assembler.initialise(actualArgs.toConanArgs(), ces);
+                assembler.initialise(args.toConanArgs(), ces);
                 return assembler;
+            }
+        }
+
+        return null;
+    }
+
+    protected static AssemblerArgs createProcessArgs(String toolName) {
+
+        ServiceLoader<DeBruijnArgs> dbgArgs = ServiceLoader.load(DeBruijnArgs.class);
+        ServiceLoader<DeBruijnOptimiserArgs> dbgOptArgs = ServiceLoader.load(DeBruijnOptimiserArgs.class);
+        ServiceLoader<DeBruijnAutoArgs> dbgAutoArgs = ServiceLoader.load(DeBruijnAutoArgs.class);
+
+        List<AssemblerArgs> argClasses = new ArrayList<>();
+        for(DeBruijnArgs args : dbgArgs) {
+            argClasses.add(args);
+        }
+
+        for(DeBruijnOptimiserArgs args : dbgOptArgs) {
+            argClasses.add(args);
+        }
+
+        for(DeBruijnAutoArgs args : dbgAutoArgs) {
+            argClasses.add(args);
+        }
+
+        for(AssemblerArgs args : argClasses) {
+            if (args.getProcessName().equalsIgnoreCase(toolName)) {
+                return args;
             }
         }
 

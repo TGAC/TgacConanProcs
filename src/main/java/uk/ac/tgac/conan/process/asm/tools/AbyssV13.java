@@ -181,7 +181,7 @@ public class AbyssV13 extends AbstractAssembler {
 
 
     @MetaInfServices(DeBruijnArgs.class)
-    public static class Args extends AbstractProcessArgs implements DeBruijnArgs {
+    public static class Args extends AbstractAssemblerArgs implements DeBruijnArgs {
 
         public static final int DEFAULT_NB_CONTIG_PAIRS = 10;
         public static final String DEFAULT_NAME = "abyss";
@@ -189,44 +189,22 @@ public class AbyssV13 extends AbstractAssembler {
         public static final int DEFAULT_COVERAGE_CUTOFF = 0;
         public static final int DEFAULT_THREADS = 1;
 
-        private File outputDir;
-        private List<Library> libs;
         private int nbContigPairs;
         private String name;
         private int k;
         private int coverageCutoff;
-        private int threads;
 
         public Args() {
-            super(new Params());
+            super(new Params(), NAME);
 
-            this.outputDir = new File("");
-            this.libs = null;
             this.nbContigPairs = DEFAULT_NB_CONTIG_PAIRS;
             this.name = DEFAULT_NAME;
             this.k = DEFAULT_K;
             this.coverageCutoff = DEFAULT_COVERAGE_CUTOFF;
-            this.threads = DEFAULT_THREADS;
         }
 
         public Params getParams() {
             return (Params)this.params;
-        }
-
-        public File getOutputDir() {
-            return outputDir;
-        }
-
-        public void setOutputDir(File outputDir) {
-            this.outputDir = outputDir;
-        }
-
-        public List<Library> getLibs() {
-            return libs;
-        }
-
-        public void setLibs(List<Library> libs) {
-            this.libs = libs;
         }
 
         public int getNbContigPairs() {
@@ -235,16 +213,6 @@ public class AbyssV13 extends AbstractAssembler {
 
         public void setNbContigPairs(int nbContigPairs) {
             this.nbContigPairs = nbContigPairs;
-        }
-
-        @Override
-        public String getProcessName() {
-            return NAME;
-        }
-
-        @Override
-        public AbstractProcessArgs toConanArgs() {
-            return this;
         }
 
         public String getName() {
@@ -269,14 +237,6 @@ public class AbyssV13 extends AbstractAssembler {
 
         public void setCoverageCutoff(int coverageCutoff) {
             this.coverageCutoff = coverageCutoff;
-        }
-
-        public int getThreads() {
-            return threads;
-        }
-
-        public void setThreads(int threads) {
-            this.threads = threads;
         }
 
         @Override
@@ -357,9 +317,11 @@ public class AbyssV13 extends AbstractAssembler {
 
             args.setCoverageCutoff(this.coverageCutoff);
             args.setK(this.k);
+
             args.setThreads(this.threads);
             args.setLibraries(this.libs);
             args.setOutputDir(this.outputDir);
+            args.setMemory(this.maxMemUsageMB);
 
             return args;
         }
@@ -372,6 +334,7 @@ public class AbyssV13 extends AbstractAssembler {
             this.k = args.getK();
             this.coverageCutoff = args.getCoverageCutoff();
             this.threads = args.getThreads();
+            this.maxMemUsageMB = args.getMemory();
         }
     }
 

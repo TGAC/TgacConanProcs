@@ -82,6 +82,12 @@ public interface Assembler extends ConanProcess {
     boolean acceptsLibraries(List<Library> libraries);
 
     /**
+     * Sets the list of libraries as input for this assembler
+     * @param libraries List of libraries to assemble
+     */
+    void setLibraries(List<Library> libraries);
+
+    /**
      * This can be used to do any setup work between running the constructor and executing the process.  For example,
      * it can be used to add any pre or post commands that are necessary for this assembler.
      * @throws IOException

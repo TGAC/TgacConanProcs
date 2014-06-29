@@ -8,7 +8,7 @@ import java.util.ServiceLoader;
 /**
  * Created by maplesod on 18/06/14.
  */
-public class GenericDeBruijnArgs extends AbstractAssemblerArgs {
+public class GenericDeBruijnArgs extends GenericAssemblerArgs {
 
     public static final int DEFAULT_K = 55;
     public static final int DEFAULT_COVERAGE_CUTOFF = 0;
