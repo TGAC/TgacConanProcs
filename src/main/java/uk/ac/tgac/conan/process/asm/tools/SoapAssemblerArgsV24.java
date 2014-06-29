@@ -26,6 +26,7 @@ import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.FlagParameter;
 import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
 import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
+import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
@@ -46,7 +47,7 @@ import java.util.List;
  * Time: 15:57
  */
 @MetaInfServices(uk.ac.tgac.conan.process.asm.Assembler.class)
-public class SoapAssemblerArgsV24 extends AbstractAssembler implements DeBruijnArgs {
+public class SoapAssemblerArgsV24 extends AbstractAssembler {
 
     private static Logger log = LoggerFactory.getLogger(SoapAssemblerArgsV24.class);
 
@@ -67,7 +68,7 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler implements DeBruijnA
     }
 
     public Args getArgs() {
-        return (Args)this.getAssemblerArgs();
+        return (Args)this.getProcessArgs();
     }
 
     @Override
@@ -161,36 +162,35 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler implements DeBruijnA
         this.addPostCommand("cd " + pwd);
 
 
-        if (args.getConfigFile() == null && args.getLibraries() != null) {
+        if (args.getConfigFile() == null && args.getLibs() != null) {
 
             File configFile = new File(args.getOutputDir(), "soap.libs");
             log.debug("Config file not defined but libraries available.  Creating config file from libraries at " + configFile.getAbsolutePath());
             args.setConfigFile(configFile);
-            args.createLibraryConfigFile(args.getLibraries(), configFile);
+            args.createLibraryConfigFile(args.getLibs(), configFile);
         }
-        else if (args.getConfigFile() == null && args.getLibraries() == null) {
+        else if (args.getConfigFile() == null && args.getLibs() == null) {
             throw new IOException("Cannot run SOAP without libraries or config file");
         }
-        else if (args.getConfigFile() != null && args.getLibraries() != null) {
+        else if (args.getConfigFile() != null && args.getLibs() != null) {
             log.warn("SOAP denovo found both a config file and libraries.  Assuming config file was intended to be used.");
         }
     }
 
-    @Override
-    public void setDeBruijnArgs(GenericDeBruijnArgs commonArgs) {
-        super.setCommonArgs(commonArgs);
-
-        Args args = this.getArgs();
-
-        args.setK(commonArgs.getK());
-        args.setCoverageCutoff(commonArgs.getCoverageCutoff());
-    }
-
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends GenericDeBruijnArgs {
+    public static class Args extends AbstractProcessArgs implements DeBruijnArgs {
 
         private static Logger log = LoggerFactory.getLogger(SoapAssemblerArgsV24.class);
 
+        public static final int DEFAULT_K = 61;
+        public static final int DEFAULT_COVERAGE_CUTOFF = 0;
+        public static final int DEFAULT_THREADS = 1;
+
+        private File outputDir;
+        private List<Library> libs;
+        private int k;
+        private int coverageCutoff;
+        private int threads;
         private int memory;
         private boolean resolveRepeats;
         private boolean fillGaps;
@@ -199,8 +199,13 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler implements DeBruijnA
 
 
         public Args() {
-            super(new Params(), NAME);
+            super(new Params());
 
+            this.outputDir = new File("");
+            this.libs = null;
+            this.k = DEFAULT_K;
+            this.coverageCutoff = DEFAULT_COVERAGE_CUTOFF;
+            this.threads = DEFAULT_THREADS;
             this.memory = 0;
             this.resolveRepeats = true;
             this.fillGaps = false;
@@ -208,6 +213,49 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler implements DeBruijnA
             this.outputPrefix = "soap_out";
         }
 
+        public Params getParams() {
+            return (Params)this.params;
+        }
+
+        public File getOutputDir() {
+            return outputDir;
+        }
+
+        public void setOutputDir(File outputDir) {
+            this.outputDir = outputDir;
+        }
+
+        public List<Library> getLibs() {
+            return libs;
+        }
+
+        public void setLibs(List<Library> libs) {
+            this.libs = libs;
+        }
+
+        public int getK() {
+            return k;
+        }
+
+        public void setK(int k) {
+            this.k = k;
+        }
+
+        public int getCoverageCutoff() {
+            return coverageCutoff;
+        }
+
+        public void setCoverageCutoff(int coverageCutoff) {
+            this.coverageCutoff = coverageCutoff;
+        }
+
+        public int getThreads() {
+            return threads;
+        }
+
+        public void setThreads(int threads) {
+            this.threads = threads;
+        }
 
         public int getMemory() {
             return memory;
@@ -368,6 +416,40 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler implements DeBruijnA
             FileUtils.writeStringToFile(configFile, fileContents);
 
             log.debug("Config file created: " + (configFile.exists() ? "true" : "false"));
+        }
+
+        @Override
+        public GenericDeBruijnArgs getDeBruijnArgs() {
+
+            GenericDeBruijnArgs args = new GenericDeBruijnArgs();
+
+            args.setCoverageCutoff(this.coverageCutoff);
+            args.setK(this.k);
+            args.setThreads(this.threads);
+            args.setLibraries(this.libs);
+            args.setOutputDir(this.outputDir);
+
+            return args;
+        }
+
+        @Override
+        public void setDeBruijnArgs(GenericDeBruijnArgs args) {
+
+            this.outputDir = args.getOutputDir();
+            this.libs = args.getLibraries();
+            this.k = args.getK();
+            this.coverageCutoff = args.getCoverageCutoff();
+            this.threads = args.getThreads();
+        }
+
+        @Override
+        public String getProcessName() {
+            return NAME;
+        }
+
+        @Override
+        public AbstractProcessArgs toConanArgs() {
+            return this;
         }
     }
 

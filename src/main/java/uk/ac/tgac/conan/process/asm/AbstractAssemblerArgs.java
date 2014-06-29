@@ -18,13 +18,15 @@
 package uk.ac.tgac.conan.process.asm;
 
 import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
-import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
+import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.Organism;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ServiceLoader;
 
 public abstract class AbstractAssemblerArgs {
 
@@ -80,5 +82,27 @@ public abstract class AbstractAssemblerArgs {
 
     public void setMemory(int memory) {
         this.memory = memory;
+    }
+
+    public abstract AssemblerArgs createProcessArgs(String toolName);
+
+    public abstract Assembler createAssembler(String toolName, ConanExecutorService ces) throws IOException;
+
+    protected Assembler createAssembler(String toolName, AbstractProcessArgs args, ConanExecutorService ces)
+            throws IOException {
+
+        if (args == null)
+            throw new IllegalArgumentException("Provided assembler args are null");
+
+        ServiceLoader<Assembler> procLoader = ServiceLoader.load(Assembler.class);
+
+        for(Assembler assembler : procLoader) {
+            if (assembler.getName().equalsIgnoreCase(toolName.trim())) {
+                assembler.initialise(args, ces);
+                return assembler;
+            }
+        }
+
+        throw new IllegalArgumentException("Could not find the requested assembler: " + toolName);
     }
 }

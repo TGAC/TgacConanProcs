@@ -67,7 +67,7 @@ public class AbyssV13Test {
         /*correctCommand = "abyss-pe --directory=" + pwd + " name=OUTPUT_FILE k=61 np=16 lib='peLib1' " +
                 "peLib1='" + pwd + "/tools/mass/LIB1896_R1.r95.fastq " + pwd + "/tools/mass/LIB1896_R2.r95.fastq'";*/
 
-        correctCommand = "abyss-pe name=OUTPUT_FILE k=61 np=16 lib='peLib1' " +
+        correctCommand = "abyss-pe name=abyss-out k=61 np=16 lib='peLib1' " +
                 "peLib1='" + pwd + "/tools/mass/LIB1896_R1.r95.fastq " + pwd + "/tools/mass/LIB1896_R2.r95.fastq'";
 
         correctFullCommand = "cd " + testDir + "; " + correctCommand + " 2>&1; cd " + pwd;
@@ -93,9 +93,9 @@ public class AbyssV13Test {
         List<Library> libs = this.createLocalPETestLibrary();
 
         AbyssV13.Args args = new AbyssV13.Args();
-        args.setLibraries(libs);
+        args.setLibs(libs);
         args.setK(61);
-        args.setOutputName("OUTPUT_FILE");
+        args.setName("abyss-out");
         args.setThreads(16);
         args.setOutputDir(temp.getRoot());
 

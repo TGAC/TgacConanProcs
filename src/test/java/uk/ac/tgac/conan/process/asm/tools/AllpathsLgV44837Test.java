@@ -102,7 +102,7 @@ public class AllpathsLgV44837Test {
         List<Library> libs = this.createLocalPETestLibrary();
 
         AllpathsLgV44837.Args args = new AllpathsLgV44837.Args();
-        args.setLibraries(libs);
+        args.setLibs(libs);
         args.setDesiredCoverage(75);
         args.setThreads(16);
         args.setOutputDir(temp.getRoot());

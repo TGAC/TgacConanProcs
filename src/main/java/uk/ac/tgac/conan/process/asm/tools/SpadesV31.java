@@ -18,19 +18,19 @@
 package uk.ac.tgac.conan.process.asm.tools;
 
 import org.kohsuke.MetaInfServices;
+import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
-import uk.ac.tgac.conan.process.asm.AbstractAssembler;
-import uk.ac.tgac.conan.process.asm.Assembler;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
-import uk.ac.tgac.conan.process.asm.GenericDeBruijnOptimiserArgs;
+import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: maplesod
@@ -46,16 +46,15 @@ public class SpadesV31 extends AbstractAssembler {
     public SpadesV31() {
         this(null);
     }
-
     public SpadesV31(ConanExecutorService ces) {
         this(ces, new Args());
     }
-    public SpadesV31(ConanExecutorService ces, Args args) {
+    public SpadesV31(ConanExecutorService ces, AbstractProcessArgs args) {
         super(NAME, EXE, args, new Params(), ces);
     }
 
     public Args getArgs() {
-        return (Args)this.getAssemblerArgs();
+        return (Args)this.getProcessArgs();
     }
 
     @Override
@@ -146,10 +145,69 @@ public class SpadesV31 extends AbstractAssembler {
 
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends GenericDeBruijnOptimiserArgs {
+    public static class Args extends AbstractProcessArgs implements DeBruijnOptimiserArgs {
+
+        public static final int DEFAULT_THREADS = 1;
+        public static final int DEFAULT_MEM_LIMIT = 16;
+
+        private File outputDir;
+        private List<Library> input;
+        private int threads;
+        private int memoryLimit;
+        private KmerRange kmerRange;
 
         public Args() {
-            super(new Params(), NAME);
+            super(new Params());
+
+            this.outputDir = new File("");
+            this.input = new ArrayList<>();
+            this.threads = DEFAULT_THREADS;
+            this.memoryLimit = DEFAULT_MEM_LIMIT;
+            this.kmerRange = new KmerRange();
+        }
+
+        public Params getParams() {
+            return (Params)this.params;
+        }
+
+        public File getOutputDir() {
+            return outputDir;
+        }
+
+        public void setOutputDir(File outputDir) {
+            this.outputDir = outputDir;
+        }
+
+        public List<Library> getInput() {
+            return input;
+        }
+
+        public void setInput(List<Library> input) {
+            this.input = input;
+        }
+
+        public int getThreads() {
+            return threads;
+        }
+
+        public void setThreads(int threads) {
+            this.threads = threads;
+        }
+
+        public int getMemoryLimit() {
+            return memoryLimit;
+        }
+
+        public void setMemoryLimit(int memoryLimit) {
+            this.memoryLimit = memoryLimit;
+        }
+
+        public KmerRange getKmerRange() {
+            return kmerRange;
+        }
+
+        public void setKmerRange(KmerRange kmerRange) {
+            this.kmerRange = kmerRange;
         }
 
         @Override
@@ -175,6 +233,40 @@ public class SpadesV31 extends AbstractAssembler {
         @Override
         public void setFromArgMap(ParamMap pvp) throws IOException {
             //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public GenericDeBruijnOptimiserArgs getDeBruijnOptimiserArgs() {
+
+            GenericDeBruijnOptimiserArgs args = new GenericDeBruijnOptimiserArgs();
+
+            args.setOutputDir(this.outputDir);
+            args.setLibraries(this.input);
+            args.setThreads(this.threads);
+            args.setMemory(this.memoryLimit * 1000);        // Convert to MB
+            args.setKmerRange(this.kmerRange);
+
+            return args;
+        }
+
+        @Override
+        public void setDeBruijnOptimiserArgs(GenericDeBruijnOptimiserArgs args) {
+
+            this.outputDir = args.getOutputDir();
+            this.input = args.getLibraries();
+            this.threads = args.getThreads();
+            this.memoryLimit = args.getMemory() / 1000;     // Convert to GB
+            this.kmerRange = args.getKmerRange();
+        }
+
+        @Override
+        public String getProcessName() {
+            return NAME;
+        }
+
+        @Override
+        public AbstractProcessArgs toConanArgs() {
+            return this;
         }
     }
 

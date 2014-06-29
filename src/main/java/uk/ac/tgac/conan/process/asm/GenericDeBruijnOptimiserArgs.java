@@ -1,21 +1,21 @@
 package uk.ac.tgac.conan.process.asm;
 
-import uk.ac.ebi.fgpt.conan.model.param.ProcessParams;
+import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
+
+import java.io.IOException;
+import java.util.ServiceLoader;
 
 /**
  * Created by maplesod on 18/06/14.
  */
-public abstract class GenericDeBruijnOptimiserArgs extends AbstractAssemblerArgs {
+public class GenericDeBruijnOptimiserArgs extends AbstractAssemblerArgs {
 
     private KmerRange kmerRange;
 
-    protected GenericDeBruijnOptimiserArgs(ProcessParams params, String name) {
-        super(params, name);
-    }
+    public GenericDeBruijnOptimiserArgs() {
+        super();
 
-    @Override
-    public Assembler.Type getType() {
-        return Assembler.Type.DE_BRUIJN_OPTIMISER;
+        this.kmerRange = new KmerRange();
     }
 
     public KmerRange getKmerRange() {
@@ -26,4 +26,34 @@ public abstract class GenericDeBruijnOptimiserArgs extends AbstractAssemblerArgs
         this.kmerRange = kmerRange;
     }
 
+    @Override
+    public DeBruijnOptimiserArgs createProcessArgs(String toolName) {
+        ServiceLoader<DeBruijnOptimiserArgs> argLoader = ServiceLoader.load(DeBruijnOptimiserArgs.class);
+
+        for(DeBruijnOptimiserArgs args : argLoader) {
+            if (args.getProcessName().equalsIgnoreCase(toolName.trim())) {
+                args.setDeBruijnOptimiserArgs(this);
+                return args;
+            }
+        }
+
+        throw new IllegalArgumentException("Could not find the requested assembler: " + toolName);
+    }
+
+    @Override
+    public Assembler createAssembler(String toolName, ConanExecutorService ces) throws IOException {
+
+        DeBruijnOptimiserArgs args = this.createProcessArgs(toolName);
+
+        if (args == null)
+            throw new IllegalArgumentException("Provided assembler args are null");
+
+        Assembler asm = createAssembler(toolName, args.toConanArgs(), ces);
+
+        if (asm.getType() != Assembler.Type.DE_BRUIJN_OPTIMISER) {
+            throw new IllegalArgumentException("Assembler \"" + toolName + "\" is not a De Bruijn graph assembler that optimises K value ranges");
+        }
+
+        return asm;
+    }
 }

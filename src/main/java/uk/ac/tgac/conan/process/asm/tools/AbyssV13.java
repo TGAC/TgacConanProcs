@@ -201,6 +201,7 @@ public class AbyssV13 extends AbstractAssembler {
             super(new Params());
 
             this.outputDir = new File("");
+            this.libs = null;
             this.nbContigPairs = DEFAULT_NB_CONTIG_PAIRS;
             this.name = DEFAULT_NAME;
             this.k = DEFAULT_K;

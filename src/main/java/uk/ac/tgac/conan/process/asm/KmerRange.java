@@ -19,10 +19,12 @@ package uk.ac.tgac.conan.process.asm;
 
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Element;
+import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.util.XmlHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * User: maplesod
@@ -41,7 +43,9 @@ public class KmerRange extends ArrayList<Integer> {
     private static final String KEY_ATTR_STEP = "step";
     private static final String KEY_ATTR_LIST = "list";
 
-    private StepSize stepSize;
+    private int minK;
+    private int maxK;
+    private int stepSize;
 
     /**
      * Default Kmer range (just K61)
@@ -58,10 +62,19 @@ public class KmerRange extends ArrayList<Integer> {
      */
     public KmerRange(int minKmer, int maxKmer, StepSize stepSize) {
 
+        this(minKmer, maxKmer, stepSize.getStep());
+    }
+
+    /**
+     * Generate Kmer Range from properties
+     * @param minKmer Minimum kmer length (may be automatically adjusted by stepper to first valid kmer)
+     * @param maxKmer Maximum kmer length
+     * @param stepSize How big the jump between kmer values should be
+     */
+    public KmerRange(int minKmer, int maxKmer, int stepSize) {
+
         // Init arraylist
         super();
-
-        this.stepSize = stepSize;
 
         // Generate list of kmers from range properties
         this.setFromProperties(minKmer, maxKmer, stepSize);
@@ -91,14 +104,26 @@ public class KmerRange extends ArrayList<Integer> {
             this.setFromString(XmlHelper.getTextValue(ele, KEY_ATTR_LIST));
         }
         else {
+
+            String step = XmlHelper.getTextValue(ele, KEY_ATTR_STEP).toUpperCase();
+
+            int stepSize = StringUtils.isNumeric(step) ?
+                    Integer.parseInt(step) :
+                    StepSize.valueOf(step).getStep();
+
             this.setFromProperties(XmlHelper.getIntValue(ele, KEY_ATTR_K_MIN),
                 XmlHelper.getIntValue(ele, KEY_ATTR_K_MAX),
-                StepSize.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_STEP).toUpperCase()));
+                stepSize);
         }
     }
 
-    protected final void setFromProperties(int minKmer, int maxKmer, StepSize stepSize) {
-        for(int k = stepSize.firstValidKmer(minKmer); k <= maxKmer; k = stepSize.nextKmer(k)) {
+    protected final void setFromProperties(int minKmer, int maxKmer, int stepSize) {
+
+        this.minK = minKmer;
+        this.maxK = maxKmer;
+        this.stepSize = stepSize;
+
+        for(int k = firstValidKmer(minKmer); k <= maxKmer; k += stepSize) {
             this.add(k);
         }
     }
@@ -110,6 +135,35 @@ public class KmerRange extends ArrayList<Integer> {
         }
 
         Collections.sort(this);
+
+        this.minK = this.getFirstKmer();
+        this.maxK = this.getLastKmer();
+        this.stepSize = (this.maxK - this.minK) / this.size();  // This is a bit of a hack because we have no way of working
+                                                                // out what the step size is from a list of kmers
+    }
+
+    public static int getLastKmerFromLibs(List<Library> libs) {
+
+        if (libs == null || libs.isEmpty()) {
+            return 0;
+        }
+
+        int maxK = 10000;
+
+        for(Library lib : libs) {
+            maxK = Math.min(maxK, getLastKmerFromLib(lib));
+        }
+
+        return maxK;
+    }
+
+    public static int getLastKmerFromLib(Library lib) {
+
+        if (lib == null) {
+            return 0;
+        }
+
+        return lib.getReadLength() - 1;
     }
 
     public int getFirstKmer() {
@@ -120,47 +174,23 @@ public class KmerRange extends ArrayList<Integer> {
         return this.get(this.size() - 1);
     }
 
-    public StepSize getStepSize() {
+    public int getStepSize() {
         return this.stepSize;
     }
 
+    private int firstValidKmer(int kmin) {
+        return (kmin % 2 == 0) ? kmin + 1 : kmin;
+    }
+
     public enum StepSize {
-        FINE {
-            @Override
-            public int nextKmer(int kmer) {
-                return kmer += 2;
-            }
+        FINE(4),
+        MEDIUM(10),
+        COARSE(20);
 
-            @Override
-            public int firstValidKmer(int kmin) {
-                return nextOddNumber(kmin);
-            }
-        },
-        MEDIUM {
-            @Override
-            public int nextKmer(int kmer) {
-                return kmer += 4;
-            }
+        private int ss;
 
-            @Override
-            public int firstValidKmer(int kmin) {
-                return nextOddNumber(kmin);
-            }
-        },
-        COARSE {
-            @Override
-            public int nextKmer(int kmer) {
-                return kmer += 10;
-            }
-
-            @Override
-            public int firstValidKmer(int kmin) {
-                return nextOddNumber(kmin);
-            }
-        };
-
-        private static int nextOddNumber(int number) {
-            return (number % 2 == 0) ? number + 1 : number;
+        private StepSize(int stepSize) {
+            ss = stepSize;
         }
 
         /**
@@ -169,8 +199,13 @@ public class KmerRange extends ArrayList<Integer> {
          * @param kmer The current k-mer value
          * @return The next kmer value
          */
-        public abstract int nextKmer(int kmer);
-        public abstract int firstValidKmer(int kmin);
+        public int nextKmer(int kmer) {
+            return kmer += this.ss;
+        }
+
+        public int getStep() {
+            return ss;
+        }
     }
 
     /**

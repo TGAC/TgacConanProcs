@@ -18,6 +18,7 @@
 package uk.ac.tgac.conan.process.asm.tools;
 
 import org.kohsuke.MetaInfServices;
+import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
@@ -27,7 +28,7 @@ import uk.ac.tgac.conan.core.data.SeqFile;
 import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.List;
 
 /**
  * User: maplesod
@@ -46,12 +47,12 @@ public class VelvetV12 extends AbstractAssembler {
     public VelvetV12(ConanExecutorService conanExecutorService) {
         this(conanExecutorService, new Args());
     }
-    public VelvetV12(ConanExecutorService conanExecutorService, AbstractAssemblerArgs args) {
+    public VelvetV12(ConanExecutorService conanExecutorService, AbstractProcessArgs args) {
         super(NAME, EXE, args, new Params(), conanExecutorService);
     }
 
     public Args getArgs() {
-        return (Args)this.getAssemblerArgs();
+        return (Args)this.getProcessArgs();
     }
 
     @Override
@@ -146,16 +147,16 @@ public class VelvetV12 extends AbstractAssembler {
 
         StringBuilder libString = new StringBuilder();
 
-        for(int i = 0; i < args.getLibraries().size(); i++) {
-            libString.append(this.createLibString(args.getLibraries().get(i), i == 0)).append(" ");
+        for(int i = 0; i < args.getLibs().size(); i++) {
+            libString.append(this.createLibString(args.getLibs().get(i), i == 0)).append(" ");
         }
 
         final String velvetHCmd = "velveth-127 " + args.getOutputDir().getAbsolutePath() + " " + args.getK() + " -create_binary " + libString.toString();
 
         StringBuilder insString = new StringBuilder();
 
-        for(int i = 0; i < args.getLibraries().size(); i++) {
-            insString.append("-ins_length" + (i != 0 ? i : "") + " " + args.getLibraries().get(i).getAverageInsertSize()).append(" ");
+        for(int i = 0; i < args.getLibs().size(); i++) {
+            insString.append("-ins_length" + (i != 0 ? i : "") + " " + args.getLibs().get(i).getAverageInsertSize()).append(" ");
         }
 
         final String velvetGCmd = "velvetg-127 " + args.getOutputDir().getAbsolutePath() + " -cov_cutoff auto " + insString.toString() + " -exp_cov auto";
@@ -164,24 +165,85 @@ public class VelvetV12 extends AbstractAssembler {
     }
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends GenericDeBruijnArgs {
+    public static class Args extends AbstractProcessArgs implements DeBruijnArgs {
+
+        public static final int DEFAULT_K = 61;
+        public static final int DEFAULT_COVERAGE_CUTOFF = 0;
+        public static final int DEFAULT_THREADS = 1;
+
+        private File outputDir;
+        private List<Library> libs;
+        private int k;
+        private int coverageCutoff;
+        private int threads;
 
         public Args() {
-            super(new Params(), NAME);
+            super(new Params());
+
+            this.outputDir = new File("");
+            this.libs = null;
+            this.k = DEFAULT_K;
+            this.coverageCutoff = DEFAULT_COVERAGE_CUTOFF;
+            this.threads = DEFAULT_THREADS;
+        }
+
+        public Params getParams() {
+            return (Params)this.params;
+        }
+
+        public File getOutputDir() {
+            return outputDir;
+        }
+
+        public void setOutputDir(File outputDir) {
+            this.outputDir = outputDir;
+        }
+
+        public List<Library> getLibs() {
+            return libs;
+        }
+
+        public void setLibs(List<Library> libs) {
+            this.libs = libs;
+        }
+
+        public int getK() {
+            return k;
+        }
+
+        public void setK(int k) {
+            this.k = k;
+        }
+
+        public int getCoverageCutoff() {
+            return coverageCutoff;
+        }
+
+        public void setCoverageCutoff(int coverageCutoff) {
+            this.coverageCutoff = coverageCutoff;
+        }
+
+        public int getThreads() {
+            return threads;
+        }
+
+        public void setThreads(int threads) {
+            this.threads = threads;
         }
 
         @Override
-        public void parse(String args) throws IOException {
+        public void parse(String args) {
             //To change body of implemented methods use File | Settings | File Templates.
         }
 
         @Override
         public ParamMap getArgMap() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+
+            return null;
         }
 
         @Override
-        protected void setOptionFromMapEntry(ConanParameter param, String value) {
+        protected void setOptionFromMapEntry(ConanParameter param, String val) {
 
         }
 
@@ -191,8 +253,37 @@ public class VelvetV12 extends AbstractAssembler {
         }
 
         @Override
-        public void setFromArgMap(ParamMap pvp) throws IOException {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public GenericDeBruijnArgs getDeBruijnArgs() {
+
+            GenericDeBruijnArgs args = new GenericDeBruijnArgs();
+
+            args.setCoverageCutoff(this.coverageCutoff);
+            args.setK(this.k);
+            args.setThreads(this.threads);
+            args.setLibraries(this.libs);
+            args.setOutputDir(this.outputDir);
+
+            return args;
+        }
+
+        @Override
+        public void setDeBruijnArgs(GenericDeBruijnArgs args) {
+
+            this.outputDir = args.getOutputDir();
+            this.libs = args.getLibraries();
+            this.k = args.getK();
+            this.coverageCutoff = args.getCoverageCutoff();
+            this.threads = args.getThreads();
+        }
+
+        @Override
+        public String getProcessName() {
+            return NAME;
+        }
+
+        @Override
+        public AbstractProcessArgs toConanArgs() {
+            return this;
         }
     }
 

@@ -21,16 +21,14 @@ import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
+import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.asm.AbstractAssembler;
-import uk.ac.tgac.conan.process.asm.Assembler;
-import uk.ac.tgac.conan.process.asm.AssemblerArgs;
-import uk.ac.tgac.conan.process.asm.GenericDeBruijnOptimiserArgs;
+import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,7 +59,7 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
     }
 
     public Args getArgs() {
-        return (Args)this.getAssemblerArgs();
+        return (Args)this.getProcessArgs();
     }
 
     @Override
@@ -86,7 +84,7 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
 
     @Override
     public File getContigsFile() {
-        return new File(this.getArgs().getOutputDir(), this.getArgs().getName() + "_contigs.fa");
+        return new File(this.getArgs().getOutputDir(), this.getArgs().getOutputPrefix() + "_contigs.fa");
     }
 
     @Override
@@ -100,9 +98,9 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
     }
 
     @MetaInfServices(AssemblerArgs.class)
-    public static class Args extends GenericDeBruijnOptimiserArgs {
+    public static class Args extends AbstractProcessArgs implements DeBruijnOptimiserArgs {
 
-        public static final String DEFAULT_OUTPUT_PREFIX = "out";
+        public static final String DEFAULT_OUTPUT_PREFIX = "platanus";
         public static final int DEFAULT_INITIAL_K = 32;
         public static final int DEFAULT_K_STEP = 10;
         public static final int DEFAULT_INITIAL_K_CUTOFF = 0;
@@ -113,7 +111,7 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
         public static final int DEFAULT_THREADS = 1;
         public static final int DEFAULT_MEM_LIMIT = 16;
 
-
+        private File outputDir;
         private String outputPrefix;
         private List<Library> input;
         private int initialK;
@@ -127,8 +125,9 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
         private int memoryLimit;
 
         public Args() {
-            super(new Params(), NAME);
+            super(new Params());
 
+            this.outputDir = new File("");
             this.outputPrefix = DEFAULT_OUTPUT_PREFIX;
             this.input = new ArrayList<>();
             this.initialK = DEFAULT_INITIAL_K;
@@ -140,6 +139,18 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
             this.maxDiffBranchCut = DEFAULT_MAX_DIFF_BRANCH_CUT;
             this.threads = DEFAULT_THREADS;
             this.memoryLimit = DEFAULT_MEM_LIMIT;
+        }
+
+        public Params getParams() {
+            return (Params)this.params;
+        }
+
+        public File getOutputDir() {
+            return outputDir;
+        }
+
+        public void setOutputDir(File outputDir) {
+            this.outputDir = outputDir;
         }
 
         public String getOutputPrefix() {
@@ -332,6 +343,41 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
         @Override
         public void setFromArgMap(ParamMap pvp) throws IOException, ConanParameterException {
 
+        }
+
+        @Override
+        public GenericDeBruijnOptimiserArgs getDeBruijnOptimiserArgs() {
+
+            GenericDeBruijnOptimiserArgs args = new GenericDeBruijnOptimiserArgs();
+
+            args.setOutputDir(this.outputDir);
+            args.setLibraries(this.input);
+            args.setThreads(this.threads);
+            args.setMemory(this.memoryLimit * 1000);        // Convert to MB
+            args.setKmerRange(new KmerRange(this.initialK, KmerRange.getLastKmerFromLibs(this.input), this.kStep));
+
+            return args;
+        }
+
+        @Override
+        public void setDeBruijnOptimiserArgs(GenericDeBruijnOptimiserArgs args) {
+
+            this.outputDir = args.getOutputDir();
+            this.input = args.getLibraries();
+            this.threads = args.getThreads();
+            this.memoryLimit = args.getMemory() / 1000;     // Convert to GB
+            this.initialK = args.getKmerRange().getFirstKmer();
+            this.kStep = args.getKmerRange().getStepSize();
+        }
+
+        @Override
+        public String getProcessName() {
+            return NAME;
+        }
+
+        @Override
+        public AbstractProcessArgs toConanArgs() {
+            return this;
         }
     }
 
