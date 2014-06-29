@@ -17,7 +17,11 @@
  **/
 package uk.ac.tgac.conan.process.asm.tools;
 
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.MetaInfServices;
+import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
+import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
@@ -145,16 +149,26 @@ public class SpadesV31 extends AbstractAssembler {
     @MetaInfServices(AssemblerArgs.class)
     public static class Args extends AbstractAssemblerArgs implements DeBruijnOptimiserArgs {
 
+        private boolean careful;
         private KmerRange kmerRange;
 
         public Args() {
             super(new Params(), NAME);
 
+            this.careful = true;
             this.kmerRange = new KmerRange();
         }
 
         public Params getParams() {
             return (Params)this.params;
+        }
+
+        public boolean isCareful() {
+            return careful;
+        }
+
+        public void setCareful(boolean careful) {
+            this.careful = careful;
         }
 
         public KmerRange getKmerRange() {
@@ -172,12 +186,61 @@ public class SpadesV31 extends AbstractAssembler {
 
         @Override
         public ParamMap getArgMap() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+
+            Params params = this.getParams();
+            ParamMap pvp = new DefaultParamMap();
+
+            if (this.outputDir != null) {
+                pvp.put(params.getOutputDir(), this.outputDir.getAbsolutePath());
+            }
+
+            if (this.careful) {
+                pvp.put(params.getCareful(), Boolean.toString(this.careful));
+            }
+
+            pvp.put(params.getThreads(), Integer.toString(this.getThreads()));
+
+            if (this.maxMemUsageMB > 0) {
+                pvp.put(params.getMemoryGB(), Integer.toString(this.getMaxMemUsageMB() / 1000));
+            }
+
+            if (this.kmerRange != null && !this.kmerRange.isEmpty()) {
+                pvp.put(params.getkList(), StringUtils.join(this.kmerRange, ","));
+            }
+
+            /*if (this.getLibs() != null && !this.getLibs().isEmpty()) {
+                pvp.put(params.getLibs(), new InputLibsArg(this.getLibs()).toString());
+            }*/
+
+            return pvp;
         }
 
         @Override
-        protected void setOptionFromMapEntry(ConanParameter param, String value) {
+        protected void setOptionFromMapEntry(ConanParameter param, String val) {
 
+            Params params = this.getParams();
+
+            if (param.equals(params.getOutputDir())) {
+                this.outputDir = new File(val);
+            }
+            else if (param.equals(params.getCareful())) {
+                this.careful = Boolean.parseBoolean(val);
+            }
+            else if (param.equals(params.getThreads())) {
+                this.threads = Integer.parseInt(val);
+            }
+            else if (param.equals(params.getMemoryGB())) {
+                this.maxMemUsageMB = Integer.parseInt(val) * 1000;
+            }
+            else if (param.equals(params.getkList())) {
+                this.kmerRange = new KmerRange(val);
+            }
+            /*else if (param.equals(params.getLibs())) {
+                this.setLibs(InputLibsArg.parse(val).getLibs());
+            } */
+            else {
+                throw new IllegalArgumentException("Unknown param found: " + param);
+            }
         }
 
         @Override
@@ -217,9 +280,85 @@ public class SpadesV31 extends AbstractAssembler {
 
     public static class Params extends AbstractProcessParams {
 
+        private ConanParameter outputDir;
+        private ConanParameter careful;
+        private ConanParameter input;
+        private ConanParameter threads;
+        private ConanParameter memoryGB;
+        private ConanParameter kList;
+
+        public Params() {
+
+            this.outputDir = new ParameterBuilder()
+                    .shortName("o")
+                    .description("Specify the output directory. Required option.")
+                    .argValidator(ArgValidator.PATH)
+                    .create();
+
+            this.careful = new ParameterBuilder()
+                    .longName("careful")
+                    .description("Tries to reduce the number of mismatches and short indels. Also runs MismatchCorrector – a post processing tool, which uses BWA tool (comes with SPAdes). This option is recommended.")
+                    .isFlag(true)
+                    .argValidator(ArgValidator.OFF)
+                    .create();
+
+            this.input = null;
+
+            this.threads = new ParameterBuilder()
+                    .shortName("t")
+                    .longName("threads")
+                    .description("Number of threads. The default value is 16.")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.memoryGB = new ParameterBuilder()
+                    .shortName("m")
+                    .longName("memory")
+                    .description("Set memory limit in Gb. SPAdes terminates if it reaches this limit. The default value is 250 Gb. Actual amount of consumed RAM will be below this limit. Make sure this value is correct for the given machine. SPAdes uses the limit value to automatically determine the sizes of various buffers, etc.")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.kList = new ParameterBuilder()
+                    .shortName("k")
+                    .description("Comma-separated list of k-mer sizes to be used (all values must be odd, less than 128 and listed in ascending order).")
+                    .argValidator(ArgValidator.OFF)
+                    .create();
+        }
+
+        public ConanParameter getOutputDir() {
+            return outputDir;
+        }
+
+        public ConanParameter getCareful() {
+            return careful;
+        }
+
+        public ConanParameter getInput() {
+            return input;
+        }
+
+        public ConanParameter getThreads() {
+            return threads;
+        }
+
+        public ConanParameter getMemoryGB() {
+            return memoryGB;
+        }
+
+        public ConanParameter getkList() {
+            return kList;
+        }
+
         @Override
         public ConanParameter[] getConanParametersAsArray() {
-            return new ConanParameter[0];
+            return new ConanParameter[] {
+                    this.outputDir,
+                    this.careful,
+                    this.input,
+                    this.threads,
+                    this.memoryGB,
+                    this.kList
+            };
         }
     }
 
