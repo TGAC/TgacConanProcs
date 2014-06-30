@@ -18,6 +18,7 @@ public class AssemblyEnhancerFactoryTest {
         AssemblyEnhancer proc = AssemblyEnhancerFactory.create(
                 "SSPACE_Basic_v2.0",
                 new File("input.fa"),
+                null,
                 new File(""),
                 "test",
                 new ArrayList<Library>(),

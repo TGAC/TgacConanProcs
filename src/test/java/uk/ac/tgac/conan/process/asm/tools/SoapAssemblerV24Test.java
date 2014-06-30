@@ -65,8 +65,8 @@ public class SoapAssemblerV24Test {
         String testDir = temp.getRoot().getAbsolutePath();
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
-        correctCommand = "SOAPdenovo-127mer pregraph -s testlib.libs -o graph -K 63 -p 32 -a 0 -R -d 0; " +
-                "SOAPdenovo-127mer contig -g graph -R";
+        correctCommand = "SOAPdenovo-127mer pregraph -s testlib.libs -o soap -K 63 -p 32 -a 0 -R -d 0; " +
+                "SOAPdenovo-127mer contig -g soap -R";
 
         correctFullCommand = "cd " + testDir + "; " + correctCommand + " 2>&1; cd " + pwd;
     }
@@ -78,7 +78,6 @@ public class SoapAssemblerV24Test {
         SoapAssemblerArgsV24.Args args = new SoapAssemblerArgsV24.Args();
         args.setConfigFile(libFile);
         args.setK(63);
-        args.setOutputPrefix("OUTPUT_FILE");
         args.setThreads(32);
         args.setOutputDir(temp.getRoot());
 

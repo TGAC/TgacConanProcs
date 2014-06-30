@@ -67,7 +67,6 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
         public static final int DEFAULT_MIN_LINKS = 3;
         public static final double DEFAULT_MAX_DIFF_BUBBLE_CRUSH = 0.1;
 
-        private File bubbleFile;
         private int mappingSeedLength;
         private int minOverlapLength;
         private int minLinks;
@@ -77,7 +76,6 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
 
             super(new Params(), NAME, TYPE);
 
-            this.bubbleFile = null;
             this.mappingSeedLength = DEFAULT_MAPPING_SEED_LENGTH;
             this.minOverlapLength = DEFAULT_MIN_OVERLAP_LENGTH;
             this.minLinks = DEFAULT_MIN_LINKS;
@@ -105,10 +103,10 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
                 this.setOutputPrefix(op.getName());
             }
             else if (param.equals(params.getContigFile())) {
-                this.setInputFile(new File(value));
+                this.setInputAssembly(new File(value));
             }
             else if (param.equals(params.getBubbleFile())) {
-                this.bubbleFile = new File(value);
+                this.setBubbleFile(new File(value));
             }
             else if (param.equals(params.getThreads())) {
                 this.setThreads(Integer.parseInt(value));
@@ -150,12 +148,12 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
                 pvp.put(params.getOutputPrefix(), new File(this.getOutputDir(), this.getOutputPrefix()).getAbsolutePath());
             }
 
-            if (this.getInputFile() != null) {
-                pvp.put(params.getContigFile(), this.getInputFile().getAbsolutePath());
+            if (this.getInputAssembly() != null) {
+                pvp.put(params.getContigFile(), this.getInputAssembly().getAbsolutePath());
             }
 
-            if (this.bubbleFile != null) {
-                pvp.put(params.getBubbleFile(), this.bubbleFile.getAbsolutePath());
+            if (this.getBubbleFile() != null) {
+                pvp.put(params.getBubbleFile(), this.getBubbleFile().getAbsolutePath());
             }
 
             if (this.mappingSeedLength != DEFAULT_MAPPING_SEED_LENGTH) {
@@ -185,6 +183,7 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
     public static class Params extends AbstractProcessParams {
 
         private ConanParameter outputPrefix;
+        private ConanParameter reads;
         private ConanParameter contigFile;
         private ConanParameter bubbleFile;
         private ConanParameter mappingSeedLength;
@@ -200,6 +199,11 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
             this.outputPrefix = new ParameterBuilder()
                     .shortName("o")
                     .description("prefix of output file (default out, length <= 200)")
+                    .create();
+
+            this.reads = new ParameterBuilder()
+                    .description("Input reads for platanus scaffold")
+                    .argValidator(ArgValidator.OFF)
                     .create();
 
             this.contigFile = new ParameterBuilder()
@@ -249,6 +253,10 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
             return outputPrefix;
         }
 
+        public ConanParameter getReads() {
+            return reads;
+        }
+
         public ConanParameter getContigFile() {
             return contigFile;
         }
@@ -282,6 +290,7 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
 
             return new ConanParameter[] {
                     this.outputPrefix,
+                    this.reads,
                     this.contigFile,
                     this.bubbleFile,
                     this.mappingSeedLength,

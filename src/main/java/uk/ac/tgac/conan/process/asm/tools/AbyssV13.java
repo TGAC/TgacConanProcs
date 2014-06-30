@@ -88,6 +88,11 @@ public class AbyssV13 extends AbstractAssembler {
         return containsPairedEndLib();
     }
 
+    @Override
+    public boolean makesBubbles() {
+        return true;
+    }
+
     protected boolean containsPairedEndLib() {
         for(Library lib : this.getArgs().getLibs()) {
             if (lib.isPairedEnd()) {
@@ -133,26 +138,22 @@ public class AbyssV13 extends AbstractAssembler {
 
     @Override
     public File getUnitigsFile() {
-
-        Args abyssV134Args = (Args)this.getArgs();
-        File unitigsFile = new File(abyssV134Args.getOutputDir(), abyssV134Args.getName() + "-unitigs.fa");
-        return unitigsFile;
+        return new File(this.getArgs().getOutputDir(), this.getArgs().getName() + "-unitigs.fa");
     }
 
     @Override
     public File getContigsFile() {
-
-        Args abyssV134Args = (Args)this.getArgs();
-        File unitigsFile = new File(abyssV134Args.getOutputDir(), abyssV134Args.getName() + "-contigs.fa");
-        return unitigsFile;
+        return new File(this.getArgs().getOutputDir(), this.getArgs().getName() + "-contigs.fa");
     }
 
     @Override
     public File getScaffoldsFile() {
+        return new File(this.getArgs().getOutputDir(), this.getArgs().getName() + "-scaffolds.fa");
+    }
 
-        Args abyssV134Args = (Args)this.getArgs();
-        File unitigsFile = new File(abyssV134Args.getOutputDir(), abyssV134Args.getName() + "-scaffolds.fa");
-        return unitigsFile;
+    @Override
+    public File getBubbleFile() {
+        return new File(this.getArgs().getOutputDir(), this.getArgs().getName() + "-bubbles.fa");
     }
 
     @Override

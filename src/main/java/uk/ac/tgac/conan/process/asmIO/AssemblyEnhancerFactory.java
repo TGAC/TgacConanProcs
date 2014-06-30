@@ -33,6 +33,7 @@ public class AssemblyEnhancerFactory {
 
     public static AssemblyEnhancer create(String toolName,
                                                    File inputFile,
+                                                   File bubbleFile,
                                                    File outputDir,
                                                    String outputPrefix,
                                                    List<Library> libs,
@@ -48,7 +49,7 @@ public class AssemblyEnhancerFactory {
         for(AssemblyEnhancerArgs args : foundAsmIOArgsClasses) {
 
             if (args.getName().equalsIgnoreCase(toolName.trim())) {
-                args.initialise(inputFile, outputDir, outputPrefix, libs, threads, memory, otherArgs);
+                args.initialise(inputFile, bubbleFile, outputDir, outputPrefix, libs, threads, memory, otherArgs);
                 actualArgs = args;
                 break;
             }

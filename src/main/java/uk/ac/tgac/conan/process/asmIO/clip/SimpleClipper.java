@@ -76,11 +76,11 @@ public class SimpleClipper extends AbstractAssemblyEnhancer {
 
         Args args = (Args)this.getProcessArgs();
 
-        if (args.getInputFile() == null || !args.getInputFile().exists()) {
+        if (args.getInputAssembly() == null || !args.getInputAssembly().exists()) {
             throw new IOException("Input file does not exist");
         }
 
-        BufferedReader reader = new BufferedReader(new FileReader(args.getInputFile()));
+        BufferedReader reader = new BufferedReader(new FileReader(args.getInputAssembly()));
         PrintWriter writer = new PrintWriter(new FileWriter(args.getOutputFile()));
 
         // Ignore everything but the sequences
@@ -173,8 +173,8 @@ public class SimpleClipper extends AbstractAssemblyEnhancer {
             Params params = this.getParams();
             ParamMap pvp = new DefaultParamMap();
 
-            if (this.getInputFile() != null)
-                pvp.put(params.getInputFile(), this.getInputFile().getAbsolutePath());
+            if (this.getInputAssembly() != null)
+                pvp.put(params.getInputFile(), this.getInputAssembly().getAbsolutePath());
 
             if (this.getOutputFile() != null)
                 pvp.put(params.getOutputFile(), this.getOutputFile().getAbsolutePath());
@@ -192,7 +192,7 @@ public class SimpleClipper extends AbstractAssemblyEnhancer {
             Params params = this.getParams();
 
             if (param.equals(params.getInputFile())) {
-                this.setInputFile(new File(value));
+                this.setInputAssembly(new File(value));
             } else if (param.equals(params.getOutputFile())) {
                 this.setOutputFile(new File(value));
             } else if (param.equals(params.getMinLen())) {

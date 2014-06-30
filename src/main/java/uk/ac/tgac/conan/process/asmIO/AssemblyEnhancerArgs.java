@@ -34,7 +34,7 @@ public interface AssemblyEnhancerArgs extends ProcessArgs {
      * Creates an instance of an AbstractAssemblyIOProcess using Basic args
      * @return
      */
-    void initialise(File inputFile, File outputDir, String outputPrefix, List<Library> libs, int threads,
+    void initialise(File inputFile, File bubbleFile, File outputDir, String outputPrefix, List<Library> libs, int threads,
                                             int memory, String otherArgs) throws IOException;
 
     /**

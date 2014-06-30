@@ -119,6 +119,10 @@ public class AllpathsLgV44837 extends AbstractAssembler implements Subsampler {
         return true;
     }
 
+    @Override
+    public boolean makesBubbles() {
+        return false;
+    }
 
     @Override
     public File getUnitigsFile() {
@@ -133,6 +137,11 @@ public class AllpathsLgV44837 extends AbstractAssembler implements Subsampler {
     @Override
     public File getScaffoldsFile() {
         return new File(assembliesDir, "final.assembly.fasta");
+    }
+
+    @Override
+    public File getBubbleFile() {
+        return null;
     }
 
 
@@ -499,7 +508,7 @@ public class AllpathsLgV44837 extends AbstractAssembler implements Subsampler {
     }
 
 
-    @MetaInfServices(AssemblerArgs.class)
+    @MetaInfServices(DeBruijnAutoArgs.class)
     public static class Args extends AbstractAssemblerArgs implements DeBruijnAutoArgs {
 
         public static final int DEFAULT_DESIRED_COVERAGE = -1;

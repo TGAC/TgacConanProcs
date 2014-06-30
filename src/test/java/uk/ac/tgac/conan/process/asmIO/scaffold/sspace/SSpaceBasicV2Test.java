@@ -66,7 +66,7 @@ public class SSpaceBasicV2Test {
         SSpaceBasicV2.Args args = new SSpaceBasicV2.Args();
         args.setLibraryConfigFile(libFile);
         args.setThreads(8);
-        args.setInputFile(contigsFile);
+        args.setInputAssembly(contigsFile);
         args.setOutputDir(outputDir);
         args.setBaseName("Output");
 

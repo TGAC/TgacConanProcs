@@ -39,6 +39,12 @@ public interface Assembler extends ConanProcess {
     boolean makesScaffolds();
 
     /**
+     * Whether this assembler produces a bubble file
+     * @return
+     */
+    boolean makesBubbles();
+
+    /**
      * Returns the unitigs file produced by this assembler, if present, otherwise returns null
      * @return
      */
@@ -55,6 +61,12 @@ public interface Assembler extends ConanProcess {
      * @return
      */
     File getScaffoldsFile();
+
+    /**
+     * Returns the bubble file produced by this asssembler, if present, otherwise returns null
+     * @return
+     */
+    File getBubbleFile();
 
     /**
      * Some assemblers use openmpi, this method returns true if this assembler uses openmpi
@@ -101,7 +113,7 @@ public interface Assembler extends ConanProcess {
      * @param
      * @throws IOException
      */
-    void initialise(AbstractProcessArgs args, ConanExecutorService ces) throws IOException;
+    void initialise(AbstractProcessArgs args, ConanExecutorService ces);
 
 
     public enum Type {

@@ -46,7 +46,7 @@ public class SoapGapCloserV112Test {
 
         SoapGapCloserV112.Args args = new SoapGapCloserV112.Args();
         args.setOutputFile(new File("output.fa"));
-        args.setInputFile(new File("input.fa"));
+        args.setInputAssembly(new File("input.fa"));
         args.setThreads(8);
         args.setOverlap(29);
         args.setLibraryFile(new File("libFile.cfg"));

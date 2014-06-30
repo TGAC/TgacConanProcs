@@ -144,7 +144,7 @@ public class SSpaceBasicV2 extends AbstractAssemblyEnhancer {
 
             // **** Main args ****
             this.libraryConfigFile = null;
-            this.setInputFile(null);
+            this.setInputAssembly(null);
             this.extend = DEFAULT_EXTEND;
 
             // **** Extension args ****
@@ -394,8 +394,8 @@ public class SSpaceBasicV2 extends AbstractAssemblyEnhancer {
             if (this.libraryConfigFile != null)
                 pvp.put(params.getLibraryFile(), this.libraryConfigFile.getAbsolutePath());
 
-            if (this.getInputFile() != null)
-                pvp.put(params.getContigsFile(), this.getInputFile().getAbsolutePath());
+            if (this.getInputAssembly() != null)
+                pvp.put(params.getContigsFile(), this.getInputAssembly().getAbsolutePath());
 
             if (this.extend != DEFAULT_EXTEND)
                 pvp.put(params.getExtend(), Integer.toString(this.extend));
@@ -460,7 +460,7 @@ public class SSpaceBasicV2 extends AbstractAssemblyEnhancer {
                 this.libraryConfigFile = new File(value);
             }
             else if (param.equals(params.getContigsFile())) {
-                this.setInputFile(new File(value));
+                this.setInputAssembly(new File(value));
             }
             else if (param.equals(params.getExtend())) {
                 this.extend = Integer.parseInt(value);

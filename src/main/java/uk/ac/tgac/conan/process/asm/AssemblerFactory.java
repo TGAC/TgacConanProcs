@@ -31,11 +31,11 @@ import java.util.ServiceLoader;
  */
 public class AssemblerFactory {
 
-    public static Assembler createGenericAssembler(String toolName) throws IOException {
+    public static Assembler createGenericAssembler(String toolName) {
         return createGenericAssembler(toolName, null);
     }
 
-    public static Assembler createGenericAssembler(String toolName, ConanExecutorService ces) throws IOException {
+    public static Assembler createGenericAssembler(String toolName, ConanExecutorService ces) {
 
         AssemblerArgs args = createProcessArgs(toolName);
 

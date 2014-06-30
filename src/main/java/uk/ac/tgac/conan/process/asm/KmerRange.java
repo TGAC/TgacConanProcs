@@ -98,7 +98,7 @@ public class KmerRange extends ArrayList<Integer> {
      * we assume a range has been specified, and we generate a list from those attributes.
      * @param ele
      */
-    public KmerRange(Element ele) {
+    public KmerRange(Element ele, int defaultMin, int defaultMax, int defaultStep) {
 
         if (ele.hasAttribute(KEY_ATTR_LIST)) {
             this.setFromString(XmlHelper.getTextValue(ele, KEY_ATTR_LIST));
@@ -107,13 +107,21 @@ public class KmerRange extends ArrayList<Integer> {
 
             String step = XmlHelper.getTextValue(ele, KEY_ATTR_STEP).toUpperCase();
 
-            int stepSize = StringUtils.isNumeric(step) ?
-                    Integer.parseInt(step) :
-                    StepSize.valueOf(step).getStep();
+            int min = ele.hasAttribute(KEY_ATTR_K_MIN) ?
+                    XmlHelper.getIntValue(ele, KEY_ATTR_K_MIN) :
+                    defaultMin;
 
-            this.setFromProperties(XmlHelper.getIntValue(ele, KEY_ATTR_K_MIN),
-                XmlHelper.getIntValue(ele, KEY_ATTR_K_MAX),
-                stepSize);
+            int max = ele.hasAttribute(KEY_ATTR_K_MAX) ?
+                    XmlHelper.getIntValue(ele, KEY_ATTR_K_MAX) :
+                    defaultMax;
+
+            int stepSize = ele.hasAttribute(KEY_ATTR_STEP) ?
+                    StringUtils.isNumeric(step) ?
+                        Integer.parseInt(step) :
+                        StepSize.valueOf(step).getStep() :
+                    defaultStep;
+
+            this.setFromProperties(min, max, stepSize);
         }
     }
 

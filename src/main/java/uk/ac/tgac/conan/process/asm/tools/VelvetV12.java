@@ -70,6 +70,11 @@ public class VelvetV12 extends AbstractAssembler {
     }
 
     @Override
+    public boolean makesBubbles() {
+        return false;
+    }
+
+    @Override
     public File getUnitigsFile() {
         return null;
     }
@@ -81,6 +86,11 @@ public class VelvetV12 extends AbstractAssembler {
 
     @Override
     public File getScaffoldsFile() {
+        return null;
+    }
+
+    @Override
+    public File getBubbleFile() {
         return null;
     }
 
@@ -163,7 +173,7 @@ public class VelvetV12 extends AbstractAssembler {
         return velvetHCmd + "; " + velvetGCmd;
     }
 
-    @MetaInfServices(AssemblerArgs.class)
+    @MetaInfServices(DeBruijnArgs.class)
     public static class Args extends AbstractAssemblerArgs implements DeBruijnArgs {
 
         public static final int DEFAULT_K = 61;

@@ -36,7 +36,8 @@ public abstract class AbstractAssemblyEnhancerArgs extends AbstractProcessArgs i
 
     private String name;
     private AssemblyEnhancerType type;
-    private File inputFile;
+    private File inputAssembly;
+    private File bubbleFile;
     private File outputDir;
     private String outputPrefix;
     private List<Library> libraries;
@@ -48,7 +49,8 @@ public abstract class AbstractAssemblyEnhancerArgs extends AbstractProcessArgs i
         super(params);
         this.name = name;
         this.type = type;
-        this.inputFile = null;
+        this.inputAssembly = null;
+        this.bubbleFile = null;
         this.outputDir = null;
         this.outputPrefix = "AMP";
         this.libraries = null;
@@ -56,12 +58,20 @@ public abstract class AbstractAssemblyEnhancerArgs extends AbstractProcessArgs i
         this.memory = 0;
     }
 
-    public File getInputFile() {
-        return inputFile;
+    public File getInputAssembly() {
+        return inputAssembly;
     }
 
-    public void setInputFile(File inputFile) {
-        this.inputFile = inputFile;
+    public void setInputAssembly(File inputAssembly) {
+        this.inputAssembly = inputAssembly;
+    }
+
+    public File getBubbleFile() {
+        return bubbleFile;
+    }
+
+    public void setBubbleFile(File bubbleFile) {
+        this.bubbleFile = bubbleFile;
     }
 
     public File getOutputDir() {
@@ -107,10 +117,11 @@ public abstract class AbstractAssemblyEnhancerArgs extends AbstractProcessArgs i
     public abstract File getOutputFile();
 
     @Override
-    public void initialise(File inputFile, File outputDir, String outputPrefix, List<Library> libs,
+    public void initialise(File inputFile, File bubbleFile, File outputDir, String outputPrefix, List<Library> libs,
                                                    int threads, int memory, String otherArgs) throws IOException {
 
-        this.setInputFile(inputFile);
+        this.setInputAssembly(inputFile);
+        this.setBubbleFile(bubbleFile);
         this.setOutputDir(outputDir);
         this.setOutputPrefix(outputPrefix);
         this.setLibraries(libs);

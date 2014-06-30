@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asm.tools;
 
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
@@ -27,10 +28,13 @@ import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
+import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: maplesod
@@ -75,13 +79,18 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
     }
 
     @Override
+    public boolean makesBubbles() {
+        return true;
+    }
+
+    @Override
     public File getUnitigsFile() {
         return null;
     }
 
     @Override
     public File getContigsFile() {
-        return new File(this.getArgs().getOutputDir(), this.getArgs().getOutputPrefix() + "_contigs.fa");
+        return new File(this.getArgs().getOutputDir(), this.getArgs().getOutputPrefix() + "_contig.fa");
     }
 
     @Override
@@ -90,11 +99,25 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
     }
 
     @Override
+    public File getBubbleFile() {
+        return new File(this.getArgs().getOutputDir(), this.getArgs().getOutputPrefix() + "_contigBubble.fa");
+    }
+
+    @Override
     public Assembler.Type getType() {
         return Assembler.Type.DE_BRUIJN_OPTIMISER;
     }
 
-    @MetaInfServices(AssemblerArgs.class)
+    @Override
+    public void setup() throws IOException {
+        String pwdFull = new File(".").getAbsolutePath();
+        String pwd = pwdFull.substring(0, pwdFull.length() - 2);
+
+        this.addPreCommand("cd " + this.getArgs().getOutputDir().getAbsolutePath());
+        this.addPostCommand("cd " + pwd);
+    }
+
+    @MetaInfServices(DeBruijnOptimiserArgs.class)
     public static class Args extends AbstractAssemblerArgs implements DeBruijnOptimiserArgs {
 
         public static final String DEFAULT_OUTPUT_PREFIX = "platanus";
@@ -252,7 +275,26 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
                 pvp.put(params.getMaxDiffBranchCut(), Double.toString(this.getMaxDiffBranchCut()));
             }
 
+            if (this.libs != null) {
+                pvp.put(params.getFiles(), this.createFileString());
+            }
+
             return pvp;
+        }
+
+        protected String createFileString() {
+
+            List<String> libStrings = new ArrayList<>();
+            for(Library lib : this.getLibs()) {
+                if (lib.isPairedEnd()) {
+                    libStrings.add(lib.getFile1().getAbsolutePath() + " " + lib.getFile2().getAbsolutePath());
+                }
+                else {
+                    libStrings.add(lib.getFile1().getAbsolutePath());
+                }
+            }
+
+            return StringUtils.join(libStrings, " ");
         }
 
         @Override
@@ -289,6 +331,9 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
             }
             else if (param.equals(params.getMaxDiffBranchCut())) {
                 this.setMaxDiffBranchCut(Double.parseDouble(value));
+            }
+            else if (param.equals(params.getFiles())) {
+                //this.libs = value.split(" ");
             }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
@@ -367,7 +412,7 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
             this.files = new ParameterBuilder()
                     .shortName("f")
                     .description("reads file (fasta or fastq, number <= 100)")
-                    .argValidator(ArgValidator.DEFAULT)
+                    .argValidator(ArgValidator.OFF)
                     .create();
 
             this.initialK = new ParameterBuilder()

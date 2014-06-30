@@ -121,7 +121,7 @@ public class PlatanusGapCloseV12 extends AbstractAssemblyEnhancer {
                 this.setOutputPrefix(op.getName());
             }
             else if (param.equals(params.getScaffoldFile())) {
-                this.setInputFile(new File(value));
+                this.setInputAssembly(new File(value));
             }
             else if (param.equals(params.getThreads())) {
                 this.setThreads(Integer.parseInt(value));
@@ -184,8 +184,8 @@ public class PlatanusGapCloseV12 extends AbstractAssemblyEnhancer {
                 pvp.put(params.getOutputPrefix(), new File(this.getOutputDir(), this.getOutputPrefix()).getAbsolutePath());
             }
 
-            if (this.getInputFile() != null) {
-                pvp.put(params.getScaffoldFile(), this.getInputFile().getAbsolutePath());
+            if (this.getInputAssembly() != null) {
+                pvp.put(params.getScaffoldFile(), this.getInputAssembly().getAbsolutePath());
             }
 
             if (this.mappingSeedLength != DEFAULT_MAPPING_SEED_LENGTH) {

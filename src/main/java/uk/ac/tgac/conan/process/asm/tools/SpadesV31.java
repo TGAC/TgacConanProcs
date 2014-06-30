@@ -27,12 +27,14 @@ import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
+import uk.ac.tgac.conan.core.data.FilePair;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
 import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.*;
 
 /**
  * User: maplesod
@@ -75,6 +77,11 @@ public class SpadesV31 extends AbstractAssembler {
     }
 
     @Override
+    public boolean makesBubbles() {
+        return false;
+    }
+
+    @Override
     public File getUnitigsFile() {
         return null;
     }
@@ -86,6 +93,11 @@ public class SpadesV31 extends AbstractAssembler {
 
     @Override
     public File getScaffoldsFile() {
+        return null;
+    }
+
+    @Override
+    public File getBubbleFile() {
         return null;
     }
 
@@ -146,7 +158,7 @@ public class SpadesV31 extends AbstractAssembler {
     }
 
 
-    @MetaInfServices(AssemblerArgs.class)
+    @MetaInfServices(DeBruijnOptimiserArgs.class)
     public static class Args extends AbstractAssemblerArgs implements DeBruijnOptimiserArgs {
 
         private boolean careful;
@@ -208,9 +220,9 @@ public class SpadesV31 extends AbstractAssembler {
                 pvp.put(params.getkList(), StringUtils.join(this.kmerRange, ","));
             }
 
-            /*if (this.getLibs() != null && !this.getLibs().isEmpty()) {
-                pvp.put(params.getLibs(), new InputLibsArg(this.getLibs()).toString());
-            }*/
+            if (this.getLibs() != null && !this.getLibs().isEmpty()) {
+                pvp.put(params.getInput(), new InputLibsArg(this.getLibs()).toString());
+            }
 
             return pvp;
         }
@@ -237,10 +249,10 @@ public class SpadesV31 extends AbstractAssembler {
             }
             /*else if (param.equals(params.getLibs())) {
                 this.setLibs(InputLibsArg.parse(val).getLibs());
-            } */
+            }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
-            }
+            }*/
         }
 
         @Override
@@ -302,7 +314,10 @@ public class SpadesV31 extends AbstractAssembler {
                     .argValidator(ArgValidator.OFF)
                     .create();
 
-            this.input = null;
+            this.input = new ParameterBuilder()
+                    .description("Input for SPADES.  See documentation for more details.")
+                    .argValidator(ArgValidator.OFF)
+                    .create();
 
             this.threads = new ParameterBuilder()
                     .shortName("t")
@@ -360,6 +375,86 @@ public class SpadesV31 extends AbstractAssembler {
                     this.kList
             };
         }
+    }
+
+    public static class InputLibsArg {
+
+        private List<Library> libs;
+
+        public InputLibsArg() {
+            this(new ArrayList<Library>());
+        }
+
+        public InputLibsArg(List<Library> libs) {
+            this.libs = libs;
+        }
+
+
+        public List<Library> getLibs() {
+            return libs;
+        }
+
+        public void setLibs(List<Library> libs) {
+            this.libs = libs;
+        }
+
+
+        public String getOrienatation(Library lib) {
+            if (lib.getSeqOrientation() == Library.SeqOrientation.FORWARD_FORWARD) {
+                return "ff";
+            }
+            else if (lib.getSeqOrientation() == Library.SeqOrientation.FORWARD_FORWARD) {
+                return "fr";
+            }
+            else if (lib.getSeqOrientation() == Library.SeqOrientation.REVERSE_FORWARD) {
+                return "rf";
+            }
+            else {
+                throw new UnsupportedOperationException("SPADES does not supported sequence orientation: " + lib.getSeqOrientation());
+            }
+        }
+
+
+        @Override
+        public String toString() {
+
+            List<String> libStrings = new ArrayList<>();
+
+            int index = 1;
+            int nbSingleEndLibs = 0;
+            for (Library lib : this.libs) {
+                if (lib.getType() == Library.Type.PAIRED_END || lib.getType() == Library.Type.OVERLAPPING_PAIRED_END) {
+                    final String peStart = "--pe" + index;
+                    libStrings.add(
+                            peStart + "-1 " + lib.getFile1().getAbsolutePath() + " " +
+                                    peStart + "-2 " + lib.getFile2().getAbsolutePath() + " " +
+                                    peStart + this.getOrienatation(lib));
+                }
+                else if (lib.getType() == Library.Type.MATE_PAIR) {
+                    final String mpStart = "--mp" + index;
+                    libStrings.add(
+                            mpStart + "-1 " + lib.getFile1().getAbsolutePath() + " " +
+                                    mpStart + "-2 " + lib.getFile2().getAbsolutePath() + " " +
+                                    mpStart + this.getOrienatation(lib));
+                }
+                else if (lib.getType() == Library.Type.SINGLE_END) {
+
+                    if (nbSingleEndLibs >= 1) {
+                        throw new UnsupportedOperationException("Cannot use more than one single end library for SPADES: " + lib.getName());
+                    }
+
+                    libStrings.add("-s " + lib.getFile1().getAbsolutePath());
+                    nbSingleEndLibs++;
+                }
+                else {
+                    throw new IllegalArgumentException("Unknown library type detected \"" + lib.getType() + "\" for: " + lib.getName());
+                }
+                index++;
+            }
+
+            return StringUtils.join(libStrings, " ").trim();
+        }
+
     }
 
 }

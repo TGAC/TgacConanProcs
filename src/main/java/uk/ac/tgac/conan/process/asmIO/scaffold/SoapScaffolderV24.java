@@ -29,7 +29,6 @@ import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
-import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.ebi.fgpt.conan.util.StringJoiner;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
@@ -77,9 +76,9 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
         Args args = this.getArgs();
 
         return "prepare " +
-                " -c " + args.getInputFile().getAbsolutePath() +
+                " -c " + args.getInputAssembly().getAbsolutePath() +
                 " -K " + args.getKmer() +
-                " -g graph";
+                " -g soap";
     }
 
     protected String createMapCommand() {
@@ -88,7 +87,7 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
 
         return EXE + " map" +
                 " -s " + args.getConfigFile() +
-                " -g graph" +
+                " -g soap" +
                 " -p " + args.getThreads();
     }
 
@@ -97,7 +96,7 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
         Args args = this.getArgs();
 
         return EXE + " scaff" +
-                " -g graph" +
+                " -g soap" +
                 (args.isFillGaps() ? " -F" : "") +
                 (args.isUnmaskContigs() ? " -u" : "") +
                 (args.isRequireWeakConnection() ? " -w" : "") +
@@ -184,6 +183,7 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
         public static final int DEFAULT_GENOME_SIZE = 0;
 
         private File configFile;
+        private String outputPrefix;
         private int kmer;
         private int kmerFreqCutoff;
         private boolean fillGaps;
@@ -202,6 +202,7 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
 
             super(new Params(), NAME, TYPE);
             this.configFile = null;
+            this.outputPrefix = "soap";
             this.kmer = DEFAULT_KMER;
             this.kmerFreqCutoff = DEFAULT_KMER_FREQ_CUTOFF;
             this.fillGaps = DEFAULT_FILL_GAPS;
@@ -416,8 +417,8 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
             if (this.configFile != null)
                 pvp.put(params.getConfigFile(), this.configFile.getAbsolutePath());
 
-            //if (this.getInputFile() != null)
-            //    pvp.put(params.getContigsFile(), this.getInputFile().getAbsolutePath());
+            //if (this.getInputAssembly() != null)
+            //    pvp.put(params.getContigsFile(), this.getInputAssembly().getAbsolutePath());
 
             if (this.getOutputPrefix() != null)
                 pvp.put(params.getOutputPrefix(), this.getOutputPrefix());
@@ -469,7 +470,7 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
                 this.configFile = new File(value);
             }
             //else if (param.equals(params.())) {
-            //    this.setInputFile(new File(value));
+            //    this.setInputAssembly(new File(value));
             //}
             else if (param.equals(params.getOutputPrefix())) {
                 this.setOutputPrefix(value);

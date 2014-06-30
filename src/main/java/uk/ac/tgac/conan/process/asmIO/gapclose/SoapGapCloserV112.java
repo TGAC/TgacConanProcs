@@ -213,8 +213,8 @@ public class SoapGapCloserV112 extends AbstractAssemblyEnhancer {
             Params params = this.getParams();
             ParamMap pvp = new DefaultParamMap();
 
-            if (this.getInputFile() != null)
-                pvp.put(params.getInputScaffoldFile(), this.getInputFile().getAbsolutePath());
+            if (this.getInputAssembly() != null)
+                pvp.put(params.getInputScaffoldFile(), this.getInputAssembly().getAbsolutePath());
 
             if (this.libraryFile != null)
                 pvp.put(params.getLibraryFile(), this.libraryFile.getAbsolutePath());
@@ -252,7 +252,7 @@ public class SoapGapCloserV112 extends AbstractAssemblyEnhancer {
                 this.setThreads(Integer.parseInt(value));
             }
             else if (param.equals(params.getInputScaffoldFile())) {
-                this.setInputFile(new File(value));
+                this.setInputAssembly(new File(value));
             }
             else if (param.equals(params.getOutputFile())) {
                 this.setOutputFile(new File(value));

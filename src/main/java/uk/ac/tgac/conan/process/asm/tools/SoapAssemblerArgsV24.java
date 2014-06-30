@@ -86,6 +86,11 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
     }
 
     @Override
+    public boolean makesBubbles() {
+        return false;
+    }
+
+    @Override
     public File getUnitigsFile() {
         return null;
     }
@@ -97,11 +102,16 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
 
     @Override
     public File getContigsFile() {
-        return new File(this.getArgs().getOutputDir(), this.getArgs().getOutputPrefix() + ".contig");
+        return new File(this.getArgs().getOutputDir(), "soap.contig");
     }
 
     @Override
     public File getScaffoldsFile() {
+        return null;
+    }
+
+    @Override
+    public File getBubbleFile() {
         return null;
     }
 
@@ -116,7 +126,7 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
 
         return EXE + " pregraph" +
                 " -s " + args.getConfigFile() +
-                " -o graph" +
+                " -o soap" +
                 " -K " + args.getK() +
                 " -p " + args.getThreads() +
                 " -a " + args.getMemoryAssumptionGB() +
@@ -129,7 +139,7 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
         Args args = this.getArgs();
 
         return EXE + " contig" +
-                " -g graph" +
+                " -g soap" +
                 (args.resolveRepeats ? " -R" : "") //+
                 //" -M ?" +
                 //" -D ?" +
@@ -181,7 +191,7 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
         }
     }
 
-    @MetaInfServices(AssemblerArgs.class)
+    @MetaInfServices(DeBruijnArgs.class)
     public static class Args extends AbstractAssemblerArgs implements DeBruijnArgs {
 
         private static Logger log = LoggerFactory.getLogger(SoapAssemblerArgsV24.class);
@@ -206,7 +216,7 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
             this.resolveRepeats = true;
             this.fillGaps = false;
             this.configFile = null;
-            this.outputPrefix = "soap_out";
+            this.outputPrefix = "soap";
         }
 
         public Params getParams() {
