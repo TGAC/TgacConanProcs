@@ -18,6 +18,7 @@ public abstract class AbstractAssemblerArgs extends AbstractProcessArgs implemen
     protected List<Library> libs;
     protected int threads;
     protected int maxMemUsageMB;
+    protected int desiredCoverage;
 
     protected AbstractAssemblerArgs(ProcessParams params, String processName) {
 
@@ -28,6 +29,7 @@ public abstract class AbstractAssemblerArgs extends AbstractProcessArgs implemen
         this.libs = new ArrayList<>();
         this.threads = 1;
         this.maxMemUsageMB = 0;
+        this.desiredCoverage = -1;
     }
 
     public File getOutputDir() {
@@ -60,6 +62,14 @@ public abstract class AbstractAssemblerArgs extends AbstractProcessArgs implemen
 
     public void setMaxMemUsageMB(int maxMemUsageMB) {
         this.maxMemUsageMB = maxMemUsageMB;
+    }
+
+    public int getDesiredCoverage() {
+        return desiredCoverage;
+    }
+
+    public void setDesiredCoverage(int desiredCoverage) {
+        this.desiredCoverage = desiredCoverage;
     }
 
     @Override

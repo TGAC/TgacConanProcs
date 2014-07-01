@@ -63,6 +63,11 @@ public abstract class AbstractAssembler extends AbstractConanProcess implements 
     }
 
     @Override
+    public void initialise(ConanExecutorService ces) {
+        this.conanExecutorService = ces;
+    }
+
+    @Override
     public void initialise(AbstractProcessArgs args, ConanExecutorService ces) {
         this.setProcessArgs(args);
         this.conanExecutorService = ces;

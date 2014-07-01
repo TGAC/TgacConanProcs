@@ -73,7 +73,7 @@ public class SpadesV31 extends AbstractAssembler {
 
     @Override
     public boolean makesScaffolds() {
-        return false;
+        return true;
     }
 
     @Override
@@ -88,12 +88,12 @@ public class SpadesV31 extends AbstractAssembler {
 
     @Override
     public File getContigsFile() {
-        return new File(this.getArgs().getOutputDir(), "contigs.fa");
+        return new File(this.getArgs().getOutputDir(), "contigs.fasta");
     }
 
     @Override
     public File getScaffoldsFile() {
-        return null;
+        return new File(this.getArgs().getOutputDir(), "scaffolds.fasta");
     }
 
     @Override
@@ -315,6 +315,7 @@ public class SpadesV31 extends AbstractAssembler {
                     .create();
 
             this.input = new ParameterBuilder()
+                    .isOption(false)
                     .description("Input for SPADES.  See documentation for more details.")
                     .argValidator(ArgValidator.OFF)
                     .create();
@@ -403,7 +404,7 @@ public class SpadesV31 extends AbstractAssembler {
             if (lib.getSeqOrientation() == Library.SeqOrientation.FORWARD_FORWARD) {
                 return "ff";
             }
-            else if (lib.getSeqOrientation() == Library.SeqOrientation.FORWARD_FORWARD) {
+            else if (lib.getSeqOrientation() == Library.SeqOrientation.FORWARD_REVERSE) {
                 return "fr";
             }
             else if (lib.getSeqOrientation() == Library.SeqOrientation.REVERSE_FORWARD) {
@@ -428,14 +429,14 @@ public class SpadesV31 extends AbstractAssembler {
                     libStrings.add(
                             peStart + "-1 " + lib.getFile1().getAbsolutePath() + " " +
                                     peStart + "-2 " + lib.getFile2().getAbsolutePath() + " " +
-                                    peStart + this.getOrienatation(lib));
+                                    peStart + "-" + this.getOrienatation(lib));
                 }
                 else if (lib.getType() == Library.Type.MATE_PAIR) {
                     final String mpStart = "--mp" + index;
                     libStrings.add(
                             mpStart + "-1 " + lib.getFile1().getAbsolutePath() + " " +
                                     mpStart + "-2 " + lib.getFile2().getAbsolutePath() + " " +
-                                    mpStart + this.getOrienatation(lib));
+                                    mpStart + "-" + this.getOrienatation(lib));
                 }
                 else if (lib.getType() == Library.Type.SINGLE_END) {
 

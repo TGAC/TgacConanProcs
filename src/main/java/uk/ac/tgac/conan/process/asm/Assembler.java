@@ -115,6 +115,8 @@ public interface Assembler extends ConanProcess {
      */
     void initialise(AbstractProcessArgs args, ConanExecutorService ces);
 
+    void initialise(ConanExecutorService ces);
+
 
     public enum Type {
         DE_BRUIJN,

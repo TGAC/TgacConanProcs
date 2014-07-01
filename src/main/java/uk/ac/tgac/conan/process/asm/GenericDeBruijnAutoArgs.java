@@ -29,7 +29,7 @@ public class GenericDeBruijnAutoArgs extends GenericAssemblerArgs {
     }
 
     @Override
-    public Assembler createAssembler(String toolName, ConanExecutorService ces) throws IOException {
+    public Assembler createAssembler(String toolName, ConanExecutorService ces) {
 
         DeBruijnAutoArgs args = this.createProcessArgs(toolName);
 

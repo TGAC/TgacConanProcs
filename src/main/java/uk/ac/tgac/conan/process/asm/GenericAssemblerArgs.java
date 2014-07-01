@@ -35,6 +35,7 @@ public class GenericAssemblerArgs {
     private File outputDir;
     private List<Library> libraries;
     private Organism organism;
+    private int desiredCoverage;
 
     public GenericAssemblerArgs() {
         this.memory = 0;
@@ -42,6 +43,7 @@ public class GenericAssemblerArgs {
         this.outputDir = new File(".");
         this.libraries = new ArrayList<>();
         this.organism = null;
+        this.desiredCoverage = -1;
     }
 
     public int getThreads() {
@@ -84,6 +86,14 @@ public class GenericAssemblerArgs {
         this.memory = memory;
     }
 
+    public int getDesiredCoverage() {
+        return desiredCoverage;
+    }
+
+    public void setDesiredCoverage(int desiredCoverage) {
+        this.desiredCoverage = desiredCoverage;
+    }
+
     public AssemblerArgs createProcessArgs(String toolName) {
 
         ServiceLoader<DeBruijnArgs> dbgArgs = ServiceLoader.load(DeBruijnArgs.class);
@@ -112,7 +122,11 @@ public class GenericAssemblerArgs {
         return null;
     }
 
-    public Assembler createAssembler(String toolName, ConanExecutorService ces) throws IOException {
+    public Assembler createAssembler(String toolName) {
+        return this.createAssembler(toolName, null);
+    }
+
+    public Assembler createAssembler(String toolName, ConanExecutorService ces) {
 
         AssemblerArgs args = createProcessArgs(toolName);
 
@@ -131,8 +145,7 @@ public class GenericAssemblerArgs {
         return null;
     }
 
-    protected Assembler createAssembler(String toolName, AbstractProcessArgs args, ConanExecutorService ces)
-            throws IOException {
+    protected Assembler createAssembler(String toolName, AbstractProcessArgs args, ConanExecutorService ces) {
 
         if (args == null)
             throw new IllegalArgumentException("Provided assembler args are null");

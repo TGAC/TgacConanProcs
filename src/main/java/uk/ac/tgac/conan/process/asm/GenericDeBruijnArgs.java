@@ -56,7 +56,7 @@ public class GenericDeBruijnArgs extends GenericAssemblerArgs {
     }
 
     @Override
-    public Assembler createAssembler(String toolName, ConanExecutorService ces) throws IOException {
+    public Assembler createAssembler(String toolName, ConanExecutorService ces) {
 
         DeBruijnArgs args = this.createProcessArgs(toolName);
 

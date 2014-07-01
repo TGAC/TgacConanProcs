@@ -41,7 +41,7 @@ public class GenericDeBruijnOptimiserArgs extends GenericAssemblerArgs {
     }
 
     @Override
-    public Assembler createAssembler(String toolName, ConanExecutorService ces) throws IOException {
+    public Assembler createAssembler(String toolName, ConanExecutorService ces) {
 
         DeBruijnOptimiserArgs args = this.createProcessArgs(toolName);
 
