@@ -118,7 +118,7 @@ public abstract class AbstractAssemblyEnhancerArgs extends AbstractProcessArgs i
 
     @Override
     public void initialise(File inputFile, File bubbleFile, File outputDir, String outputPrefix, List<Library> libs,
-                                                   int threads, int memory, String otherArgs) throws IOException {
+                                                   int threads, int memory, String checkedArgs, String uncheckedArgs) throws IOException {
 
         this.setInputAssembly(inputFile);
         this.setBubbleFile(bubbleFile);
@@ -127,7 +127,8 @@ public abstract class AbstractAssemblyEnhancerArgs extends AbstractProcessArgs i
         this.setLibraries(libs);
         this.setThreads(threads);
         this.setMemory(memory);
-        this.parse(otherArgs);
+        this.parse(checkedArgs);
+        this.setUncheckedArgs(uncheckedArgs);
     }
 
     @Override

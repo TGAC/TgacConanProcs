@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asm.stats;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,7 +34,7 @@ import static org.junit.Assert.assertTrue;
  * Date: 06/08/13
  * Time: 14:15
  */
-public class CegmaV2_4ProcessTest {
+public class CegmaV24Test {
 
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
@@ -60,20 +61,20 @@ public class CegmaV2_4ProcessTest {
                 " 2>&1; cd " + pwd;
     }
 
-    private CegmaV2_4Process createProcess() {
+    private CegmaV24 createProcess() {
 
-        CegmaV2_4Args args = new CegmaV2_4Args();
+        CegmaV24.Args args = new CegmaV24.Args();
         args.setGenomeFile(new File("assembly.fa"));
         args.setOutputPrefix(new File(testDir, "cegma-output"));
         args.setThreads(16);
 
-        return new CegmaV2_4Process(args);
+        return new CegmaV24(null, args);
     }
 
     @Test
     public void testCommand() {
 
-        CegmaV2_4Process process = createProcess();
+        CegmaV24 process = createProcess();
 
         String command = process.getCommand();
 
@@ -83,7 +84,7 @@ public class CegmaV2_4ProcessTest {
     @Test
     public void testFullCommand() throws IOException, ConanParameterException {
 
-        CegmaV2_4Process process = createProcess();
+        CegmaV24 process = createProcess();
 
         process.initialise();
 
@@ -92,5 +93,14 @@ public class CegmaV2_4ProcessTest {
         assertTrue(fullCommand.equals(correctFullCommand));
     }
 
+    private File cegmaReportFile = FileUtils.toFile(this.getClass().getResource("/stats/cegma-report.txt"));
 
+    @Test
+    public void testQuastReport() throws IOException {
+
+        CegmaV24.Report report = new CegmaV24.Report(cegmaReportFile);
+
+        assertTrue(report.getPcComplete() == 93.55);
+        assertTrue(report.getPcPartial() == 93.95);
+    }
 }

@@ -75,10 +75,14 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
 
         Args args = this.getArgs();
 
-        return "prepare " +
-                " -c " + args.getInputAssembly().getAbsolutePath() +
+        return "finalFusion " +
+                " -s " + args.getConfigFile() +
+                " -g soap" +
+                " -p " + args.getThreads() +
+                " -D" +
                 " -K " + args.getKmer() +
-                " -g soap";
+                " -c " + args.getInputAssembly().getAbsolutePath() +
+                " -M";
     }
 
     protected String createMapCommand() {
@@ -114,7 +118,7 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
         List<String> commands = new ArrayList<String>();
 
         commands.add(this.createPrepareCommand());
-        commands.add(this.createMapCommand());
+        //commands.add(this.createMapCommand());
         commands.add(this.createScaffCommand());
 
         // Join commands

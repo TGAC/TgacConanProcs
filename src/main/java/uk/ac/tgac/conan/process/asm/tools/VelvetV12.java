@@ -240,7 +240,6 @@ public class VelvetV12 extends AbstractAssembler {
             args.setMemory(this.getMaxMemUsageMB());
 
             args.setK(this.k);
-            args.setCoverageCutoff(this.coverageCutoff);
 
             return args;
         }
@@ -254,7 +253,6 @@ public class VelvetV12 extends AbstractAssembler {
             this.maxMemUsageMB = args.getMemory();
 
             this.k = args.getK();
-            this.coverageCutoff = args.getCoverageCutoff();
         }
     }
 

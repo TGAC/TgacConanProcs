@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asmIO.gapclose;
 
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
@@ -25,10 +26,13 @@ import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
+import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asmIO.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by maplesod on 14/06/14.
@@ -52,6 +56,15 @@ public class PlatanusGapCloseV12 extends AbstractAssemblyEnhancer {
     public PlatanusGapCloseV12(ConanExecutorService ces, Args args) {
         super(NAME, TYPE, EXE, args, new Params(), ces);
         this.setMode(MODE);
+    }
+
+    @Override
+    public void setup() throws IOException {
+        String pwdFull = new File(".").getAbsolutePath();
+        String pwd = pwdFull.substring(0, pwdFull.length() - 2);
+
+        this.addPreCommand("cd " + this.getArgs().getOutputDir().getAbsolutePath());
+        this.addPostCommand("cd " + pwd);
     }
 
     public Args getArgs() {
@@ -159,6 +172,9 @@ public class PlatanusGapCloseV12 extends AbstractAssemblyEnhancer {
             else if (param.equals(params.getThreads())) {
                 this.setThreads(Integer.parseInt(value));
             }
+            //else if (param.equals(params.getInput())) {
+                //this.setThreads(Integer.parseInt(value));
+            //}
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
             }
@@ -181,7 +197,7 @@ public class PlatanusGapCloseV12 extends AbstractAssemblyEnhancer {
             ParamMap pvp = new DefaultParamMap();
 
             if (this.getOutputPrefix() != null) {
-                pvp.put(params.getOutputPrefix(), new File(this.getOutputDir(), this.getOutputPrefix()).getAbsolutePath());
+                pvp.put(params.getOutputPrefix(), this.getOutputPrefix());
             }
 
             if (this.getInputAssembly() != null) {
@@ -232,6 +248,10 @@ public class PlatanusGapCloseV12 extends AbstractAssemblyEnhancer {
                 pvp.put(params.getThreads(), Integer.toString(this.getThreads()));
             }
 
+            if (this.getLibraries() != null && !this.getLibraries().isEmpty()) {
+                pvp.put(params.getInput(), new InputLibsArg(this.getLibraries()).toString());
+            }
+
             return pvp;
         }
     }
@@ -240,6 +260,7 @@ public class PlatanusGapCloseV12 extends AbstractAssemblyEnhancer {
 
         private ConanParameter outputPrefix;
         private ConanParameter scaffoldFile;
+        private ConanParameter input;
         private ConanParameter mappingSeedLength;
         private ConanParameter mappingSeedLengthOLC;
         private ConanParameter maxReadsInGaps;
@@ -259,12 +280,19 @@ public class PlatanusGapCloseV12 extends AbstractAssemblyEnhancer {
             this.outputPrefix = new ParameterBuilder()
                     .shortName("o")
                     .description("prefix of output file (default out, length <= 200)")
+                    .argValidator(ArgValidator.DEFAULT)
                     .create();
 
             this.scaffoldFile = new ParameterBuilder()
                     .shortName("c")
                     .description("scaffold_file (fasta format)")
                     .argValidator(ArgValidator.PATH)
+                    .create();
+
+            this.input = new ParameterBuilder()
+                    .isOption(false)
+                    .description("input to platanus gap_close")
+                    .argValidator(ArgValidator.OFF)
                     .create();
 
             this.mappingSeedLength = new ParameterBuilder()
@@ -344,6 +372,10 @@ public class PlatanusGapCloseV12 extends AbstractAssemblyEnhancer {
             return scaffoldFile;
         }
 
+        public ConanParameter getInput() {
+            return input;
+        }
+
         public ConanParameter getMappingSeedLength() {
             return mappingSeedLength;
         }
@@ -393,6 +425,7 @@ public class PlatanusGapCloseV12 extends AbstractAssemblyEnhancer {
             return new ConanParameter[] {
                     this.outputPrefix,
                     this.scaffoldFile,
+                    this.input,
                     this.mappingSeedLength,
                     this.mappingSeedLengthOLC,
                     this.maxReadsInGaps,
@@ -406,5 +439,58 @@ public class PlatanusGapCloseV12 extends AbstractAssemblyEnhancer {
                     this.threads
             };
         }
+    }
+
+    public static class InputLibsArg {
+
+        private List<Library> libs;
+
+        public InputLibsArg() {
+            this(new ArrayList<Library>());
+        }
+
+        public InputLibsArg(List<Library> libs) {
+            this.libs = libs;
+        }
+
+
+        public List<Library> getLibs() {
+            return libs;
+        }
+
+        public void setLibs(List<Library> libs) {
+            this.libs = libs;
+        }
+
+        @Override
+        public String toString() {
+
+            List<String> libStrings = new ArrayList<>();
+
+            int index = 1;
+            int nbSingleEndLibs = 0;
+            for (Library lib : this.libs) {
+
+                if (lib.getSeqOrientation() == Library.SeqOrientation.FORWARD_REVERSE) {
+                    libStrings.add(
+                            "-IP" + index + " " + lib.getFile1().getAbsolutePath() + " " + lib.getFile2().getAbsolutePath()
+                    );
+                }
+                else if (lib.getSeqOrientation() == Library.SeqOrientation.REVERSE_FORWARD) {
+                    final String mpStart = "--OP" + index;
+                    libStrings.add(
+                            "-OP" + index + " " + lib.getFile1().getAbsolutePath() + " " + lib.getFile2().getAbsolutePath()
+                    );
+                }
+                else {
+                    throw new IllegalArgumentException("Unknown library type detected \"" + lib.getType() + "\" for: " + lib.getName());
+                }
+
+                index++;
+            }
+
+            return StringUtils.join(libStrings, " ").trim();
+        }
+
     }
 }

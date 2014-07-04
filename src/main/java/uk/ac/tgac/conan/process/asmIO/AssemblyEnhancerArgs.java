@@ -35,7 +35,7 @@ public interface AssemblyEnhancerArgs extends ProcessArgs {
      * @return
      */
     void initialise(File inputFile, File bubbleFile, File outputDir, String outputPrefix, List<Library> libs, int threads,
-                                            int memory, String otherArgs) throws IOException;
+                                            int memory, String checkedArgs, String uncheckedArgs) throws IOException;
 
     /**
      * Gets the name of this process

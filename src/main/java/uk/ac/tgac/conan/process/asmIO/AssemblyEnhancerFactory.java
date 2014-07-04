@@ -39,7 +39,8 @@ public class AssemblyEnhancerFactory {
                                                    List<Library> libs,
                                                    int threads,
                                                    int memory,
-                                                   String otherArgs,
+                                                   String checkedArgs,
+                                                   String uncheckedArgs,
                                                    ConanExecutorService ces) throws IOException {
 
         AssemblyEnhancerArgs actualArgs = null;
@@ -49,7 +50,7 @@ public class AssemblyEnhancerFactory {
         for(AssemblyEnhancerArgs args : foundAsmIOArgsClasses) {
 
             if (args.getName().equalsIgnoreCase(toolName.trim())) {
-                args.initialise(inputFile, bubbleFile, outputDir, outputPrefix, libs, threads, memory, otherArgs);
+                args.initialise(inputFile, bubbleFile, outputDir, outputPrefix, libs, threads, memory, checkedArgs, uncheckedArgs);
                 actualArgs = args;
                 break;
             }

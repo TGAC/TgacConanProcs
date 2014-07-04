@@ -27,14 +27,14 @@ import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
-import uk.ac.tgac.conan.core.data.FilePair;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
 import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: maplesod

@@ -401,7 +401,6 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
 
             GenericDeBruijnArgs args = new GenericDeBruijnArgs();
 
-            args.setCoverageCutoff(this.coverageCutoff);
             args.setK(this.k);
             args.setThreads(this.threads);
             args.setMemory(this.maxMemUsageMB);
@@ -417,7 +416,6 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
             this.outputDir = args.getOutputDir();
             this.libs = args.getLibraries();
             this.k = args.getK();
-            this.coverageCutoff = args.getCoverageCutoff();
             this.threads = args.getThreads();
             this.maxMemUsageMB = args.getMemory();
         }

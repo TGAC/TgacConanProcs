@@ -25,6 +25,7 @@ public class AssemblyEnhancerFactoryTest {
                 1,
                 1000,
                 "",
+                "",
                 new DefaultExecutorService());
 
         assertTrue(proc != null);

@@ -17,6 +17,8 @@
  **/
 package uk.ac.tgac.conan.process.asmIO.scaffold;
 
+import org.apache.commons.cli.*;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
@@ -25,10 +27,13 @@ import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
+import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asmIO.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by maplesod on 14/06/14.
@@ -53,6 +58,15 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
 
         super(NAME, TYPE, EXE, args, new Params(), ces);
         this.setMode(MODE);
+    }
+
+    @Override
+    public void setup() throws IOException {
+        String pwdFull = new File(".").getAbsolutePath();
+        String pwd = pwdFull.substring(0, pwdFull.length() - 2);
+
+        this.addPreCommand("cd " + this.getArgs().getOutputDir().getAbsolutePath());
+        this.addPostCommand("cd " + pwd);
     }
 
     public Args getArgs() {
@@ -97,7 +111,6 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
             Params params = (Params)this.params;
 
             if (param.equals(params.getOutputPrefix())) {
-
                 File op = new File(value).getAbsoluteFile();
                 this.setOutputDir(op.getParentFile());
                 this.setOutputPrefix(op.getName());
@@ -133,9 +146,51 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
 
         }
 
+        public Options createOptions() {
+
+            Params params = this.getParams();
+
+            // create Options object
+            Options options = new Options();
+
+            options.addOption(new Option(params.getMappingSeedLength().getShortName(), true, params.getMappingSeedLength().getDescription()));
+            options.addOption(new Option(params.getMinOverlapLength().getShortName(), true, params.getMinOverlapLength().getDescription()));
+            options.addOption(new Option(params.getMinLinks().getShortName(), true, params.getMinLinks().getDescription()));
+            options.addOption(new Option(params.getMaxDiffBubbleCrush().getShortName(), true, params.getMaxDiffBubbleCrush().getDescription()));
+
+            return options;
+        }
+
         @Override
         public void parse(String args) throws IOException {
+            Params params = this.getParams();
 
+            String[] splitArgs = new String(PlatanusScaffoldV12.EXE + " " + args).split(" ");
+            CommandLine cmdLine = null;
+            try {
+                cmdLine = new PosixParser().parse(createOptions(), splitArgs);
+            } catch (ParseException e) {
+                throw new IOException(e);
+            }
+
+            if (cmdLine == null)
+                return;
+
+            this.mappingSeedLength = cmdLine.hasOption(params.getMappingSeedLength().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getMappingSeedLength().getShortName())) :
+                    this.mappingSeedLength;
+
+            this.minOverlapLength = cmdLine.hasOption(params.getMinOverlapLength().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getMinOverlapLength().getShortName())) :
+                    this.minOverlapLength;
+
+            this.minLinks = cmdLine.hasOption(params.getMinLinks().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getMinLinks().getShortName())) :
+                    this.minLinks;
+
+            this.maxDiffBubbleCrush = cmdLine.hasOption(params.getMaxDiffBubbleCrush().getShortName()) ?
+                    Double.parseDouble(cmdLine.getOptionValue(params.getMaxDiffBubbleCrush().getShortName())) :
+                    this.maxDiffBubbleCrush;
         }
 
         @Override
@@ -145,7 +200,7 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
             ParamMap pvp = new DefaultParamMap();
 
             if (this.getOutputPrefix() != null) {
-                pvp.put(params.getOutputPrefix(), new File(this.getOutputDir(), this.getOutputPrefix()).getAbsolutePath());
+                pvp.put(params.getOutputPrefix(), this.getOutputPrefix());
             }
 
             if (this.getInputAssembly() != null) {
@@ -176,6 +231,11 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
                 pvp.put(params.getMaxDiffBubbleCrush(), Double.toString(this.maxDiffBubbleCrush));
             }
 
+            if (this.getLibraries() != null && !this.getLibraries().isEmpty()) {
+                pvp.put(params.getReads(), new InputLibsArg(this.getLibraries()).toString());
+            }
+
+
             return pvp;
         }
     }
@@ -199,9 +259,11 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
             this.outputPrefix = new ParameterBuilder()
                     .shortName("o")
                     .description("prefix of output file (default out, length <= 200)")
+                    .argValidator(ArgValidator.DEFAULT)
                     .create();
 
             this.reads = new ParameterBuilder()
+                    .isOption(false)
                     .description("Input reads for platanus scaffold")
                     .argValidator(ArgValidator.OFF)
                     .create();
@@ -300,5 +362,61 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
                     this.threads
             };
         }
+    }
+
+    public static class InputLibsArg {
+
+        private List<Library> libs;
+
+        public InputLibsArg() {
+            this(new ArrayList<Library>());
+        }
+
+        public InputLibsArg(List<Library> libs) {
+            this.libs = libs;
+        }
+
+
+        public List<Library> getLibs() {
+            return libs;
+        }
+
+        public void setLibs(List<Library> libs) {
+            this.libs = libs;
+        }
+
+        @Override
+        public String toString() {
+
+            List<String> libStrings = new ArrayList<>();
+
+            int index = 1;
+            int nbSingleEndLibs = 0;
+            for (Library lib : this.libs) {
+
+                if (lib.getSeqOrientation() == Library.SeqOrientation.FORWARD_REVERSE) {
+                    libStrings.add(
+                            "-IP" + index + " " + lib.getFile1().getAbsolutePath() + " " + lib.getFile2().getAbsolutePath()
+                    );
+                }
+                else if (lib.getSeqOrientation() == Library.SeqOrientation.REVERSE_FORWARD) {
+                    final String mpStart = "--OP" + index;
+                    libStrings.add(
+                            "-OP" + index + " " + lib.getFile1().getAbsolutePath() + " " + lib.getFile2().getAbsolutePath()
+                    );
+                }
+                else {
+                    throw new IllegalArgumentException("Unknown library type detected \"" + lib.getType() + "\" for: " + lib.getName());
+                }
+
+                libStrings.add("-a" + index + " " + lib.getAverageInsertSize());
+                libStrings.add("-d" + index + " " + lib.getInsertErrorTolerance());
+
+                index++;
+            }
+
+            return StringUtils.join(libStrings, " ").trim();
+        }
+
     }
 }

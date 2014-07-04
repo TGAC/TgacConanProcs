@@ -18,19 +18,73 @@
 package uk.ac.tgac.conan.process.asm.stats;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
 /**
  * User: maplesod
- * Date: 12/08/13
- * Time: 13:47
+ * Date: 06/08/13
+ * Time: 14:15
  */
-public class QuastV2_4ReportTest {
+public class QuastV22Test {
+
+    @Rule
+    public TemporaryFolder temp = new TemporaryFolder();
+
+    private String pwd;
+
+    private static String testDir;
+
+    private static String correctCommand;
+
+    @Before
+    public void setup() {
+
+        String pwdFull = new File(".").getAbsolutePath();
+        this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
+
+        this.testDir = temp.getRoot().getAbsolutePath();
+
+        correctCommand = "quast.py --output=" + testDir + " --threads=16 --est-ref-size=50000000 --scaffolds " +
+                pwd + "/file1.fa " + pwd + "/file2.fa";
+    }
+
+    private QuastV22 createProcess() {
+
+        List<File> inputFiles = new ArrayList<>();
+
+        inputFiles.add(new File("file1.fa"));
+        inputFiles.add(new File("file2.fa"));
+
+        QuastV22.Args args = new QuastV22.Args();
+        args.setInputFiles(inputFiles);
+        args.setScaffolds(true);
+        args.setEstimatedGenomeSize(50000000);
+        args.setThreads(16);
+        args.setOutputDir(new File(testDir));
+
+        return new QuastV22(null, args);
+    }
+
+    @Test
+    public void testCommand() throws ConanParameterException {
+
+        QuastV22 process = createProcess();
+
+        String command = process.getCommand();
+
+        assertTrue(command.equals(correctCommand));
+    }
 
     private File quastReportFile = FileUtils.toFile(this.getClass().getResource("/stats/quast-report.txt"));
     private File quastReportScaffoldsFile = FileUtils.toFile(this.getClass().getResource("/stats/quast-report-scaffolds.txt"));
@@ -38,7 +92,7 @@ public class QuastV2_4ReportTest {
     @Test
     public void testQuastReport() throws IOException {
 
-        QuastV2_2Report report = new QuastV2_2Report(quastReportFile);
+        QuastV22.Report report = new QuastV22.Report(quastReportFile);
 
         assertTrue(report.getAssemblyStats(0).getName().equalsIgnoreCase("rampart-5pc-k61-scaffolds"));
         assertTrue(report.getAssemblyStats(7).getName().equalsIgnoreCase("rampart-100pc-k71-scaffolds"));
@@ -47,11 +101,9 @@ public class QuastV2_4ReportTest {
     @Test
     public void testQuastScaffoldsReport() throws IOException {
 
-        QuastV2_2Report report = new QuastV2_2Report(quastReportScaffoldsFile);
+        QuastV22.Report report = new QuastV22.Report(quastReportScaffoldsFile);
 
         assertTrue(report.getAssemblyStats(0).getName().equalsIgnoreCase("abyss-raw-kmer-cvg-all_k-61-scaffolds_broken"));
         assertTrue(report.getAssemblyStats(7).getName().equalsIgnoreCase("abyss-raw-kmer-cvg-all_k-75-scaffolds"));
     }
-
-
 }

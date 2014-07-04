@@ -40,7 +40,7 @@ import static org.junit.Assert.assertTrue;
  * Time: 11:17
  */
 @RunWith(MockitoJUnitRunner.class)
-public class AbyssV13Test {
+public class AbyssV15Test {
 
     private String pwd;
 
@@ -89,23 +89,23 @@ public class AbyssV13Test {
         return libs;
     }
 
-    private AbyssV13 createProcess() {
+    private AbyssV15 createProcess() {
         List<Library> libs = this.createLocalPETestLibrary();
 
-        AbyssV13.Args args = new AbyssV13.Args();
+        AbyssV15.Args args = new AbyssV15.Args();
         args.setLibs(libs);
         args.setK(61);
         args.setName("abyss-out");
         args.setThreads(16);
         args.setOutputDir(temp.getRoot());
 
-        return new AbyssV13(null, args);
+        return new AbyssV15(null, args);
     }
 
     @Test
     public void testAbyssV134Command() throws Exception {
 
-        AbyssV13 abyss = createProcess();
+        AbyssV15 abyss = createProcess();
 
         String command = abyss.getCommand();
 
@@ -118,7 +118,7 @@ public class AbyssV13Test {
     @Test
     public void testAbyssV134FullCommand() throws Exception {
 
-        AbyssV13 abyss = createProcess();
+        AbyssV15 abyss = createProcess();
         abyss.setup();
 
         String fullCommand = abyss.getFullCommand();

@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
  * Date: 28/02/13
  * Time: 17:27
  */
-public class RV2122ProcessTest {
+public class RV2122Test {
 
     @Test
     public void testRV2122() throws ConanParameterException {
@@ -40,12 +40,12 @@ public class RV2122ProcessTest {
         rArgs.add("arg1");
         rArgs.add("arg2");
 
-        RV2122Args args = new RV2122Args();
+        RV2122.Args args = new RV2122.Args();
         args.setArgs(rArgs);
         args.setOutput(new File("output.txt"));
         args.setScript(new File("script.R"));
 
-        RV2122Process task = new RV2122Process(args);
+        RV2122 task = new RV2122(args);
 
         String command = task.getCommand();
         String correct = "Rscript script.R arg1 arg2 > output.txt";

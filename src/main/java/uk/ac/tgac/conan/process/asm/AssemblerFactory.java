@@ -19,7 +19,6 @@ package uk.ac.tgac.conan.process.asm;
 
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;

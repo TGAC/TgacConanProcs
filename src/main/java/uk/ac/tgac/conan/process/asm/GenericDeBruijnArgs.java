@@ -2,7 +2,6 @@ package uk.ac.tgac.conan.process.asm;
 
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 
-import java.io.IOException;
 import java.util.ServiceLoader;
 
 /**
@@ -11,17 +10,14 @@ import java.util.ServiceLoader;
 public class GenericDeBruijnArgs extends GenericAssemblerArgs {
 
     public static final int DEFAULT_K = 55;
-    public static final int DEFAULT_COVERAGE_CUTOFF = 0;
 
     private int k;
-    private int coverageCutoff;
 
     public GenericDeBruijnArgs() {
 
         super();
 
         this.k = DEFAULT_K;
-        this.coverageCutoff = DEFAULT_COVERAGE_CUTOFF;
     }
 
     public int getK() {
@@ -30,14 +26,6 @@ public class GenericDeBruijnArgs extends GenericAssemblerArgs {
 
     public void setK(int k) {
         this.k = k;
-    }
-
-    public int getCoverageCutoff() {
-        return coverageCutoff;
-    }
-
-    public void setCoverageCutoff(int coverageCutoff) {
-        this.coverageCutoff = coverageCutoff;
     }
 
     @Override

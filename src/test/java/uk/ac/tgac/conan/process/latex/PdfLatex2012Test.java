@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  * Date: 08/03/13
  * Time: 10:51
  */
-public class PdfLatex2012ProcessTest {
+public class PdfLatex2012Test {
 
     private String pwd;
 
@@ -44,11 +44,11 @@ public class PdfLatex2012ProcessTest {
     @Test
     public void testPdfLatexCommand() {
 
-        PdfLatex2012Args args = new PdfLatex2012Args();
+        PdfLatex2012.Args args = new PdfLatex2012.Args();
         args.setOutputDir(new File(pwd + "pdfLatexOut"));
         args.setTexFile(new File(pwd + "texFile.tex"));
 
-        PdfLatex2012Process process = new PdfLatex2012Process(args);
+        PdfLatex2012 process = new PdfLatex2012(args);
 
         String command = process.getCommand();
         String correct = "pdflatex -interaction=nonstopmode " + pwd + "texFile.tex";
@@ -61,11 +61,11 @@ public class PdfLatex2012ProcessTest {
     @Test
     public void testPdfLatexFullCommand() throws ConanParameterException {
 
-        PdfLatex2012Args args = new PdfLatex2012Args();
+        PdfLatex2012.Args args = new PdfLatex2012.Args();
         args.setOutputDir(new File(pwd + "pdfLatexOut"));
         args.setTexFile(new File(pwd + "texFile.tex"));
 
-        PdfLatex2012Process process = new PdfLatex2012Process(args);
+        PdfLatex2012 process = new PdfLatex2012(args);
 
         String command = process.getFullCommand();
         String correct = "mkdir -p " + pwd + "pdfLatexOut; cd " + pwd + "pdfLatexOut; pdflatex -interaction=nonstopmode " + pwd + "texFile.tex 2>&1; cd " + pwd;
