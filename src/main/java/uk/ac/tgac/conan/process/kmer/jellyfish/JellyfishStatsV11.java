@@ -9,6 +9,7 @@ import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,11 +28,15 @@ public class JellyfishStatsV11 extends AbstractConanProcess {
 
 
     public JellyfishStatsV11() {
-        this(new Args());
+        this(null);
     }
 
-    public JellyfishStatsV11(Args args) {
-        super(EXE, args, new Params());
+    public JellyfishStatsV11(ConanExecutorService ces) {
+        this(ces, new Args());
+    }
+
+    public JellyfishStatsV11(ConanExecutorService ces, Args args) {
+        super(EXE, args, new Params(), ces);
         this.setMode(MODE);
     }
 
