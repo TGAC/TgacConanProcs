@@ -17,6 +17,13 @@ public class GenericDeBruijnOptimiserArgs extends GenericAssemblerArgs {
         this.kmerRange = new KmerRange();
     }
 
+    public GenericDeBruijnOptimiserArgs(GenericAssemblerArgs asmArgs) {
+
+        super(asmArgs);
+
+        this.kmerRange = new KmerRange();
+    }
+
     public KmerRange getKmerRange() {
         return kmerRange;
     }

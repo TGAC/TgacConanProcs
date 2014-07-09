@@ -38,11 +38,20 @@ public class GenericAssemblerArgs {
 
     public GenericAssemblerArgs() {
         this.memory = 0;
-        this.threads = 0;
+        this.threads = 1;
         this.outputDir = new File(".");
         this.libraries = new ArrayList<>();
         this.organism = null;
         this.desiredCoverage = -1;
+    }
+
+    public GenericAssemblerArgs(GenericAssemblerArgs args) {
+        this.memory = args.getMemory();
+        this.threads = args.getThreads();
+        this.outputDir = new File(args.getOutputDir().getPath());
+        this.libraries = new ArrayList<>(args.getLibraries());
+        this.organism = args.getOrganism();
+        this.desiredCoverage = args.getDesiredCoverage();
     }
 
     public int getThreads() {

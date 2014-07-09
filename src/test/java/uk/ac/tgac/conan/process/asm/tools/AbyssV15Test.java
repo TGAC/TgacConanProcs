@@ -29,6 +29,7 @@ import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,5 +128,14 @@ public class AbyssV15Test {
         assertTrue(correctFullCommand != null && !correctFullCommand.isEmpty());
         assertTrue(fullCommand.length() == correctFullCommand.length());
         assertTrue(fullCommand.equals(correctFullCommand));
+    }
+
+    @Test
+    public void testParse() throws IOException {
+
+        AbyssV15.Args args = new AbyssV15.Args();
+        args.parse("-n 20 -N 5");
+
+        assertTrue(args.getMinNbPairsForContigs() == 20);
     }
 }

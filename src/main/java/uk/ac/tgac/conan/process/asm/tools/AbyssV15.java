@@ -419,7 +419,7 @@ public class AbyssV15 extends AbstractAssembler {
         public void parse(String args) throws IOException {
             Params params = this.getParams();
 
-            String[] splitArgs = new String(SSpaceBasicV2.EXE + " " + args).split(" ");
+            String[] splitArgs = new String(AbyssV15.EXE + " " + args.trim()).split(" ");
             CommandLine cmdLine = null;
             try {
                 cmdLine = new PosixParser().parse(createOptions(), splitArgs);

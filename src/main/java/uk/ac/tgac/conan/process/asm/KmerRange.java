@@ -131,8 +131,13 @@ public class KmerRange extends ArrayList<Integer> {
         this.maxK = maxKmer;
         this.stepSize = stepSize;
 
-        for(int k = firstValidKmer(minKmer); k <= maxKmer; k += stepSize) {
-            this.add(k);
+        if (stepSize == 0) {
+            this.add(firstValidKmer(minKmer));
+        }
+        else {
+            for (int k = firstValidKmer(minKmer); k <= maxKmer; k += stepSize) {
+                this.add(k);
+            }
         }
     }
 

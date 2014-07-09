@@ -20,6 +20,13 @@ public class GenericDeBruijnArgs extends GenericAssemblerArgs {
         this.k = DEFAULT_K;
     }
 
+    public GenericDeBruijnArgs(GenericAssemblerArgs asmArgs) {
+
+        super(asmArgs);
+
+        this.k = DEFAULT_K;
+    }
+
     public int getK() {
         return k;
     }

@@ -13,6 +13,11 @@ public class GenericDeBruijnAutoArgs extends GenericAssemblerArgs {
         super();
     }
 
+    public GenericDeBruijnAutoArgs(GenericAssemblerArgs asmArgs) {
+
+        super(asmArgs);
+    }
+
     @Override
     public DeBruijnAutoArgs createProcessArgs(String toolName) {
         ServiceLoader<DeBruijnAutoArgs> argLoader = ServiceLoader.load(DeBruijnAutoArgs.class);
