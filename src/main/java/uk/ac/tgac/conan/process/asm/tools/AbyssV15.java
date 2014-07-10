@@ -32,7 +32,6 @@ import uk.ac.tgac.conan.core.data.FilePair;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
 import uk.ac.tgac.conan.process.asm.*;
-import uk.ac.tgac.conan.process.asmIO.scaffold.SSpaceBasicV2;
 
 import java.io.File;
 import java.io.FilenameFilter;

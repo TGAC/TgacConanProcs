@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package uk.ac.tgac.conan.process.ec.quake;
+package uk.ac.tgac.conan.process.re.tools;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.tgac.conan.core.data.Library;
+import uk.ac.tgac.conan.process.re.tools.QuakeV03;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +37,7 @@ import static org.junit.Assert.assertTrue;
  * Date: 22/04/13
  * Time: 10:56
  */
-public class QuakeV034ProcessTest {
+public class QuakeV03Test {
 
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
@@ -54,15 +55,15 @@ public class QuakeV034ProcessTest {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "quake.py -l 50 -k 18 -p 32 -f " + readsListFile.getAbsolutePath();
+        correctCommand = "quake.py -f " + readsListFile.getAbsolutePath() + " -k 18 -p 32 -l 50";
 
         correctFullCommand = "cd " + pwd + "/quake" + "; " + correctCommand + " 2>&1; cd " + pwd;
     }
 
     @Test
-    public void testQuakeCommand() throws ConanParameterException {
+    public void testQuakeCommand() throws ConanParameterException, IOException {
 
-        QuakeV034Process quake = new QuakeV034Process(createQuakeArgs());
+        QuakeV03 quake = new QuakeV03(null, createQuakeArgs());
 
         String command = quake.getCommand();
 
@@ -70,10 +71,10 @@ public class QuakeV034ProcessTest {
     }
 
     @Test
-    public void testQuakeFullCommand() throws ConanParameterException {
+    public void testQuakeFullCommand() throws ConanParameterException, IOException {
 
-        QuakeV034Process quake = new QuakeV034Process(createQuakeArgs());
-        quake.initialise();
+        QuakeV03 quake = new QuakeV03(null, createQuakeArgs());
+        quake.setup();
 
         String command = quake.getFullCommand();
 
@@ -84,19 +85,18 @@ public class QuakeV034ProcessTest {
     @Test
     public void testReadsFileCreation() throws IOException {
 
-        File outputDir = temp.newFolder("quake");
-
-        QuakeV034Args args = createQuakeArgs();
-        args.setOutputDir(outputDir);
-
         Library lib = new Library();
-        lib.setFiles(pwd + "/file1.fastq", pwd + "/file2.fastq");
+        lib.setFiles(new File(pwd, "file1.fastq"), new File(pwd, "file2.fastq"));
 
-        args.setFromLibrary(lib);
+        QuakeV03.Args args = createQuakeArgs();
+        args.setInput(lib);
+        args.setReadsListFile(null);
+        args.setOutputDir(temp.newFolder("quake"));
 
-        File readsFile = args.getReadsListFile();
+        QuakeV03 quake = new QuakeV03(null, args);
+        quake.setup();
 
-        List<String> lines = FileUtils.readLines(readsFile);
+        List<String> lines = FileUtils.readLines(args.getReadsListFile());
         String line = lines.get(0);
 
         assertTrue(line.equals(pwd + "/file1.fastq " + pwd + "/file2.fastq"));
@@ -104,13 +104,12 @@ public class QuakeV034ProcessTest {
 
 
 
-    protected QuakeV034Args createQuakeArgs() {
+    protected QuakeV03.Args createQuakeArgs() throws IOException {
 
-        QuakeV034Args args = new QuakeV034Args();
+        QuakeV03.Args args = new QuakeV03.Args();
         args.setReadsListFile(readsListFile);
-        args.setOutputDir(new File("quake"));
+        args.setOutputDir(new File(pwd + "/quake"));
         args.setMinLength(50);
-        args.setQualityThreshold(50);
         args.setKmer(18);
         args.setThreads(32);
 

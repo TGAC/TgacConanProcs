@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package uk.ac.tgac.conan.process.ec.musket;
+package uk.ac.tgac.conan.process.re.tools;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.tgac.conan.core.data.Library;
+import uk.ac.tgac.conan.process.re.tools.MusketV10;
 
 import java.io.File;
 
@@ -34,7 +35,7 @@ import static org.junit.Assert.assertTrue;
  * Date: 03/05/13
  * Time: 10:55
  */
-public class MusketV106ProcessTest {
+public class MusketV10Test {
 
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
@@ -52,14 +53,14 @@ public class MusketV106ProcessTest {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "musket -k 15 53687091 -omulti output -p 32 -maxtrim 51 -inorder " + pwd + "/file1.fastq " + pwd + "/file2.fastq";
+        correctCommand = "musket -k 15 53687091 -omulti output -p 32 -maxtrim 30 -inorder " + pwd + "/file1.fastq " + pwd + "/file2.fastq";
         correctFullCommand = "cd " + pwd + "/musket" + "; " + correctCommand + " 2>&1; cd " + pwd;
     }
 
     @Test
     public void testMusketCommand() throws ConanParameterException {
 
-        MusketV106Process musket = new MusketV106Process(createMusketArgs());
+        MusketV10 musket = new MusketV10(null, createMusketArgs());
 
         String command = musket.getCommand();
 
@@ -69,8 +70,8 @@ public class MusketV106ProcessTest {
     @Test
     public void testMusketFullCommand() throws ConanParameterException {
 
-        MusketV106Process musket = new MusketV106Process(createMusketArgs());
-        musket.initialise();
+        MusketV10 musket = new MusketV10(null, createMusketArgs());
+        musket.setup();
 
         String command = musket.getFullCommand();
 
@@ -78,20 +79,19 @@ public class MusketV106ProcessTest {
     }
 
 
-    protected MusketV106Args createMusketArgs() {
+    protected MusketV10.Args createMusketArgs() {
 
 
         Library lib = new Library();
         lib.setReadLength(101);
         lib.setFiles("file1.fastq", "file2.fastq");
 
-        MusketV106Args args = new MusketV106Args();
+        MusketV10.Args args = new MusketV10.Args();
         args.setOutputDir(new File("musket"));
-        args.setMinLength(50);
-        args.setQualityThreshold(50);
+        args.setMaxTrim(30);
         args.setKmer(15);
         args.setThreads(32);
-        args.setFromLibrary(lib);
+        args.setInput(lib);
 
         return args;
     }
