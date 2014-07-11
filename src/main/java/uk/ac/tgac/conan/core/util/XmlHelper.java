@@ -18,6 +18,8 @@
 package uk.ac.tgac.conan.core.util;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -83,5 +85,35 @@ public class XmlHelper {
      */
     public static boolean getBooleanValue(Element ele, String tagName) {
         return Boolean.parseBoolean(getTextValue(ele,tagName));
+    }
+
+    public static boolean validate(Element ele, String[] validContents) {
+
+        // Return true if there is nothing to check
+        if (ele.getAttributes().getLength() == 0 && ele.getChildNodes().getLength() == 0) {
+            return true;
+        }
+
+        for(int i = 0; i < ele.getAttributes().getLength(); i++) {
+            Node n = ele.getAttributes().item(i);
+
+            for(String c : validContents) {
+                 if (n.getNodeName().equalsIgnoreCase(c)) {
+                     return true;
+                 }
+            }
+        }
+
+        for(int i = 0; i < ele.getChildNodes().getLength(); i++) {
+            Node n = ele.getChildNodes().item(i);
+
+            for(String c : validContents) {
+                if (n.getNodeName().equalsIgnoreCase(c)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
