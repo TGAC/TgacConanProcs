@@ -559,17 +559,29 @@ public class VelvetV12 extends AbstractAssembler {
             Params params = this.getParams();
             ParamMap pvp = new DefaultParamMap();
 
-            pvp.put(params.getCovCutoff(), this.covCutoff == DEFAULT_COVERAGE_CUTOFF ? "auto" : Integer.toString(this.covCutoff));
+            pvp.put(params.getCovCutoff(),      this.covCutoff == DEFAULT_COVERAGE_CUTOFF ? "auto" : Integer.toString(this.covCutoff));
+            pvp.put(params.getExpCoverage(),    this.expCoverage == 0.0 ? "auto" : Double.toString(this.expCoverage));
 
-            if (this.readTracking) {
-                pvp.put(params.getReadTracking(), "yes");
-            }
-
-            if (this.minContigLength != this.hashLength * 2) {
-                pvp.put(params.getMinContigLength(), Integer.toString(this.minContigLength));
-            }
-
-            //TODO Fill this out...
+            if (this.readTracking)                                      pvp.put(params.getReadTracking(), "yes");
+            if (this.minContigLength != this.hashLength * 2)            pvp.put(params.getMinContigLength(), Integer.toString(this.minContigLength));
+            if (this.exportToAmos)                                      pvp.put(params.getExportToAmos(), "yes");
+            if (this.longCovCutoff != 0.0)                              pvp.put(params.getLongCovCutoff(), Double.toString(this.longCovCutoff));
+            if (!this.scaffolding)                                      pvp.put(params.getScaffolding(), "no");
+            if (this.maxBranchLength != DEFAULT_MAX_BRANCH_LENGTH)      pvp.put(params.getMaxBranchLength(), Integer.toString(this.maxBranchLength));
+            if (this.maxDivergence != DEFAULT_MAX_DIVERGENCE)           pvp.put(params.getMaxDivergence(), Double.toString(this.maxDivergence));
+            if (this.maxGapCount != DEFAULT_MAX_GAP_COUNT)              pvp.put(params.getMaxGapCount(), Integer.toString(this.maxGapCount));
+            if (this.minPairCount != DEFAULT_MIN_PAIR_COUNT)            pvp.put(params.getMinPairCount(), Integer.toString(this.minPairCount));
+            if (this.maxCoverage != 0.0)                                pvp.put(params.getMaxCoverage(), Double.toString(this.maxCoverage));
+            if (this.coverageMask != DEFAULT_COVERAGE_MASK)             pvp.put(params.getCoverageMask(), Integer.toString(this.coverageMask));
+            if (this.longMultCutoff != DEFAULT_LONG_MULT_CUTOFF)        pvp.put(params.getLongMultCutoff(), Integer.toString(this.longMultCutoff));
+            if (this.exportUnusedReads)                                 pvp.put(params.getExportUnusedReads(), "yes");
+            if (this.exportAlignments)                                  pvp.put(params.getExportAlignments(), "yes");
+            if (this.exportFiltered)                                    pvp.put(params.getExportFiltered(), "yes");
+            if (this.clean)                                             pvp.put(params.getClean(), "yes");
+            if (this.veryClean)                                         pvp.put(params.getVeryClean(), "yes");
+            if (this.pairedExpFraction != DEFAULT_PAIRED_EXP_FRACTION)  pvp.put(params.getPairedExpFraction(), Double.toString(this.pairedExpFraction));
+            if (this.shortMatePaired)                                   pvp.put(params.getShortMatePaired(), "yes");
+            if (this.conserveLong)                                      pvp.put(params.getConserveLong(), "yes");
 
             return pvp;
         }
