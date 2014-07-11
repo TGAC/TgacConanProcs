@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.subsampler;
 
+import org.apache.commons.cli.CommandLine;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.FlagParameter;
 import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
@@ -141,8 +142,8 @@ public class TgacSubsamplerV1 extends AbstractConanProcess {
         }
 
         @Override
-        public void parse(String args) {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void parseCommandLine(CommandLine cmdLine) {
+
         }
 
         @Override

@@ -191,39 +191,11 @@ public class MusketV10 extends AbstractReadEnhancer {
             super.setThreads(threads < 2 ? 2 : threads);
         }
 
-        public Options createOptions() {
-
-            Params params = (Params)this.params;
-
-            // create Options object
-            Options options = new Options();
-
-            options.addOption(new Option(params.getKmer().getShortName(), true, params.getKmer().getDescription()));
-            options.addOption(new Option(params.getThreads().getShortName(), true, params.getThreads().getDescription()));
-            options.addOption(new Option(params.getMaxTrim().getShortName(), true, params.getMaxTrim().getDescription()));
-            options.addOption(new Option(params.getInOrder().getShortName(), false, params.getInOrder().getDescription()));
-            options.addOption(new Option(params.getMultiK().getShortName(), true, params.getMultiK().getDescription()));
-            options.addOption(new Option(params.getMaxErr().getShortName(), true, params.getMaxErr().getDescription()));
-            options.addOption(new Option(params.getMaxIter().getShortName(), true, params.getMaxIter().getDescription()));
-
-            return options;
-        }
 
         @Override
-        public void parse(String args) throws IOException {
+        public void parseCommandLine(CommandLine cmdLine) {
 
             Params params = (Params)this.params;
-
-            String[] splitArgs = new String(EXE + " " + args.trim()).split(" ");
-            CommandLine cmdLine = null;
-            try {
-                cmdLine = new PosixParser().parse(createOptions(), splitArgs);
-            } catch (ParseException e) {
-                throw new IOException(e);
-            }
-
-            if (cmdLine == null)
-                return;
 
             if (cmdLine.hasOption(params.getKmer().getShortName())) {
                 String[] parts = cmdLine.getOptionValue(params.getKmer().getShortName()).split(" ");

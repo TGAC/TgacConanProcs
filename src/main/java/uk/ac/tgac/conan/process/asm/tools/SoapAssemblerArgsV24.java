@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asm.tools;
 
+import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
@@ -276,8 +277,17 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
         }
 
         @Override
-        public void parse(String args) {
+        public void parseCommandLine(CommandLine cmdLine) {
 
+            Params params = this.getParams();
+
+            this.coverageCutoff = cmdLine.hasOption(params.getKmerFreqCutoff().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getKmerFreqCutoff().getShortName())) :
+                    this.coverageCutoff;
+
+            this.resolveRepeats = cmdLine.hasOption(params.getResolveRepeats().getShortName());
+
+            this.fillGaps = cmdLine.hasOption(params.getFillGaps().getShortName());
         }
 
         @Override

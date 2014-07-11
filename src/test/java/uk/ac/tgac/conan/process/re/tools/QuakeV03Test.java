@@ -22,6 +22,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import uk.ac.ebi.fgpt.conan.service.DefaultExecutorService;
+import uk.ac.ebi.fgpt.conan.service.DefaultProcessService;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.re.tools.QuakeV03;
@@ -85,21 +87,24 @@ public class QuakeV03Test {
     @Test
     public void testReadsFileCreation() throws IOException {
 
+        File outputDir = temp.newFolder("quake");
+
         Library lib = new Library();
         lib.setFiles(new File(pwd, "file1.fastq"), new File(pwd, "file2.fastq"));
 
         QuakeV03.Args args = createQuakeArgs();
         args.setInput(lib);
         args.setReadsListFile(null);
-        args.setOutputDir(temp.newFolder("quake"));
+        args.setOutputDir(outputDir);
 
-        QuakeV03 quake = new QuakeV03(null, args);
+        QuakeV03 quake = new QuakeV03(new DefaultExecutorService(new DefaultProcessService(), null), args);
         quake.setup();
 
         List<String> lines = FileUtils.readLines(args.getReadsListFile());
         String line = lines.get(0);
+        String odp = outputDir.getAbsolutePath();
 
-        assertTrue(line.equals(pwd + "/file1.fastq " + pwd + "/file2.fastq"));
+        assertTrue(line.equals(odp + "/file1.fastq " + odp + "/file2.fastq"));
     }
 
 

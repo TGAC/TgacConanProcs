@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asm.tools;
 
+import org.apache.commons.cli.*;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
@@ -191,9 +192,13 @@ public class SpadesV31 extends AbstractAssembler {
             this.kmerRange = kmerRange;
         }
 
+
         @Override
-        public void parse(String args) throws IOException {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void parseCommandLine(CommandLine cmdLine) {
+
+            Params params = this.getParams();
+
+            this.careful = cmdLine.hasOption(params.getCareful().getShortName());
         }
 
         @Override

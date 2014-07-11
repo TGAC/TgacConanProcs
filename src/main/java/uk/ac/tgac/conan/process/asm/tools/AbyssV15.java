@@ -385,49 +385,11 @@ public class AbyssV15 extends AbstractAssembler {
             this.minTipSize = minTipSize;
         }
 
-        public Options createOptions() {
-
-            Params params = this.getParams();
-
-            // create Options object
-            Options options = new Options();
-
-            /*options.addOption(new Option(params.getName().getShortName(), true, params.getName().getDescription()));
-            options.addOption(new Option(params.getKmer().getShortName(), true, params.getKmer().getDescription()));
-            options.addOption(new Option(params.getThreads().getShortName(), true, params.getThreads().getDescription()));*/
-            options.addOption(new Option(params.getMaxBubbleBranches().getShortName(), true, params.getMaxBubbleBranches().getDescription()));
-            options.addOption(new Option(params.getMaxBubbleLength().getShortName(), true, params.getMaxBubbleLength().getDescription()));
-            options.addOption(new Option(params.getMinMeanUnitigKmerCoverage().getShortName(), true, params.getMinMeanUnitigKmerCoverage().getDescription()));
-            options.addOption(new Option(params.getAllowableDistanceError().getShortName(), true, params.getAllowableDistanceError().getDescription()));
-            options.addOption(new Option(params.getMinErosion().getShortName(), true, params.getMinErosion().getDescription()));
-            options.addOption(new Option(params.getMinErosionPerStrand().getShortName(), true, params.getMinErosionPerStrand().getDescription()));
-            options.addOption(new Option(params.getMinAlignmentLength().getShortName(), true, params.getMinAlignmentLength().getDescription()));
-            options.addOption(new Option(params.getMinUnitigOverlap().getShortName(), true, params.getMinUnitigOverlap().getDescription()));
-            options.addOption(new Option(params.getMinNbPairsForContigs().getShortName(), true, params.getMinNbPairsForContigs().getDescription()));
-            options.addOption(new Option(params.getMinNbPairsForScaffolds().getShortName(), true, params.getMinNbPairsForScaffolds().getDescription()));
-            options.addOption(new Option(params.getMinBubbleId().getShortName(), true, params.getMinBubbleId().getDescription()));
-            options.addOption(new Option(params.getMinBaseQuality().getShortName(), true, params.getMinBaseQuality().getDescription()));
-            options.addOption(new Option(params.getMinUnitigSizeForContigs().getShortName(), true, params.getMinUnitigSizeForContigs().getDescription()));
-            options.addOption(new Option(params.getMinContigSizeForScaffolds().getShortName(), true, params.getMinContigSizeForScaffolds().getDescription()));
-            options.addOption(new Option(params.getMinTipSize().getShortName(), true, params.getMinTipSize().getDescription()));
-
-            return options;
-        }
 
         @Override
-        public void parse(String args) throws IOException {
+        public void parseCommandLine(CommandLine cmdLine) {
+
             Params params = this.getParams();
-
-            String[] splitArgs = new String(AbyssV15.EXE + " " + args.trim()).split(" ");
-            CommandLine cmdLine = null;
-            try {
-                cmdLine = new PosixParser().parse(createOptions(), splitArgs);
-            } catch (ParseException e) {
-                throw new IOException(e);
-            }
-
-            if (cmdLine == null)
-                return;
 
             this.maxBubbleBranches = cmdLine.hasOption(params.getMaxBubbleBranches().getShortName()) ?
                     Integer.parseInt(cmdLine.getOptionValue(params.getMaxBubbleBranches().getShortName())) :

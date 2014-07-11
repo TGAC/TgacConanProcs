@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asm.stats;
 
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
@@ -160,8 +161,8 @@ public class QuastV22 extends AbstractConanProcess {
         }
 
         @Override
-        public void parse(String args) {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void parseCommandLine(CommandLine cmdLine) {
+
         }
 
         @Override

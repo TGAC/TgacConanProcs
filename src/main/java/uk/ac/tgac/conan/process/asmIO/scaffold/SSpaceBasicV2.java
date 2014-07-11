@@ -300,43 +300,10 @@ public class SSpaceBasicV2 extends AbstractAssemblyEnhancer {
         }
 
 
-        public Options createOptions() {
-
-            Params params = (Params)this.params;
-
-            // create Options object
-            Options options = new Options();
-
-            options.addOption(new Option(params.getExtend().getShortName(), true, params.getExtend().getDescription()));
-            options.addOption(new Option(params.getMinOverlap().getShortName(), true, params.getMinOverlap().getDescription()));
-            options.addOption(new Option(params.getNbReads().getShortName(), true, params.getNbReads().getDescription()));
-            options.addOption(new Option(params.getTrim().getShortName(), true, params.getTrim().getDescription()));
-            options.addOption(new Option(params.getMinLinks().getShortName(), true, params.getMinLinks().getDescription()));
-            options.addOption(new Option(params.getMaxLinks().getShortName(), true, params.getMaxLinks().getDescription()));
-            options.addOption(new Option(params.getMinContigOverlap().getShortName(), true, params.getMinContigOverlap().getDescription()));
-            options.addOption(new Option(params.getMinContigLength().getShortName(), true, params.getMinContigLength().getDescription()));
-            options.addOption(new Option(params.getBowtieMaxGaps().getShortName(), true, params.getBowtieMaxGaps().getDescription()));
-            options.addOption(new Option(params.getBowtieThreads().getShortName(), true, params.getBowtieThreads().getDescription()));
-            options.addOption(new Option(params.getPlot().getShortName(), true, params.getPlot().getDescription()));
-            options.addOption(new Option(params.getVerbose().getShortName(), false, params.getVerbose().getDescription()));
-
-            return options;
-        }
-
         @Override
-        public void parse(String args) throws IOException {
+        public void parseCommandLine(CommandLine cmdLine) {
 
             Params params = (Params)this.params;
-            String[] splitArgs = new String(SSpaceBasicV2.EXE + " " + args).split(" ");
-            CommandLine cmdLine = null;
-            try {
-                cmdLine = new PosixParser().parse(createOptions(), splitArgs);
-            } catch (ParseException e) {
-                throw new IOException(e);
-            }
-
-            if (cmdLine == null)
-                return;
 
             this.extend = cmdLine.hasOption(params.getExtend().getShortName()) ?
                     Integer.parseInt(cmdLine.getOptionValue(params.getExtend().getShortName())) :

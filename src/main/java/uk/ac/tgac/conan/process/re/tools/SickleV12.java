@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.re.tools;
 
+import org.apache.commons.cli.*;
 import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
@@ -35,6 +36,7 @@ import uk.ac.tgac.conan.process.re.AbstractReadEnhancerArgs;
 import uk.ac.tgac.conan.process.re.ReadEnhancerArgs;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -198,8 +200,20 @@ public class SickleV12 extends AbstractReadEnhancer {
         }
 
         @Override
-        public void parse(String args) {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void parseCommandLine(CommandLine cmdLine) {
+
+            Params params = this.getParams();
+
+            this.qualThreshold = cmdLine.hasOption(params.getQualityThreshold().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getQualityThreshold().getShortName())) :
+                    this.qualThreshold;
+
+            this.lengthThreshold = cmdLine.hasOption(params.getLengthThreshold().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getLengthThreshold().getShortName())) :
+                    this.lengthThreshold;
+
+            this.noFivePrime = cmdLine.hasOption(params.getNoFivePrime().getShortName());
+            this.discardN = cmdLine.hasOption(params.getDiscardN().getShortName());
         }
 
         @Override

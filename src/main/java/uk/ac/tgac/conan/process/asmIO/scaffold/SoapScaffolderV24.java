@@ -336,42 +336,11 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
             FileUtils.writeLines(outputLibFile, lines);
         }
 
-        public Options createOptions() {
-
-            Params params = this.getParams();
-
-            // create Options object
-            Options options = new Options();
-
-            options.addOption(new Option(params.getKmer().getShortName(), true, params.getKmer().getDescription()));
-            options.addOption(new Option(params.getKmerFreqCutoff().getShortName(), true, params.getKmerFreqCutoff().getDescription()));
-            options.addOption(new Option(params.getFillGaps().getShortName(), true, params.getFillGaps().getDescription()));
-            options.addOption(new Option(params.getUnmaskContigs().getShortName(), true, params.getUnmaskContigs().getDescription()));
-            options.addOption(new Option(params.getRequireWeakConnection().getShortName(), true, params.getRequireWeakConnection().getDescription()));
-            options.addOption(new Option(params.getGapLenDiff().getShortName(), true, params.getGapLenDiff().getDescription()));
-            options.addOption(new Option(params.getInsertSizeUpperBound().getShortName(), true, params.getInsertSizeUpperBound().getDescription()));
-            options.addOption(new Option(params.getBubbleCoverage().getShortName(), true, params.getBubbleCoverage().getDescription()));
-            options.addOption(new Option(params.getGenomeSize().getShortName(), true, params.getGenomeSize().getDescription()));
-
-            return options;
-        }
-
 
         @Override
-        public void parse(String args) throws IOException {
+        public void parseCommandLine(CommandLine cmdLine) {
 
             Params params = this.getParams();
-
-            String[] splitArgs = new String(SSpaceBasicV2.EXE + " " + args).split(" ");
-            CommandLine cmdLine = null;
-            try {
-                cmdLine = new PosixParser().parse(createOptions(), splitArgs);
-            } catch (ParseException e) {
-                throw new IOException(e);
-            }
-
-            if (cmdLine == null)
-                return;
 
             this.kmer = cmdLine.hasOption(params.getKmer().getShortName()) ?
                     Integer.parseInt(cmdLine.getOptionValue(params.getKmer().getShortName())) :

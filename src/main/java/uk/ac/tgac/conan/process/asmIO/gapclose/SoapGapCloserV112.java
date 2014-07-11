@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asmIO.gapclose;
 
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
@@ -203,8 +204,9 @@ public class SoapGapCloserV112 extends AbstractAssemblyEnhancer {
 
 
         @Override
-        public void parse(String args) {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void parseCommandLine(CommandLine cmdLine) {
+
+            Params params = this.getParams();
         }
 
         @Override

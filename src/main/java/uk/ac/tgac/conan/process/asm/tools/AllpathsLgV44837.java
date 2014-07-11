@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asm.tools;
 
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
@@ -545,8 +546,9 @@ public class AllpathsLgV44837 extends AbstractAssembler implements Subsampler {
         }
 
         @Override
-        public void parse(String args) {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void parseCommandLine(CommandLine cmdLine) {
+
+            Params params = this.getParams();
         }
 
         @Override

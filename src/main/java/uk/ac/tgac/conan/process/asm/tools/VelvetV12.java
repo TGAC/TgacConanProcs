@@ -17,7 +17,10 @@
  **/
 package uk.ac.tgac.conan.process.asm.tools;
 
+import org.apache.commons.cli.*;
 import org.kohsuke.MetaInfServices;
+import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
+import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
@@ -28,6 +31,7 @@ import uk.ac.tgac.conan.core.data.SeqFile;
 import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * User: maplesod
@@ -208,9 +212,12 @@ public class VelvetV12 extends AbstractAssembler {
             this.coverageCutoff = coverageCutoff;
         }
 
+
         @Override
-        public void parse(String args) {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void parseCommandLine(CommandLine cmdLine) {
+
+            Params params = this.getParams();
+
         }
 
         @Override
@@ -258,9 +265,256 @@ public class VelvetV12 extends AbstractAssembler {
 
     public static class Params extends AbstractProcessParams {
 
+        private ConanParameter hashLength;
+        private ConanParameter covCutoff;
+        private ConanParameter readTracking;
+        private ConanParameter minContigLength;
+        private ConanParameter exportToAmos;
+        private ConanParameter expCoverage;
+        private ConanParameter longCovCutoff;
+        private ConanParameter scaffolding;
+        private ConanParameter maxBranchLength;
+        private ConanParameter maxDivergence;
+        private ConanParameter maxGapCount;
+        private ConanParameter minPairCount;
+        private ConanParameter maxCoverage;
+        private ConanParameter coverageMask;
+        private ConanParameter longMultCutoff;
+        private ConanParameter exportUnusedReads;
+        private ConanParameter exportAlignments;
+        private ConanParameter exportFiltered;
+        private ConanParameter clean;
+        private ConanParameter veryClean;
+        private ConanParameter pairedExpFraction;
+        private ConanParameter shortMatePaired;
+        private ConanParameter conserveLong;
+
+        public Params() {
+
+            this.hashLength = new ParameterBuilder()
+                    .shortName("hash_length")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.covCutoff = new ParameterBuilder()
+                    .shortName("cov_cutoff")
+                    .description("removal of low coverage nodes AFTER tour bus or allow the system to infer it")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.readTracking = new ParameterBuilder()
+                    .shortName("read_trkg")
+                    .create();
+
+            this.minContigLength = new ParameterBuilder()
+                    .shortName("min_contig_lgth")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.exportToAmos = new ParameterBuilder()
+                    .shortName("amos_file")
+                    .create();
+
+            this.expCoverage = new ParameterBuilder()
+                    .shortName("exp_cov")
+                    .argValidator(ArgValidator.FLOAT)
+                    .create();
+
+            this.longCovCutoff = new ParameterBuilder()
+                    .shortName("long_cov_cutoff")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.scaffolding = new ParameterBuilder()
+                    .shortName("scaffolding")
+                    .create();
+
+            this.maxBranchLength = new ParameterBuilder()
+                    .shortName("max_branch_length")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.maxDivergence = new ParameterBuilder()
+                    .shortName("max_divergence")
+                    .argValidator(ArgValidator.FLOAT)
+                    .create();
+
+            this.maxGapCount = new ParameterBuilder()
+                    .shortName("max_gap_count")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.minPairCount = new ParameterBuilder()
+                    .shortName("min_pair_count")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.maxCoverage = new ParameterBuilder()
+                    .shortName("max_coverage")
+                    .argValidator(ArgValidator.FLOAT)
+                    .create();
+
+            this.coverageMask = new ParameterBuilder()
+                    .shortName("coverage_mask")
+                    .create();
+
+            this.longMultCutoff = new ParameterBuilder()
+                    .shortName("long_mult_cutoff")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.exportUnusedReads = new ParameterBuilder()
+                    .shortName("unused_reads")
+                    .create();
+
+            this.exportAlignments = new ParameterBuilder()
+                    .shortName("alignments")
+                    .create();
+
+            this.exportFiltered = new ParameterBuilder()
+                    .shortName("exportFiltered")
+                    .create();
+
+            this.clean = new ParameterBuilder()
+                    .shortName("clean")
+                    .create();
+
+            this.veryClean = new ParameterBuilder()
+                    .shortName("very_clean")
+                    .create();
+
+            this.pairedExpFraction = new ParameterBuilder()
+                    .shortName("paired_exp_fraction")
+                    .argValidator(ArgValidator.FLOAT)
+                    .create();
+
+            this.shortMatePaired = new ParameterBuilder()
+                    .shortName("shortMatePaired")
+                    .create();
+
+            this.conserveLong = new ParameterBuilder()
+                    .shortName("conserveLong")
+                    .create();
+        }
+
+        public ConanParameter getHashLength() {
+            return hashLength;
+        }
+
+        public ConanParameter getCovCutoff() {
+            return covCutoff;
+        }
+
+        public ConanParameter getReadTracking() {
+            return readTracking;
+        }
+
+        public ConanParameter getMinContigLength() {
+            return minContigLength;
+        }
+
+        public ConanParameter getExportToAmos() {
+            return exportToAmos;
+        }
+
+        public ConanParameter getExpCoverage() {
+            return expCoverage;
+        }
+
+        public ConanParameter getLongCovCutoff() {
+            return longCovCutoff;
+        }
+
+        public ConanParameter getScaffolding() {
+            return scaffolding;
+        }
+
+        public ConanParameter getMaxBranchLength() {
+            return maxBranchLength;
+        }
+
+        public ConanParameter getMaxDivergence() {
+            return maxDivergence;
+        }
+
+        public ConanParameter getMaxGapCount() {
+            return maxGapCount;
+        }
+
+        public ConanParameter getMinPairCount() {
+            return minPairCount;
+        }
+
+        public ConanParameter getMaxCoverage() {
+            return maxCoverage;
+        }
+
+        public ConanParameter getCoverageMask() {
+            return coverageMask;
+        }
+
+        public ConanParameter getLongMultCutoff() {
+            return longMultCutoff;
+        }
+
+        public ConanParameter getExportUnusedReads() {
+            return exportUnusedReads;
+        }
+
+        public ConanParameter getExportAlignments() {
+            return exportAlignments;
+        }
+
+        public ConanParameter getExportFiltered() {
+            return exportFiltered;
+        }
+
+        public ConanParameter getClean() {
+            return clean;
+        }
+
+        public ConanParameter getVeryClean() {
+            return veryClean;
+        }
+
+        public ConanParameter getPairedExpFraction() {
+            return pairedExpFraction;
+        }
+
+        public ConanParameter getShortMatePaired() {
+            return shortMatePaired;
+        }
+
+        public ConanParameter getConserveLong() {
+            return conserveLong;
+        }
+
         @Override
         public ConanParameter[] getConanParametersAsArray() {
-            return new ConanParameter[0];
+            return new ConanParameter[] {
+                    this.hashLength,
+                    this.covCutoff,
+                    this.readTracking,
+                    this.minContigLength,
+                    this.exportToAmos,
+                    this.expCoverage,
+                    this.longCovCutoff,
+                    this.scaffolding,
+                    this.maxBranchLength,
+                    this.maxDivergence,
+                    this.maxGapCount,
+                    this.minPairCount,
+                    this.maxCoverage,
+                    this.longMultCutoff,
+                    this.exportUnusedReads,
+                    this.exportAlignments,
+                    this.exportFiltered,
+                    this.clean,
+                    this.veryClean,
+                    this.pairedExpFraction,
+                    this.shortMatePaired,
+                    this.conserveLong
+            };
         }
     }
 }

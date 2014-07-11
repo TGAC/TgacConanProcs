@@ -1,5 +1,6 @@
 package uk.ac.tgac.conan.process.rnaasm;
 
+import org.apache.commons.cli.CommandLine;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
@@ -170,8 +171,9 @@ public class CufflinksV2_0 extends AbstractConanProcess {
         }
 
         @Override
-        public void parse(String args) throws IOException {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void parseCommandLine(CommandLine cmdLine) {
+
+            Params params = this.getParams();
         }
 
         @Override

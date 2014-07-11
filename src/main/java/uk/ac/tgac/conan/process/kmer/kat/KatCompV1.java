@@ -1,5 +1,6 @@
 package uk.ac.tgac.conan.process.kmer.kat;
 
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
@@ -158,8 +159,9 @@ public class KatCompV1 extends AbstractConanProcess {
         }
 
         @Override
-        public void parse(String args) throws IOException {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void parseCommandLine(CommandLine cmdLine) {
+
+            Params params = this.getParams();
         }
 
         @Override

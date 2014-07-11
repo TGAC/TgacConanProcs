@@ -146,35 +146,10 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
 
         }
 
-        public Options createOptions() {
-
-            Params params = this.getParams();
-
-            // create Options object
-            Options options = new Options();
-
-            options.addOption(new Option(params.getMappingSeedLength().getShortName(), true, params.getMappingSeedLength().getDescription()));
-            options.addOption(new Option(params.getMinOverlapLength().getShortName(), true, params.getMinOverlapLength().getDescription()));
-            options.addOption(new Option(params.getMinLinks().getShortName(), true, params.getMinLinks().getDescription()));
-            options.addOption(new Option(params.getMaxDiffBubbleCrush().getShortName(), true, params.getMaxDiffBubbleCrush().getDescription()));
-
-            return options;
-        }
-
         @Override
-        public void parse(String args) throws IOException {
+        public void parseCommandLine(CommandLine cmdLine) {
+
             Params params = this.getParams();
-
-            String[] splitArgs = new String(PlatanusScaffoldV12.EXE + " " + args).split(" ");
-            CommandLine cmdLine = null;
-            try {
-                cmdLine = new PosixParser().parse(createOptions(), splitArgs);
-            } catch (ParseException e) {
-                throw new IOException(e);
-            }
-
-            if (cmdLine == null)
-                return;
 
             this.mappingSeedLength = cmdLine.hasOption(params.getMappingSeedLength().getShortName()) ?
                     Integer.parseInt(cmdLine.getOptionValue(params.getMappingSeedLength().getShortName())) :

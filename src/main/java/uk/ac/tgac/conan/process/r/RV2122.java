@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.r;
 
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
@@ -93,8 +94,8 @@ public class RV2122 extends AbstractConanProcess {
         }
 
         @Override
-        public void parse(String args) {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void parseCommandLine(CommandLine cmdLine) {
+
         }
 
         @Override

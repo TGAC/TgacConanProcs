@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asmIO.clip;
 
+import org.apache.commons.cli.CommandLine;
 import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
@@ -163,8 +164,9 @@ public class SimpleClipper extends AbstractAssemblyEnhancer {
         }
 
         @Override
-        public void parse(String args) {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void parseCommandLine(CommandLine cmdLine) {
+
+            Params params = this.getParams();
         }
 
         @Override

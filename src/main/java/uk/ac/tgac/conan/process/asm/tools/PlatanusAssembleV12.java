@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asm.tools;
 
+import org.apache.commons.cli.*;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
@@ -224,9 +225,40 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
         public int getMemLimitGB() {
             return this.maxMemUsageMB / 1000;
         }
-        @Override
-        public void parse(String args) throws IOException {
 
+
+        @Override
+        public void parseCommandLine(CommandLine cmdLine) {
+
+            Params params = this.getParams();
+
+            this.initialK = cmdLine.hasOption(params.getInitialK().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getInitialK().getShortName())) :
+                    this.initialK;
+
+            this.kStep = cmdLine.hasOption(params.getkStep().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getkStep().getShortName())) :
+                    this.kStep;
+
+            this.initialKCutoff = cmdLine.hasOption(params.getInitialKCutoff().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getInitialKCutoff().getShortName())) :
+                    this.initialKCutoff;
+
+            this.kExtensionLevel = cmdLine.hasOption(params.getkExtensionLevel().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getkExtensionLevel().getShortName())) :
+                    this.kExtensionLevel;
+
+            this.minKCoverage = cmdLine.hasOption(params.getMinKCoverage().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getMinKCoverage().getShortName())) :
+                    this.minKCoverage;
+
+            this.maxDiffBubbleCrush = cmdLine.hasOption(params.getMaxDiffBubbleCrush().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getMaxDiffBubbleCrush().getShortName())) :
+                    this.maxDiffBubbleCrush;
+
+            this.maxDiffBranchCut = cmdLine.hasOption(params.getMaxDiffBranchCut().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getMaxDiffBranchCut().getShortName())) :
+                    this.maxDiffBranchCut;
         }
 
         @Override

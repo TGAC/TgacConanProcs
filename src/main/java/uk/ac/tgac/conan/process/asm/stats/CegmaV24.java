@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asm.stats;
 
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
@@ -194,8 +195,9 @@ public class CegmaV24 extends AbstractConanProcess {
 
 
         @Override
-        public void parse(String args) {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void parseCommandLine(CommandLine cmdLine) {
+
+            Params params = this.getParams();
         }
 
         @Override

@@ -27,6 +27,7 @@ import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
+import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
 import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.tgac.conan.core.data.FilePair;
 import uk.ac.tgac.conan.core.data.Library;
@@ -83,8 +84,24 @@ public class QuakeV03 extends AbstractReadEnhancer {
                 throw new IllegalArgumentException("Input reads file does not exist and no library object provided.  Cannot continue.");
             }
 
-            String fp1 = args.getInput().getFile1().getAbsolutePath();
-            String fp2 = args.getInput().isPairedEnd() ? " " + args.getInput().getFile2().getAbsolutePath() : "";
+            final ConanProcessService cps = this.conanExecutorService.getConanProcessService();
+
+            boolean pairedEnd = args.getInput().isPairedEnd();
+
+            File in1 = new File(args.getOutputDir(), args.getInput().getFile1().getName());
+            File in2 = pairedEnd ? new File(args.getOutputDir(), args.getInput().getFile2().getName()) : null;
+
+            try {
+                cps.createLocalSymbolicLink(args.getInput().getFile1(), in1);
+                if (pairedEnd) {
+                    cps.createLocalSymbolicLink(args.getInput().getFile2(), in2);
+                }
+            } catch (ProcessExecutionException | InterruptedException e) {
+                throw new IllegalArgumentException("Could not create symbolic links for input files.", e);
+            }
+
+            String fp1 = in1.getAbsolutePath();
+            String fp2 = pairedEnd ? " " + in2.getAbsolutePath() : "";
 
             String outLine = fp1 + fp2;
 
@@ -98,14 +115,9 @@ public class QuakeV03 extends AbstractReadEnhancer {
             try {
                 FileUtils.writeLines(inputFileList, outLines);
             } catch (IOException e) {
-                throw new IllegalArgumentException("Could not output Quake reads configuration file: " + inputFileList);
+                throw new IllegalArgumentException("Could not output Quake reads configuration file: " + inputFileList, e);
             }
         }
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
     }
 
     @Override
@@ -117,6 +129,7 @@ public class QuakeV03 extends AbstractReadEnhancer {
 
         correctedFiles.add(fp.getFile1());
         correctedFiles.add(fp.getFile2());
+        correctedFiles.addAll(this.getArgs().getSingleEndCorrectedFiles());
 
         return correctedFiles;
     }
@@ -124,8 +137,9 @@ public class QuakeV03 extends AbstractReadEnhancer {
     @MetaInfServices(ReadEnhancerArgs.class)
     public static class Args extends AbstractReadEnhancerArgs {
 
-        public static final int DEFAULT_KMER = 21;
+        public static final int DEFAULT_KMER = 17;
         public static final int DEFAULT_RATIO = 200;
+        public static final int DEFAULT_THREADS = 4;
 
         private File readsListFile;
         private int kmer;
@@ -159,6 +173,9 @@ public class QuakeV03 extends AbstractReadEnhancer {
             this.bwaTrim = 0;
             this.headersOnly = false;
             this.log = false;
+
+            // Override
+            this.threads = DEFAULT_THREADS;
         }
 
         public Params getParams() {
@@ -300,53 +317,37 @@ public class QuakeV03 extends AbstractReadEnhancer {
 
         public FilePair getPairedEndCorrectedFiles() {
 
-            try {
-                FilePair inputFiles =  this.loadInputFilePaths();
+            String f1n = this.input.getFile1().getName();
+            String f2n = this.input.isPairedEnd() ? this.input.getFile2().getName() : null;
 
-                String ext1 = FilenameUtils.getExtension(inputFiles.getFile1().getName());
-                String ext2 = FilenameUtils.getExtension(inputFiles.getFile2().getName());
+            String corOut1FileName = FilenameUtils.getBaseName(f1n) + ".cor." + FilenameUtils.getExtension(f1n);
+            String corOut2FileName = this.input.isPairedEnd() ? FilenameUtils.getBaseName(f2n) + ".cor." + FilenameUtils.getExtension(f2n) : null;
 
-                String base1 = FilenameUtils.getBaseName(inputFiles.getFile1().getName());
-                String base2 = FilenameUtils.getBaseName(inputFiles.getFile2().getName());
+            File corOut1 = new File(this.getOutputDir(), corOut1FileName);
+            File corOut2 = this.input.isPairedEnd() ? new File(this.getOutputDir(), corOut2FileName) : null;
 
-                String corOut1FileName = base1 + ".cor." + ext1;
-                String corOut2FileName = base2 + ".cor." + ext2;
-
-                File corOut1 = new File(this.getOutputDir(), corOut1FileName);
-                File corOut2 = new File(this.getOutputDir(), corOut2FileName);
-
-                return new FilePair(corOut1, corOut2);
-            }
-            catch(IOException ioe) {
-                return null;
-            }
+            return new FilePair(corOut1, corOut2);
         }
 
         public List<File> getSingleEndCorrectedFiles() {
-            try {
-                FilePair inputFiles =  this.loadInputFilePaths();
 
-                String ext1 = FilenameUtils.getExtension(inputFiles.getFile1().getName());
-                String ext2 = FilenameUtils.getExtension(inputFiles.getFile2().getName());
+            String f1n = this.input.getFile1().getName();
+            String f2n = this.input.isPairedEnd() ? this.input.getFile2().getName() : null;
 
-                String base1 = FilenameUtils.getBaseName(inputFiles.getFile1().getName());
-                String base2 = FilenameUtils.getBaseName(inputFiles.getFile2().getName());
+            String seCorOut1FileName = FilenameUtils.getBaseName(f1n) + ".cor_single." + FilenameUtils.getExtension(f1n);
+            String seCorOut2FileName = this.input.isPairedEnd() ? FilenameUtils.getBaseName(f2n) + ".cor_single." + FilenameUtils.getExtension(f2n) : null;
 
-                String seCorOut1FileName = base1 + ".cor_single." + ext1;
-                String seCorOut2FileName = base2 + ".cor_single." + ext2;
+            File seCorOut1 = new File(this.getOutputDir(), seCorOut1FileName);
+            File seCorOut2 = this.input.isPairedEnd() ? new File(this.getOutputDir(), seCorOut2FileName) : null;
 
-                File seCorOut1 = new File(this.getOutputDir(), seCorOut1FileName);
-                File seCorOut2 = new File(this.getOutputDir(), seCorOut2FileName);
+            List<File> seCorfiles = new ArrayList<>();
+            seCorfiles.add(seCorOut1);
 
-                List<File> seCorfiles = new ArrayList<File>();
-                seCorfiles.add(seCorOut1);
+            if (this.input.isPairedEnd()) {
                 seCorfiles.add(seCorOut2);
+            }
 
-                return seCorfiles;
-            }
-            catch(IOException ioe) {
-                return null;
-            }
+            return seCorfiles;
         }
 
         public FilePair getPairedEndErrorFiles() {
@@ -358,46 +359,10 @@ public class QuakeV03 extends AbstractReadEnhancer {
         }
 
 
-
-        public Options createOptions() {
-
-            Params params = this.getParams();
-
-            // create Options object
-            Options options = new Options();
-
-            options.addOption(new Option(params.getKmer().getShortName(), true, params.getKmer().getDescription()));
-            options.addOption(new Option(params.getProcesses().getShortName(), true, params.getProcesses().getDescription()));
-            options.addOption(new Option(params.getQualityScale().getShortName(), true, params.getQualityScale().getDescription()));
-            options.addOption(new Option(params.getNoJelly().getLongName(), false, params.getNoJelly().getDescription()));
-            options.addOption(new Option(params.getNoCount().getLongName(), false, params.getNoCount().getDescription()));
-            options.addOption(new Option(params.getKmersAsInts().getLongName(), false, params.getKmersAsInts().getDescription()));
-            options.addOption(new Option(params.getHashSize().getLongName(), true, params.getHashSize().getDescription()));
-            options.addOption(new Option(params.getNoCut().getLongName(), false, params.getNoCut().getDescription()));
-            options.addOption(new Option(params.getRatio().getLongName(), true, params.getRatio().getDescription()));
-            options.addOption(new Option(params.getMinLength().getShortName(), true, params.getMinLength().getDescription()));
-            options.addOption(new Option(params.getOutputErrors().getShortName(), false, params.getOutputErrors().getDescription()));
-            options.addOption(new Option(params.getBwaTrim().getShortName(), true, params.getBwaTrim().getDescription()));
-            options.addOption(new Option(params.getHeadersOnly().getLongName(), false, params.getHeadersOnly().getDescription()));
-            options.addOption(new Option(params.getLog().getLongName(), false, params.getLog().getDescription()));
-
-            return options;
-        }
-
         @Override
-        public void parse(String args) throws IOException {
+        public void parseCommandLine(CommandLine cmdLine) {
+
             Params params = this.getParams();
-
-            String[] splitArgs = new String(QuakeV03.EXE + " " + args.trim()).split(" ");
-            CommandLine cmdLine = null;
-            try {
-                cmdLine = new PosixParser().parse(createOptions(), splitArgs);
-            } catch (ParseException e) {
-                throw new IOException(e);
-            }
-
-            if (cmdLine == null)
-                return;
 
             this.kmer = cmdLine.hasOption(params.getKmer().getShortName()) ?
                     Integer.parseInt(cmdLine.getOptionValue(params.getKmer().getShortName())) :
@@ -446,12 +411,15 @@ public class QuakeV03 extends AbstractReadEnhancer {
 
             ParamMap pvp = new DefaultParamMap();
 
-            if (this.getReadsListFile() != null) {
+            if (this.readsListFile != null) {
                 pvp.put(params.getReadsListFile(), this.getReadsListFile().getAbsolutePath());
             }
 
             pvp.put(params.getKmer(), String.valueOf(this.kmer));
-            pvp.put(params.getProcesses(), Integer.toString(this.threads));
+
+            if (this.threads != DEFAULT_THREADS && this.threads > 0) {
+                pvp.put(params.getProcesses(), Integer.toString(this.threads));
+            }
 
             if (this.qualityScale != 0) {
                 pvp.put(params.getQualityScale(), Integer.toString(this.qualityScale));

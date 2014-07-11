@@ -1,5 +1,6 @@
 package uk.ac.tgac.conan.process.align;
 
+import org.apache.commons.cli.CommandLine;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
@@ -104,9 +105,9 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
         }
 
         @Override
-        public void parse(String args) throws IOException {
+        public void parseCommandLine(CommandLine cmdLine) {
 
-
+            Params params = this.getParams();
         }
 
         @Override

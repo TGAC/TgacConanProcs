@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.kmer.jellyfish;
 
+import org.apache.commons.cli.CommandLine;
 import uk.ac.ebi.fgpt.conan.core.param.*;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
@@ -198,8 +199,9 @@ public class JellyfishCountV11 extends AbstractConanProcess {
         }
 
         @Override
-        public void parse(String args) throws IOException {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void parseCommandLine(CommandLine cmdLine) {
+
+            Params params = this.getParams();
         }
 
         @Override

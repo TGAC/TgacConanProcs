@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asmIO.gapclose;
 
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
@@ -186,7 +187,9 @@ public class PlatanusGapCloseV12 extends AbstractAssemblyEnhancer {
         }
 
         @Override
-        public void parse(String args) throws IOException {
+        public void parseCommandLine(CommandLine cmdLine) {
+
+            Params params = this.getParams();
 
         }
 
