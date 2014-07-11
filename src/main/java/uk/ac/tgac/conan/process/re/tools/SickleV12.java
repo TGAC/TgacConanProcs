@@ -76,8 +76,27 @@ public class SickleV12 extends AbstractReadEnhancer {
         args.qualType = args.getInput().getPhred() == Library.Phred.PHRED_64 ?
                 QualityTypeParameter.SickleQualityTypeOptions.ILLUMINA :
                 QualityTypeParameter.SickleQualityTypeOptions.SANGER;
+
+        if (args.getFastqOut1() == null) {
+            this.setOutputFiles();
+        }
     }
 
+    protected void setOutputFiles() {
+
+        Args args = this.getArgs();
+
+        // Auto set the output variables if not already set.
+        if (args.getInput() != null) {
+            if (args.getInput().isPairedEnd()) {
+                args.setFastqOut1(new File(args.getOutputDir(), args.getInput().getName() + "_1.sickle.fastq"));
+                args.setFastqOut2(new File(args.getOutputDir(), args.getInput().getName() + "_2.sickle.fastq"));
+                args.setFastqOutSe(new File(args.getOutputDir(), args.getInput().getName() + "_se.sickle.fastq"));
+            } else {
+                args.setFastqOut1(new File(args.getOutputDir(), args.getInput().getName() + ".sickle.fastq"));
+            }
+        }
+    }
 
     @Override
     public List<File> getEnhancedFiles() {
@@ -85,6 +104,10 @@ public class SickleV12 extends AbstractReadEnhancer {
         List<File> enhancedFiles = new ArrayList<>();
 
         Args args = this.getArgs();
+
+        if (args.getFastqOut1() == null) {
+            this.setOutputFiles();
+        }
 
         if (args.getInput().isPairedEnd()) {
 
