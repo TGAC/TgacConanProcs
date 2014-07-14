@@ -29,13 +29,13 @@ import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
+import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.ebi.fgpt.conan.util.StringJoiner;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
 import uk.ac.tgac.conan.process.asmIO.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,18 +71,25 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
         return (Args)this.getProcessArgs();
     }
 
+    public File getPreparedInputFile() {
+        return new File(this.getArgs().getOutputDir(), "input_wo-gaps.fa");
+    }
+
+    public File getSoapConfigFile() {
+        return new File(this.getArgs().getOutputDir(), "soap_scaff.libs");
+    }
+
     protected String createPrepareCommand() {
 
         Args args = this.getArgs();
 
         return "finalFusion " +
                 " -s " + args.getConfigFile() +
-                " -g soap" +
+                " -g " + args.getOutputPrefix() +
                 " -p " + args.getThreads() +
                 " -D" +
                 " -K " + args.getKmer() +
-                " -c " + args.getInputAssembly().getAbsolutePath() +
-                " -M";
+                " -c " + this.getPreparedInputFile().getAbsolutePath();
     }
 
     protected String createMapCommand() {
@@ -91,7 +98,7 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
 
         return EXE + " map" +
                 " -s " + args.getConfigFile() +
-                " -g soap" +
+                " -g " + args.getOutputPrefix() +
                 " -p " + args.getThreads();
     }
 
@@ -100,7 +107,7 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
         Args args = this.getArgs();
 
         return EXE + " scaff" +
-                " -g soap" +
+                " -g " + args.getOutputPrefix() +
                 (args.isFillGaps() ? " -F" : "") +
                 (args.isUnmaskContigs() ? " -u" : "") +
                 (args.isRequireWeakConnection() ? " -w" : "") +
@@ -118,7 +125,7 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
         List<String> commands = new ArrayList<String>();
 
         commands.add(this.createPrepareCommand());
-        //commands.add(this.createMapCommand());
+        commands.add(this.createMapCommand());
         commands.add(this.createScaffCommand());
 
         // Join commands
@@ -136,9 +143,9 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
 
         Args args = this.getArgs();
 
-        // Create the SSPACE lib configuration file from the library list
+        // Create the SOAP lib configuration file from the library list
         if (args.getConfigFile() == null  && args.getLibraries() != null) {
-            args.setConfigFile(new File(args.getOutputDir(), "soap_scaff.libs"));
+            args.setConfigFile(this.getSoapConfigFile());
             args.createConfigFile(args.getLibraries(), args.getConfigFile());
         }
         else if (args.getConfigFile() == null && args.getLibraries() == null) {
@@ -147,6 +154,60 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
         else if (args.getConfigFile() != null && args.getLibraries() != null) {
             log.warn("SOAP denovo found both a config file and libraries.  Assuming config file was intended to be used.");
         }
+
+        log.info("Created SOAP denovo library config file at: " + this.getSoapConfigFile().getAbsolutePath());
+
+        // SOAP really hates having gaps in contigs, it generally tends to convert them to G's so we simply split the input
+        // assembly around the gaps to remove this problem... note that this might potentially make the output less
+        // contiguous than the input if things go badly!
+        this.removeGaps(args.getInputAssembly(), this.getPreparedInputFile());
+
+        log.info("Removed gaps from input assembly.  Gap free assembly is at: " + this.getPreparedInputFile().getAbsolutePath());
+    }
+
+    protected void split(PrintWriter writer, String header, String seq) {
+
+        String[] splitRead=seq.split("N+");
+
+        int i = 0;
+        for(String chunk : splitRead) {
+            writer.println(">" + header + "." + i++);
+            writer.println(chunk);
+        }
+    }
+
+    protected void removeGaps(File assemblyWithGaps, File assemblyWithoutGaps) throws IOException {
+
+        BufferedReader reader = new BufferedReader(new FileReader(assemblyWithGaps));
+        PrintWriter contigWriter = new PrintWriter(new BufferedWriter(new FileWriter(assemblyWithoutGaps)));
+
+        String currentId = "";
+        StringBuilder currentContig = new StringBuilder();
+
+
+        String line = null;
+        while((line = reader.readLine()) != null) {
+
+            line = line.trim();
+
+            if (line.startsWith(">")) {
+                if (currentContig.length() > 0) {
+                    split(contigWriter, currentId, currentContig.toString());
+                }
+                currentContig = new StringBuilder();
+                currentId = line.substring(1);
+            }
+            else {
+                currentContig.append(line);
+            }
+        }
+
+        if (currentContig.length() > 0) {
+            split(contigWriter, currentId, currentContig.toString());
+        }
+
+        if (reader != null) reader.close();
+        if (contigWriter != null) contigWriter.close();
     }
 
     @Override
