@@ -18,8 +18,11 @@
 package uk.ac.tgac.conan.process.asmIO.scaffold;
 
 import org.apache.commons.cli.*;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.MetaInfServices;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
@@ -30,8 +33,7 @@ import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asmIO.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +42,8 @@ import java.util.List;
  */
 @MetaInfServices(AssemblyEnhancer.class)
 public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
+
+    private static Logger log = LoggerFactory.getLogger(PlatanusScaffoldV12.class);
 
     public static final String NAME = "Platanus_Scaffold_V1.2";
     public static final String EXE = "platanus";
@@ -67,6 +71,75 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
 
         this.addPreCommand("cd " + this.getArgs().getOutputDir().getAbsolutePath());
         this.addPostCommand("cd " + pwd);
+
+        Args args = this.getArgs();
+
+        BufferedReader reader = new BufferedReader(new FileReader(args.getInputAssembly()));
+        String line = null;
+        while((line = reader.readLine()) != null) {
+            line = line.trim();
+            if (line.startsWith(">")) {
+                if (line.contains("_cov")) {
+                    this.addPreCommand("ln -s -f " + args.getInputAssembly() + " " + args.getConvertedInputFile());
+                }
+                else if (line.split(" ").length == 3) {
+                    // We are probably working with an abyss contig file... so convert to something suitable
+                    this.convertAbyssContigs(args.getInputAssembly(), args.getConvertedInputFile());
+                    log.info("Converted abyss assembly to platanus format.  New assembly file at: " + args.getConvertedInputFile().getAbsolutePath());
+                }
+                else {
+                    throw new IOException("Unknown input file type.  Fasta header is unrecognised.  Currently we only support platanus or abyss style contig files for input.");
+                }
+                break;  // We are probably working with a platanus contig file.
+            }
+        }
+
+    }
+
+    protected void convertAbyssHeader(PrintWriter writer, String header, String seq) {
+
+        String[] parts = header.split(" ");
+
+        int index = Integer.parseInt(parts[0]) + 1;
+        //int length = Integer.parseInt(parts[1]);
+        int kcov = Integer.parseInt(parts[2]);
+
+        writer.println(">scaffold" + index + "_cov" + kcov);
+        writer.println(seq);
+    }
+
+    protected void convertAbyssContigs(File inputAssembly, File convertedInputFile) throws IOException {
+
+        BufferedReader reader = new BufferedReader(new FileReader(inputAssembly));
+        PrintWriter contigWriter = new PrintWriter(new BufferedWriter(new FileWriter(convertedInputFile)));
+
+        String currentId = "";
+        StringBuilder currentContig = new StringBuilder();
+
+
+        String line = null;
+        while((line = reader.readLine()) != null) {
+
+            line = line.trim();
+
+            if (line.startsWith(">")) {
+                if (currentContig.length() > 0) {
+                    this.convertAbyssHeader(contigWriter, currentId, currentContig.toString());
+                }
+                currentContig = new StringBuilder();
+                currentId = line.substring(1);
+            }
+            else {
+                currentContig.append(line);
+            }
+        }
+
+        if (currentContig.length() > 0) {
+            this.convertAbyssHeader(contigWriter, currentId, currentContig.toString());
+        }
+
+        if (reader != null) reader.close();
+        if (contigWriter != null) contigWriter.close();
     }
 
     public Args getArgs() {
@@ -98,6 +171,10 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
 
         protected Params getParams() {
             return (Params) this.params;
+        }
+
+        public File getConvertedInputFile() {
+            return new File(this.getOutputDir(), "input.fa");
         }
 
         @Override
@@ -179,7 +256,7 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
             }
 
             if (this.getInputAssembly() != null) {
-                pvp.put(params.getContigFile(), this.getInputAssembly().getAbsolutePath());
+                pvp.put(params.getContigFile(), this.getConvertedInputFile().getAbsolutePath());
             }
 
             if (this.getBubbleFile() != null) {

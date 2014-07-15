@@ -120,7 +120,7 @@ public class PlatanusGapCloseV12 extends AbstractAssemblyEnhancer {
 
         @Override
         public File getOutputFile() {
-            return new File(this.getOutputDir(), this.getOutputPrefix() + "_scaffold.fa");
+            return new File(this.getOutputDir(), this.getOutputPrefix() + "_gapClosed.fa");
         }
 
         @Override

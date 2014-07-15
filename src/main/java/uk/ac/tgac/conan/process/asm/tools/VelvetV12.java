@@ -159,17 +159,6 @@ public class VelvetV12 extends AbstractAssembler {
     public void setup() throws IOException {
         Args args = this.getArgs();
 
-        StringBuilder libString = new StringBuilder();
-
-        for(int i = 0; i < args.getLibs().size(); i++) {
-            libString.append(this.createLibString(args.getLibs().get(i), i == 0)).append(" ");
-        }
-
-        final String velvetHCmd = "velveth-127 " + args.getOutputDir().getAbsolutePath() + " " + args.getHashLength() + " -create_binary " + libString.toString();
-
-        // Set velveth as a pre command
-        this.addPreCommand(velvetHCmd);
-
         // This is a bit of a hack to get the output directory as the first argument before all the options.
         this.setMode(args.getOutputDir().getAbsolutePath());
     }
@@ -186,7 +175,15 @@ public class VelvetV12 extends AbstractAssembler {
             insString.append("-ins_length" + (i != 0 ? i : "") + " " + args.getLibs().get(i).getAverageInsertSize()).append(" ");
         }
 
-        return super.getCommand() + " " + insString;
+        StringBuilder libString = new StringBuilder();
+
+        for(int i = 0; i < args.getLibs().size(); i++) {
+            libString.append(this.createLibString(args.getLibs().get(i), i == 0)).append(" ");
+        }
+
+        final String velvetHCmd = "velveth-127 " + args.getOutputDir().getAbsolutePath() + " " + args.getHashLength() + " -create_binary " + libString.toString();
+
+        return velvetHCmd.trim() + "; " + super.getCommand() + " " + insString.toString();
     }
 
     @MetaInfServices(DeBruijnArgs.class)
@@ -659,7 +656,7 @@ public class VelvetV12 extends AbstractAssembler {
             this.covCutoff = new ParameterBuilder()
                     .shortName("cov_cutoff")
                     .description("removal of low coverage nodes AFTER tour bus or allow the system to infer it")
-                    .argValidator(ArgValidator.DIGITS)
+                    .argValidator(ArgValidator.OFF)
                     .create();
 
             this.readTracking = new ParameterBuilder()
@@ -677,7 +674,7 @@ public class VelvetV12 extends AbstractAssembler {
 
             this.expCoverage = new ParameterBuilder()
                     .shortName("exp_cov")
-                    .argValidator(ArgValidator.FLOAT)
+                    .argValidator(ArgValidator.OFF)
                     .create();
 
             this.longCovCutoff = new ParameterBuilder()
