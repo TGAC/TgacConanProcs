@@ -207,6 +207,14 @@ public class SoapGapCloserV112 extends AbstractAssemblyEnhancer {
         public void parseCommandLine(CommandLine cmdLine) {
 
             Params params = this.getParams();
+
+            this.maxReadLength = cmdLine.hasOption(params.getMaxReadLength().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getMaxReadLength().getShortName())) :
+                    this.maxReadLength;
+
+            this.overlap = cmdLine.hasOption(params.getOverlap().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getOverlap().getShortName())) :
+                    this.overlap;
         }
 
         @Override

@@ -191,6 +191,45 @@ public class PlatanusGapCloseV12 extends AbstractAssemblyEnhancer {
 
             Params params = this.getParams();
 
+            this.mappingSeedLength = cmdLine.hasOption(params.getMappingSeedLength().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getMappingSeedLength().getShortName())) :
+                    this.mappingSeedLength;
+
+            this.mappingSeedLengthOLC = cmdLine.hasOption(params.getMappingSeedLengthOLC().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getMappingSeedLengthOLC().getShortName())) :
+                    this.mappingSeedLengthOLC;
+
+            this.maxReadsInGaps = cmdLine.hasOption(params.getMaxReadsInGaps().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getMaxReadsInGaps().getShortName())) :
+                    this.maxReadsInGaps;
+
+            this.minOverlapLengthOLC = cmdLine.hasOption(params.getMinOverlapLengthOLC().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getMinOverlapLengthOLC().getShortName())) :
+                    this.minOverlapLengthOLC;
+
+            this.minOverlapLengthDBG = cmdLine.hasOption(params.getMinOverlapLengthDBG().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getMinOverlapLengthDBG().getShortName())) :
+                    this.minOverlapLengthDBG;
+
+            this.maxEditDistanceOLC = cmdLine.hasOption(params.getMaxEditDistanceOLC().getShortName()) ?
+                    Integer.parseInt(cmdLine.getOptionValue(params.getMaxEditDistanceOLC().getShortName())) :
+                    this.maxEditDistanceOLC;
+
+            this.maxErrorRateDBG = cmdLine.hasOption(params.getMaxErrorRateDBG().getShortName()) ?
+                    Double.parseDouble(cmdLine.getOptionValue(params.getMaxErrorRateDBG().getShortName())) :
+                    this.maxErrorRateDBG;
+
+            this.minConsensusRateOLC = cmdLine.hasOption(params.getMinConsensusRateOLC().getShortName()) ?
+                    Double.parseDouble(cmdLine.getOptionValue(params.getMinConsensusRateOLC().getShortName())) :
+                    this.minConsensusRateOLC;
+
+            this.minConsensusRateSR = cmdLine.hasOption(params.getMinConsensusRateSR().getShortName()) ?
+                    Double.parseDouble(cmdLine.getOptionValue(params.getMinConsensusRateSR().getShortName())) :
+                    this.minConsensusRateSR;
+
+            this.gapCloseOnce = cmdLine.hasOption(params.getGapCloseOnce().getShortName()) ?
+                    cmdLine.hasOption(params.getGapCloseOnce().getShortName()) :
+                    this.gapCloseOnce;
         }
 
         @Override
