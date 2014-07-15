@@ -72,6 +72,13 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
         this.addPreCommand("cd " + this.getArgs().getOutputDir().getAbsolutePath());
         this.addPostCommand("cd " + pwd);
 
+        this.convertContigs();
+        this.convertBubbles();
+    }
+
+
+
+    protected void convertContigs() throws IOException {
         Args args = this.getArgs();
 
         BufferedReader reader = new BufferedReader(new FileReader(args.getInputAssembly()));
@@ -93,8 +100,67 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
                 break;  // We are probably working with a platanus contig file.
             }
         }
-
+        reader.close();
     }
+
+    protected void convertBubbles() throws IOException {
+
+        Args args = this.getArgs();
+
+        if (args.getBubbleFile() != null && args.getBubbleFile().exists()) {
+            BufferedReader reader = new BufferedReader(new FileReader(args.getInputAssembly()));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.startsWith(">")) {
+                    if (line.contains("_cov") && line.contains("_len")) {
+                        this.addPreCommand("ln -s -f " + args.getBubbleFile() + " " + args.getConvertedBubbleFile());
+                    } else if (line.split(" ").length == 3) {
+                        // We are probably working with an abyss contig file... so convert to something suitable
+                        this.convertAbyssBubbles(args.getBubbleFile(), args.getConvertedBubbleFile());
+                        log.info("Converted abyss bubble file to platanus format.  New bubble file at: " + args.getConvertedBubbleFile().getAbsolutePath());
+                    } else {
+                        throw new IOException("Unknown input file type.  Fasta header is unrecognised.  Currently we only support platanus or abyss style contig files for input.");
+                    }
+                    break;  // We are probably working with a platanus contig file.
+                }
+            }
+        }
+    }
+
+    protected void convertAbyssBubbles(File inputAssembly, File convertedInputFile) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(inputAssembly));
+        PrintWriter contigWriter = new PrintWriter(new BufferedWriter(new FileWriter(convertedInputFile)));
+
+        String currentId = "";
+        StringBuilder currentContig = new StringBuilder();
+
+
+        String line = null;
+        while((line = reader.readLine()) != null) {
+
+            line = line.trim();
+
+            if (line.startsWith(">")) {
+                if (currentContig.length() > 0) {
+                    this.convertAbyssBubbleHeader(contigWriter, currentId, currentContig.toString());
+                }
+                currentContig = new StringBuilder();
+                currentId = line.substring(1);
+            }
+            else {
+                currentContig.append(line);
+            }
+        }
+
+        if (currentContig.length() > 0) {
+            this.convertAbyssBubbleHeader(contigWriter, currentId, currentContig.toString());
+        }
+
+        if (reader != null) reader.close();
+        if (contigWriter != null) contigWriter.close();
+    }
+
 
     protected void convertAbyssHeader(PrintWriter writer, String header, String seq) {
 
@@ -142,6 +208,18 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
         if (contigWriter != null) contigWriter.close();
     }
 
+    protected void convertAbyssBubbleHeader(PrintWriter writer, String header, String seq) {
+
+        String[] parts = header.split(" ");
+
+        String index = parts[0];
+        int length = Integer.parseInt(parts[1]);
+        int kcov = Integer.parseInt(parts[2]);
+
+        writer.println(">seq" + index + "_len" + length + "_cov" + kcov);
+        writer.println(seq);
+    }
+
     public Args getArgs() {
         return (Args) this.getProcessArgs();
     }
@@ -175,6 +253,10 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
 
         public File getConvertedInputFile() {
             return new File(this.getOutputDir(), "input.fa");
+        }
+
+        public File getConvertedBubbleFile() {
+            return new File(this.getOutputDir(), "bubbles.fa");
         }
 
         @Override
@@ -260,7 +342,7 @@ public class PlatanusScaffoldV12 extends AbstractAssemblyEnhancer {
             }
 
             if (this.getBubbleFile() != null) {
-                pvp.put(params.getBubbleFile(), this.getBubbleFile().getAbsolutePath());
+                pvp.put(params.getBubbleFile(), this.getConvertedBubbleFile().getAbsolutePath());
             }
 
             if (this.mappingSeedLength != DEFAULT_MAPPING_SEED_LENGTH) {
