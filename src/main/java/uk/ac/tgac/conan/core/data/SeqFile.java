@@ -161,7 +161,7 @@ public class SeqFile implements Serializable {
 	}
 	
 	public File getFile() {
-		return new File(filePath);
+		return filePath == null ? null : new File(filePath);
 	}
 
 	public FileType getFileType() {

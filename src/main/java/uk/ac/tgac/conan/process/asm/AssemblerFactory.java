@@ -17,12 +17,9 @@
  **/
 package uk.ac.tgac.conan.process.asm;
 
-import uk.ac.ebi.fgpt.conan.service.ConanProcessService;
-import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.core.data.Organism;
+import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -33,46 +30,51 @@ import java.util.ServiceLoader;
  */
 public class AssemblerFactory {
 
-    public static AbstractAssembler create(String toolName) throws IOException {
-        return create(toolName, null);
+    public static Assembler createGenericAssembler(String toolName) {
+        return createGenericAssembler(toolName, null);
     }
 
-    public static AbstractAssembler create(String toolName, ConanProcessService conanProcessService) throws IOException {
-        return create(toolName, 61, null, null, 1, 0, -1, null, conanProcessService);
-    }
+    public static Assembler createGenericAssembler(String toolName, ConanExecutorService ces) {
 
-    public static AbstractAssembler create(String toolName,
-                                                   int k,
-                                                   List<Library> libs,
-                                                   File outputDir,
-                                                   int threads,
-                                                   int memory,
-                                                   int coverage,
-                                                   Organism organism,
-                                                   ConanProcessService conanProcessService) throws IOException {
+        AssemblerArgs args = createProcessArgs(toolName);
 
-        AbstractAssemblerArgs actualArgs = null;
+        if (args == null)
+            return null;
 
-        ServiceLoader<AssemblerArgsCreator> foundAsmArgsClasses = ServiceLoader.load(AssemblerArgsCreator.class);
+        ServiceLoader<Assembler> procLoader = ServiceLoader.load(Assembler.class);
 
-        for(AssemblerArgsCreator asmArgsClass : foundAsmArgsClasses) {
-
-            if (asmArgsClass.getName().equalsIgnoreCase(toolName.trim())) {
-                actualArgs = asmArgsClass.create(k, libs, outputDir, threads, memory, coverage, organism);
-                break;
+        for(Assembler assembler : procLoader) {
+            if (assembler.getName().equalsIgnoreCase(toolName.trim())) {
+                assembler.initialise(args.toConanArgs(), ces);
+                return assembler;
             }
         }
 
-        if (actualArgs == null)
-            return null;
+        return null;
+    }
 
-        ServiceLoader<AssemblerCreator> procLoader = ServiceLoader.load(AssemblerCreator.class);
+    protected static AssemblerArgs createProcessArgs(String toolName) {
 
-        for(AssemblerCreator aioProc : procLoader) {
+        ServiceLoader<DeBruijnArgs> dbgArgs = ServiceLoader.load(DeBruijnArgs.class);
+        ServiceLoader<DeBruijnOptimiserArgs> dbgOptArgs = ServiceLoader.load(DeBruijnOptimiserArgs.class);
+        ServiceLoader<DeBruijnAutoArgs> dbgAutoArgs = ServiceLoader.load(DeBruijnAutoArgs.class);
 
-            if (aioProc.getName().equalsIgnoreCase(toolName.trim())) {
+        List<AssemblerArgs> argClasses = new ArrayList<>();
+        for(DeBruijnArgs args : dbgArgs) {
+            argClasses.add(args);
+        }
 
-                return aioProc.create(actualArgs, conanProcessService);
+        for(DeBruijnOptimiserArgs args : dbgOptArgs) {
+            argClasses.add(args);
+        }
+
+        for(DeBruijnAutoArgs args : dbgAutoArgs) {
+            argClasses.add(args);
+        }
+
+        for(AssemblerArgs args : argClasses) {
+            if (args.getProcessName().equalsIgnoreCase(toolName)) {
+                return args;
             }
         }
 

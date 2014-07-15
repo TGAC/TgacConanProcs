@@ -1,5 +1,6 @@
 package uk.ac.tgac.conan.process.kmer.jellyfish;
 
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
@@ -11,6 +12,7 @@ import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.CommandLineFormat;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
@@ -31,11 +33,15 @@ public class JellyfishMergeV11 extends AbstractConanProcess {
     public static final String MODE = "merge";
 
     public JellyfishMergeV11() {
-        this(new Args());
+        this(null);
     }
 
-    public JellyfishMergeV11(Args args) {
-        super(EXE, args, new Params());
+    public JellyfishMergeV11(ConanExecutorService ces) {
+        this(ces, new Args());
+    }
+
+    public JellyfishMergeV11(ConanExecutorService ces, Args args) {
+        super(EXE, args, new Params(), ces);
         this.setMode(MODE);
     }
 
@@ -108,8 +114,9 @@ public class JellyfishMergeV11 extends AbstractConanProcess {
         }
 
         @Override
-        public void parse(String args) throws IOException {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void parseCommandLine(CommandLine cmdLine) {
+
+            Params params = this.getParams();
         }
 
         @Override

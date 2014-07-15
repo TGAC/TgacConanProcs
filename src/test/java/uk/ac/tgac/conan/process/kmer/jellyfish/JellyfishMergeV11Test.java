@@ -41,7 +41,7 @@ public class JellyfishMergeV11Test {
     @Test
     public void testJellyfishCommand() throws ConanParameterException {
 
-        JellyfishMergeV11 jf = new JellyfishMergeV11(createJellyfishArgs());
+        JellyfishMergeV11 jf = new JellyfishMergeV11(null, createJellyfishArgs());
 
         String command = jf.getCommand();
 

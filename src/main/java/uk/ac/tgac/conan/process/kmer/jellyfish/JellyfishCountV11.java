@@ -17,6 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.kmer.jellyfish;
 
+import org.apache.commons.cli.CommandLine;
 import uk.ac.ebi.fgpt.conan.core.param.*;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
@@ -24,6 +25,7 @@ import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.CommandLineFormat;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
@@ -42,11 +44,15 @@ public class JellyfishCountV11 extends AbstractConanProcess {
     public static final String MODE = "count";
 
     public JellyfishCountV11() {
-        this(new Args());
+        this(null);
     }
 
-    public JellyfishCountV11(Args args) {
-        super(EXE, args, new Params());
+    public JellyfishCountV11(ConanExecutorService ces) {
+        this(ces, new Args());
+    }
+
+    public JellyfishCountV11(ConanExecutorService ces, Args args) {
+        super(EXE, args, new Params(), ces);
         this.setMode(MODE);
     }
 
@@ -193,8 +199,9 @@ public class JellyfishCountV11 extends AbstractConanProcess {
         }
 
         @Override
-        public void parse(String args) throws IOException {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void parseCommandLine(CommandLine cmdLine) {
+
+            Params params = this.getParams();
         }
 
         @Override

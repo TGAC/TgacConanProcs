@@ -1,6 +1,8 @@
 package uk.ac.tgac.conan.process.asm;
 
+import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.ConanProcess;
+import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
@@ -16,7 +18,7 @@ public interface Assembler extends ConanProcess {
      * Return the process args as an AbstractAssemblerArgs type (all Assemblers should support AbstractAssemblerArgs).
      * @return
      */
-    AbstractAssemblerArgs getArgs();
+    AbstractAssemblerArgs getAssemblerArgs();
 
     /**
      * Whether this assembler produces unitigs or not
@@ -37,6 +39,12 @@ public interface Assembler extends ConanProcess {
     boolean makesScaffolds();
 
     /**
+     * Whether this assembler produces a bubble file
+     * @return
+     */
+    boolean makesBubbles();
+
+    /**
      * Returns the unitigs file produced by this assembler, if present, otherwise returns null
      * @return
      */
@@ -55,6 +63,12 @@ public interface Assembler extends ConanProcess {
     File getScaffoldsFile();
 
     /**
+     * Returns the bubble file produced by this asssembler, if present, otherwise returns null
+     * @return
+     */
+    File getBubbleFile();
+
+    /**
      * Some assemblers use openmpi, this method returns true if this assembler uses openmpi
      * @return
      */
@@ -67,10 +81,10 @@ public interface Assembler extends ConanProcess {
     boolean doesSubsampling();
 
     /**
-     * Returns true if this assembler allows the user to modify the 'K' i.e. "kmer" length
+     * Returns the type of assembler that this is
      * @return
      */
-    boolean hasKParam();
+    Type getType();
 
     /**
      * Given a list of libraries, this method checks to see if this assembler can process them correctly
@@ -80,9 +94,34 @@ public interface Assembler extends ConanProcess {
     boolean acceptsLibraries(List<Library> libraries);
 
     /**
+     * Sets the list of libraries as input for this assembler
+     * @param libraries List of libraries to assemble
+     */
+    void setLibraries(List<Library> libraries);
+
+    /**
      * This can be used to do any setup work between running the constructor and executing the process.  For example,
      * it can be used to add any pre or post commands that are necessary for this assembler.
      * @throws IOException
      */
-    void initialise() throws IOException;
+    void setup() throws IOException;
+
+    /**
+     * This can be used to do any setup work between running the constructor and executing the process.  For example,
+     * it can be used to add any pre or post commands that are necessary for this assembler.
+     * @param
+     * @param
+     * @throws IOException
+     */
+    void initialise(AbstractProcessArgs args, ConanExecutorService ces);
+
+    void initialise(ConanExecutorService ces);
+
+
+    public enum Type {
+        DE_BRUIJN,
+        DE_BRUIJN_OPTIMISER,
+        DE_BRUIJN_AUTO,
+        OVERLAP_LAYOUT_CONSENSUS;
+    }
 }

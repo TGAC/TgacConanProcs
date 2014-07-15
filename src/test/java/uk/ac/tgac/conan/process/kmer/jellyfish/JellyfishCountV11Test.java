@@ -39,7 +39,7 @@ public class JellyfishCountV11Test {
     @Test
     public void testJellyfishCommand() throws ConanParameterException {
 
-        JellyfishCountV11 jf = new JellyfishCountV11(createJellyfishArgs());
+        JellyfishCountV11 jf = new JellyfishCountV11(null, createJellyfishArgs());
 
         String command = jf.getCommand();
 

@@ -250,7 +250,12 @@ public class Library {
 
         List<File> fs = new ArrayList<File>();
         for(SeqFile seqFile : this.files) {
-           fs.add(seqFile.getFile());
+            if (seqFile != null) {
+                File f = seqFile.getFile();
+                if (f != null) {
+                    fs.add(f);
+                }
+            }
         }
 
         return fs;
