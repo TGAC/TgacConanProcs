@@ -100,7 +100,7 @@
         <repository>
             <id>tgac-repo</id>
             <name>TGAC repository</name>
-            <url>scp://repos.tgac.ac.uk/maven/repo</url>
+            <url>scp://repos.tgac.ac.uk/storage/html/maven/repo</url>
         </repository>
     </distributionManagement>
 
