@@ -44,6 +44,7 @@ public class GTSV0 extends AbstractConanProcess {
 
         public static double DEFAULT_CDS_LEN_RATIO = 0.4;
         public static double DEFAULT_CDNA_LEN_RATIO = 0.5;
+        public static int DEFAULT_WINDOW_SIZE = 1000;
 
         private File genomicGff;
         private File transcriptGff;
@@ -53,6 +54,7 @@ public class GTSV0 extends AbstractConanProcess {
         private boolean includePutative;
         private double cdsLenRatio;
         private double cdnaLenRatio;
+        private int windowSize;
         private boolean all;
 
         public Args() {
@@ -66,6 +68,7 @@ public class GTSV0 extends AbstractConanProcess {
             this.includePutative = false;
             this.cdsLenRatio = DEFAULT_CDS_LEN_RATIO;
             this.cdnaLenRatio = DEFAULT_CDNA_LEN_RATIO;
+            this.windowSize = DEFAULT_WINDOW_SIZE;
             this.all = false;
         }
 
@@ -145,6 +148,14 @@ public class GTSV0 extends AbstractConanProcess {
             this.cdnaLenRatio = cdnaLenRatio;
         }
 
+        public int getWindowSize() {
+            return windowSize;
+        }
+
+        public void setWindowSize(int windowSize) {
+            this.windowSize = windowSize;
+        }
+
         public boolean isAll() {
             return all;
         }
@@ -181,6 +192,9 @@ public class GTSV0 extends AbstractConanProcess {
             }
             else if (param.equals(params.getCdnaLenRatio())) {
                 this.cdnaLenRatio = Double.parseDouble(value);
+            }
+            else if (param.equals(params.getWindowSize())) {
+                this.windowSize = Integer.parseInt(value);
             }
             else if (param.equals(params.getAll())) {
                 this.all = Boolean.parseBoolean(value);
@@ -239,6 +253,10 @@ public class GTSV0 extends AbstractConanProcess {
                 pvp.put(params.getCdnaLenRatio(), Double.toString(this.cdnaLenRatio));
             }
 
+            if (this.windowSize != DEFAULT_WINDOW_SIZE) {
+                pvp.put(params.getWindowSize(), Integer.toString(this.windowSize));
+            }
+
             if (this.all) {
                 pvp.put(params.getAll(), Boolean.toString(this.all));
             }
@@ -257,6 +275,7 @@ public class GTSV0 extends AbstractConanProcess {
         private ConanParameter includePutative;
         private ConanParameter cdsLenRatio;
         private ConanParameter cdnaLenRatio;
+        private ConanParameter windowSize;
         private ConanParameter all;
 
         public Params() {
@@ -314,6 +333,12 @@ public class GTSV0 extends AbstractConanProcess {
                     .argValidator(ArgValidator.FLOAT)
                     .create();
 
+            this.windowSize = new ParameterBuilder()
+                    .longName("window_size")
+                    .description("The gap to enforce between genes.")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
             this.all = new ParameterBuilder()
                     .shortName("a")
                     .longName("all")
@@ -355,6 +380,10 @@ public class GTSV0 extends AbstractConanProcess {
             return cdnaLenRatio;
         }
 
+        public ConanParameter getWindowSize() {
+            return windowSize;
+        }
+
         public ConanParameter getAll() {
             return all;
         }
@@ -370,6 +399,7 @@ public class GTSV0 extends AbstractConanProcess {
                     this.includePutative,
                     this.cdsLenRatio,
                     this.cdnaLenRatio,
+                    this.windowSize,
                     this.all
             };
         }

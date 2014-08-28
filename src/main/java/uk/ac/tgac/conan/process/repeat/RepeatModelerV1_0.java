@@ -48,10 +48,9 @@ public class RepeatModelerV1_0 extends AbstractConanProcess {
 
     @Override
     public String getCommand() throws ConanParameterException {
+
         // Ensure all parameters are valid before we try to make a command
         this.getProcessArgs().getArgMap().validate(this.getProcessParams());
-
-        List<String> commands = new ArrayList<>();
 
         Args args = this.getArgs();
 
@@ -79,7 +78,10 @@ public class RepeatModelerV1_0 extends AbstractConanProcess {
         sb.append("cd " + args.getOutputDir().getAbsolutePath()).append("; ");
 
         // Run Repeat Modeller
-        sb.append(EXE + " -database " + args.getDbDir().getAbsolutePath() + "/" + args.getDbName() + " -engine " + args.getEngine().toArgString()).append("; ");
+        sb.append(EXE +
+                " -database " + args.getDbDir().getAbsolutePath() + "/" + args.getDbName() +
+                " -pa " + args.getThreads() +
+                " -engine " + args.getEngine().toArgString()).append("; ");
 
         // Change dir back
         sb.append("cd " + pwd);
@@ -106,6 +108,7 @@ public class RepeatModelerV1_0 extends AbstractConanProcess {
         private File outputDir;
         private String dbName;
         private Engine engine;
+        private int threads;
 
         public Args() {
             super(new Params());
@@ -114,6 +117,7 @@ public class RepeatModelerV1_0 extends AbstractConanProcess {
             this.outputDir = null;
             this.dbName = "genome";
             this.engine = Engine.NCBI;
+            this.threads = 1;
         }
 
         public Params getParams() {
@@ -154,6 +158,14 @@ public class RepeatModelerV1_0 extends AbstractConanProcess {
 
         public void setEngine(Engine engine) {
             this.engine = engine;
+        }
+
+        public int getThreads() {
+            return threads;
+        }
+
+        public void setThreads(int threads) {
+            this.threads = threads;
         }
 
         public File getLatestRepeatModelerDir() {
@@ -224,6 +236,9 @@ public class RepeatModelerV1_0 extends AbstractConanProcess {
             else if (param.equals(params.getEngine())) {
                 this.engine = Engine.valueOf(value.toUpperCase());
             }
+            else if (param.equals(params.getThreads())) {
+                this.threads = Integer.parseInt(value);
+            }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
             }
@@ -269,6 +284,11 @@ public class RepeatModelerV1_0 extends AbstractConanProcess {
                 pvp.put(params.getEngine(), this.engine.toArgString());
             }
 
+            if (this.threads > 1) {
+                pvp.put(params.getThreads(), Integer.toString(this.threads));
+            }
+
+
             return pvp;
         }
     }
@@ -279,6 +299,7 @@ public class RepeatModelerV1_0 extends AbstractConanProcess {
         private ConanParameter outputDir;
         private ConanParameter dbName;
         private ConanParameter engine;
+        private ConanParameter threads;
 
         public Params() {
 
@@ -299,18 +320,22 @@ public class RepeatModelerV1_0 extends AbstractConanProcess {
                     .create();
 
             this.dbName = new ParameterBuilder()
-                    .shortName("n")
-                    .longName("name")
+                    .shortName("db")
                     .isOptional(false)
                     .description("The name of the database to create")
                     .argValidator(ArgValidator.DEFAULT)
                     .create();
 
             this.engine = new ParameterBuilder()
-                    .shortName("e")
-                    .longName("engine")
+                    .shortName("engine")
                     .description("The name of the search engine we are using. I.e abblast/wublast or ncbi (rmblast version)")
                     .argValidator(ArgValidator.DEFAULT)
+                    .create();
+
+            this.threads = new ParameterBuilder()
+                    .shortName("pa")
+                    .description("The number of shared memory processors to use")
+                    .argValidator(ArgValidator.DIGITS)
                     .create();
         }
 
@@ -330,13 +355,18 @@ public class RepeatModelerV1_0 extends AbstractConanProcess {
             return engine;
         }
 
+        public ConanParameter getThreads() {
+            return threads;
+        }
+
         @Override
         public ConanParameter[] getConanParametersAsArray() {
             return new ConanParameter[] {
                     this.inputAssembly,
                     this.outputDir,
                     this.dbName,
-                    this.engine
+                    this.engine,
+                    this.threads
             };
         }
     }
