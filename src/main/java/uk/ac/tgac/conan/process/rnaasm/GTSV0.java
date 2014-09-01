@@ -334,6 +334,7 @@ public class GTSV0 extends AbstractConanProcess {
                     .create();
 
             this.windowSize = new ParameterBuilder()
+                    .shortName("w")
                     .longName("window_size")
                     .description("The gap to enforce between genes.")
                     .argValidator(ArgValidator.DIGITS)
