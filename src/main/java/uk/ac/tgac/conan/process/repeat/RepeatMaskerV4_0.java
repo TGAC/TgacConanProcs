@@ -88,6 +88,10 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
         private File outputDir;
         private boolean gff;
         private int frag;
+        private boolean alignments;
+        private boolean small;
+        private boolean xSmall;
+        private boolean x;
 
         public Args() {
 
@@ -103,6 +107,10 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
             this.outputDir = null;
             this.gff = false;
             this.frag = -1;
+            this.alignments = false;
+            this.small = false;
+            this.xSmall = false;
+            this.x = false;
         }
 
         public Params getParams() {
@@ -189,6 +197,38 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
             this.frag = frag;
         }
 
+        public boolean isAlignments() {
+            return alignments;
+        }
+
+        public void setAlignments(boolean alignments) {
+            this.alignments = alignments;
+        }
+
+        public boolean isSmall() {
+            return small;
+        }
+
+        public void setSmall(boolean small) {
+            this.small = small;
+        }
+
+        public boolean isxSmall() {
+            return xSmall;
+        }
+
+        public void setxSmall(boolean xSmall) {
+            this.xSmall = xSmall;
+        }
+
+        public boolean isX() {
+            return x;
+        }
+
+        public void setX(boolean x) {
+            this.x = x;
+        }
+
         public File getOutputGffFile() {
             return new File(this.outputDir, this.input[0].getName() + ".out.gff");
         }
@@ -228,6 +268,18 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
             }
             else if (param.equals(params.getFrag())) {
                 this.frag = Integer.parseInt(value);
+            }
+            else if (param.equals(params.getAlignments())) {
+                this.alignments = Boolean.parseBoolean(value);
+            }
+            else if (param.equals(params.getSmall())) {
+                this.small = Boolean.parseBoolean(value);
+            }
+            else if (param.equals(params.getxSmall())) {
+                this.xSmall = Boolean.parseBoolean(value);
+            }
+            else if (param.equals(params.getX())) {
+                this.x = Boolean.parseBoolean(value);
             }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
@@ -300,6 +352,22 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
                 pvp.put(params.getFrag(), Integer.toString(this.frag));
             }
 
+            if (this.alignments) {
+                pvp.put(params.getAlignments(), Boolean.toString(this.alignments));
+            }
+
+            if (this.small) {
+                pvp.put(params.getSmall(), Boolean.toString(this.small));
+            }
+
+            if (this.xSmall) {
+                pvp.put(params.getxSmall(), Boolean.toString(this.xSmall));
+            }
+
+            if (this.x) {
+                pvp.put(params.getX(), Boolean.toString(this.x));
+            }
+
             return pvp;
         }
 
@@ -318,6 +386,10 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
         private ConanParameter outputDir;
         private ConanParameter gff;
         private ConanParameter frag;
+        private ConanParameter alignments;
+        private ConanParameter small;
+        private ConanParameter xSmall;
+        private ConanParameter x;
 
         public Params() {
 
@@ -400,6 +472,34 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
                     .argValidator(ArgValidator.DIGITS)
                     .create();
 
+            this.alignments = new ParameterBuilder()
+                    .shortName("a")
+                    .description("Writes alignments in .align output file")
+                    .isFlag(true)
+                    .argValidator(ArgValidator.OFF)
+                    .create();
+
+            this.small = new ParameterBuilder()
+                    .shortName("small")
+                    .description("Returns complete .masked sequence in lower case")
+                    .isFlag(true)
+                    .argValidator(ArgValidator.OFF)
+                    .create();
+
+            this.xSmall = new ParameterBuilder()
+                    .shortName("xsmall")
+                    .description("Returns repetitive regions in lowercase (rest capitals) rather than masked")
+                    .isFlag(true)
+                    .argValidator(ArgValidator.OFF)
+                    .create();
+
+            this.x = new ParameterBuilder()
+                    .shortName("x")
+                    .description("Returns repetitive regions masked with Xs rather than Ns")
+                    .isFlag(true)
+                    .argValidator(ArgValidator.OFF)
+                    .create();
+
         }
 
         public ConanParameter getInput() {
@@ -442,6 +542,22 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
             return frag;
         }
 
+        public ConanParameter getAlignments() {
+            return alignments;
+        }
+
+        public ConanParameter getSmall() {
+            return small;
+        }
+
+        public ConanParameter getxSmall() {
+            return xSmall;
+        }
+
+        public ConanParameter getX() {
+            return x;
+        }
+
         @Override
         public ConanParameter[] getConanParametersAsArray() {
             return new ConanParameter[] {
@@ -454,7 +570,11 @@ public class RepeatMaskerV4_0 extends AbstractConanProcess {
                     this.intOnly,
                     this.outputDir,
                     this.gff,
-                    this.frag
+                    this.frag,
+                    this.alignments,
+                    this.small,
+                    this.xSmall,
+                    this.x
             };
         }
     }
