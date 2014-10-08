@@ -40,7 +40,7 @@ public class GenericDeBruijnAutoArgs extends GenericAssemblerArgs {
         if (args == null)
             throw new IllegalArgumentException("Provided assembler args are null");
 
-        Assembler assembler = this.createAssembler(toolName, ces);
+        Assembler assembler = this.createAssembler(toolName, args.toConanArgs(), ces);
 
         if (assembler.getType() != Assembler.Type.DE_BRUIJN_AUTO) {
             throw new IllegalArgumentException("Assembler \"" + toolName + "\" is not a De Bruijn graph assembler that handles K values automatically");

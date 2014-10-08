@@ -40,10 +40,10 @@ import java.util.List;
  * Time: 15:24
  */
 @MetaInfServices(uk.ac.tgac.conan.process.asm.Assembler.class)
-public class AllpathsLgV44837 extends AbstractAssembler implements Subsampler {
+public class AllpathsLgV50 extends AbstractAssembler implements Subsampler {
 
     public static final String EXE = "RunAllPathsLG";
-    public static final String NAME = "AllpathsLg_V44837";
+    public static final String NAME = "AllpathsLg_V50";
 
     @Override
     public void setDesiredCoverage(int desiredCoverage) {
@@ -89,15 +89,15 @@ public class AllpathsLgV44837 extends AbstractAssembler implements Subsampler {
     private File inLibs;
     private GroupInfo groupInfo;
 
-    public AllpathsLgV44837() {
+    public AllpathsLgV50() {
         this(null);
     }
 
-    public AllpathsLgV44837(ConanExecutorService conanExecutorService) {
+    public AllpathsLgV50(ConanExecutorService conanExecutorService) {
         this(conanExecutorService, new Args());
     }
 
-    public AllpathsLgV44837(ConanExecutorService conanExecutorService, Args args) {
+    public AllpathsLgV50(ConanExecutorService conanExecutorService, Args args) {
         super(NAME, EXE, args, new Params(), conanExecutorService);
     }
 
@@ -216,7 +216,16 @@ public class AllpathsLgV44837 extends AbstractAssembler implements Subsampler {
             }
         }
 
+        // Create ploidy file
+        this.createPloidyFile(args.getOrganism().getPloidy(), new File(dataDir, "ploidy"));
+    }
 
+    protected void createPloidyFile(int ploidy, File ploidyFile) throws IOException {
+
+        List<String> lines = new ArrayList<>();
+        lines.add(Integer.toString(ploidy));
+
+        FileUtils.writeLines(ploidyFile, lines);
     }
 
     protected void createLibFile(File libFile, List<Library> libraries) throws IOException {

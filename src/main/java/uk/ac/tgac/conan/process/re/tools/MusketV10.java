@@ -17,17 +17,19 @@
  **/
 package uk.ac.tgac.conan.process.re.tools;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
 import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.*;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
-import uk.ac.tgac.conan.process.re.*;
+import uk.ac.tgac.conan.process.re.AbstractReadEnhancer;
+import uk.ac.tgac.conan.process.re.AbstractReadEnhancerArgs;
+import uk.ac.tgac.conan.process.re.ReadEnhancer;
+import uk.ac.tgac.conan.process.re.ReadEnhancerArgs;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

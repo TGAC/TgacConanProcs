@@ -11,10 +11,8 @@ import uk.ac.ebi.fgpt.conan.model.param.CommandLineFormat;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
-import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by maplesod on 25/07/14.

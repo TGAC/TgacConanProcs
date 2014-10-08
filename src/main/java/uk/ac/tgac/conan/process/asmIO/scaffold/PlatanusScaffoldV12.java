@@ -17,8 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asmIO.scaffold;
 
-import org.apache.commons.cli.*;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;

@@ -20,9 +20,7 @@ package uk.ac.tgac.conan.process.re.tools;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
-import uk.ac.tgac.conan.core.data.FilePair;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.re.tools.SickleV12;
 
 import java.io.File;
 

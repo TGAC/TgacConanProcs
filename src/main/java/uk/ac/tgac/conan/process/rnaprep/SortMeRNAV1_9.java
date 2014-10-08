@@ -12,7 +12,6 @@ import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.tgac.conan.core.util.PathUtils;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * SortMeRNA is a software designed to filter metatranscriptomic reads data. It takes as input a file

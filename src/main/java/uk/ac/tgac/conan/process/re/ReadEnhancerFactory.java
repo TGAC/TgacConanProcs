@@ -18,7 +18,6 @@
 package uk.ac.tgac.conan.process.re;
 
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
-import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
 import java.util.ServiceLoader;
