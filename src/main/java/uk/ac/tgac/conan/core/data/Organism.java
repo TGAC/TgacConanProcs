@@ -27,7 +27,7 @@ import uk.ac.tgac.conan.core.util.XmlHelper;
  */
 public class Organism {
 
-    private static final String KEY_ELEM_NAME = "name";
+    private static final String KEY_ATTR_NAME = "name";
     private static final String KEY_ATTR_PLOIDY = "ploidy";
     private static final String KEY_ATTR_EST_GENOME_SIZE = "est_genome_size";
     private static final String KEY_ATTR_EST_GC_PERC = "est_gc_percentage";
@@ -61,8 +61,25 @@ public class Organism {
 
     public Organism(Element ele) {
 
+        // Check there's nothing
+        if (!XmlHelper.validate(ele,
+                new String[] {
+                        KEY_ATTR_NAME
+                },
+                new String[]{
+                        KEY_ATTR_PLOIDY,
+                        KEY_ATTR_EST_GENOME_SIZE,
+                        KEY_ATTR_EST_GC_PERC,
+                        KEY_ATTR_MIN_INTRON_SIZE,
+                        KEY_ATTR_MAX_INTRON_SIZE
+                },
+                new String[0],
+                new String[0])) {
+            throw new IllegalArgumentException("Found unrecognised element or attribute in Organism");
+        }
+
         // Required
-        this.name = XmlHelper.getTextValue(ele, KEY_ELEM_NAME);
+        this.name = XmlHelper.getTextValue(ele, KEY_ATTR_NAME);
 
         // Optional
         this.ploidy = ele.hasAttribute(KEY_ATTR_PLOIDY) ? XmlHelper.getIntValue(ele, KEY_ATTR_PLOIDY) : DEFAULT_PLOIDY;

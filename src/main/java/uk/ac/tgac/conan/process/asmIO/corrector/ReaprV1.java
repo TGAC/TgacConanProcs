@@ -29,6 +29,7 @@ import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
+import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.process.asmIO.*;
 import uk.ac.tgac.conan.process.misc.FastXRC_V0013;
@@ -67,15 +68,12 @@ public class ReaprV1 extends AbstractAssemblyEnhancer {
     }
 
     @Override
-    public String getCommand() throws ConanParameterException {
+    public boolean execute(ExecutionContext executionContext)
+            throws ProcessExecutionException, InterruptedException {
 
         Args args = this.getArgs();
 
         List<String> commands = new ArrayList<>();
-
-        File convertedAssemblyFileForFaCheck = new File(args.getOutputDir(), "input_assembly");
-        File convertedAssemblyFile = new File(args.getOutputDir(), "input_assembly.fa");
-        File bamFile = new File(args.getOutputDir(), "mapped_reads.bam");
 
         if (args.getLibraries() == null || args.getLibraries().isEmpty()) {
             throw new IllegalArgumentException("Can't execute Reapr because not input read files have been provided");
@@ -86,35 +84,46 @@ public class ReaprV1 extends AbstractAssemblyEnhancer {
 
         Library inputLibrary = args.getLibraries().get(0);
 
-        File readFile1 = inputLibrary.getFile1();
-        File readFile2 = inputLibrary.getFile2();
 
         // Check for "outie" libraries, if found reverse complement it
         if (inputLibrary.getSeqOrientation() == Library.SeqOrientation.RF) {
 
-            File inputRc1File = new File(this.getOutputDir(), "input_reads_rc_1.fastq");
-            File inputRc2File = new File(this.getOutputDir(), "input_reads_rc_2.fastq");
-
             FastXRC_V0013.Args fxrc1Args = new FastXRC_V0013.Args();
             fxrc1Args.setIn(inputLibrary.getFile1());
-            fxrc1Args.setOut(inputRc1File);
+            fxrc1Args.setOut(args.getInputReadsFile1());
             fxrc1Args.setQualityOffset(inputLibrary.getPhred() == Library.Phred.PHRED_33 ? 33 : 64);
 
             FastXRC_V0013.Args fxrc2Args = new FastXRC_V0013.Args();
             fxrc2Args.setIn(inputLibrary.getFile2());
-            fxrc2Args.setOut(inputRc2File);
+            fxrc2Args.setOut(args.getInputReadsFile2());
             fxrc2Args.setQualityOffset(inputLibrary.getPhred() == Library.Phred.PHRED_33 ? 33 : 64);
 
             FastXRC_V0013 fxrc1 = new FastXRC_V0013(this.conanExecutorService, fxrc1Args);
             FastXRC_V0013 fxrc2 = new FastXRC_V0013(this.conanExecutorService, fxrc2Args);
 
-            commands.add(fxrc1.getCommand());
-            commands.add(fxrc2.getCommand());
+            this.conanExecutorService.executeProcess(fxrc1, args.getOutputDir(), executionContext.getJobName() + "-rc1", 1, 0, false);
+            this.conanExecutorService.executeProcess(fxrc2, args.getOutputDir(), executionContext.getJobName() + "-rc2", 1, 0, false);
+        }
+        else {
+            // Make links
+            this.conanExecutorService.getConanProcessService().createLocalSymbolicLink(inputLibrary.getFile1(), args.getInputReadsFile1());
+            this.conanExecutorService.getConanProcessService().createLocalSymbolicLink(inputLibrary.getFile2(), args.getInputReadsFile2());
 
-            readFile1 = inputRc1File;
-            readFile2 = inputRc2File;
         }
 
+        return super.execute(executionContext);
+    }
+
+    @Override
+    public String getCommand() throws ConanParameterException {
+
+        Args args = this.getArgs();
+
+        List<String> commands = new ArrayList<>();
+
+        File convertedAssemblyFileForFaCheck = new File(args.getOutputDir(), "input_assembly");
+        File convertedAssemblyFile = new File(args.getOutputDir(), "input_assembly.fa");
+        File bamFile = new File(args.getOutputDir(), "mapped_reads.bam");
 
         // Assembly conversion
         commands.add(EXE + " facheck "
@@ -124,15 +133,15 @@ public class ReaprV1 extends AbstractAssemblyEnhancer {
         // Mapping command
         commands.add(EXE + " smaltmap -n " + args.getThreads() + " "
                 + convertedAssemblyFile.getAbsolutePath() + " "
-                + readFile1.getAbsolutePath() + " "
-                + readFile2.getAbsolutePath() + " "
+                + args.getInputReadsFile1().getAbsolutePath() + " "
+                + args.getInputReadsFile2().getAbsolutePath() + " "
                 + bamFile.getAbsolutePath());
 
         // Reapr pipeline command
         commands.add(EXE + " pipeline "
                 + convertedAssemblyFile.getAbsolutePath() + " "
                 + bamFile.getAbsolutePath() + " "
-                + args.getOutputDir().getAbsolutePath());
+                + args.getPipelineOutDir().getAbsolutePath());
 
         String command = StringUtils.join(commands, "; ");
 
@@ -162,16 +171,28 @@ public class ReaprV1 extends AbstractAssemblyEnhancer {
             return (Params)this.params;
         }
 
+        public File getPipelineOutDir() {
+            return new File(this.getOutputDir(), "pipeline_out");
+        }
+
         public File getBrokenAssemblyFile() {
-            return new File(this.getOutputDir(), "04.break.broken_assembly.fa");
+            return new File(this.getPipelineOutDir(), "04.break.broken_assembly.fa");
         }
 
         public File getSummaryReportFile() {
-            return new File(this.getOutputDir(), "05.summary.report.tsv");
+            return new File(this.getPipelineOutDir(), "05.summary.report.tsv");
         }
 
         public File getSummaryStatsFile() {
-            return new File(this.getOutputDir(), "05.summary.stats.tsv");
+            return new File(this.getPipelineOutDir(), "05.summary.stats.tsv");
+        }
+
+        public File getInputReadsFile1() {
+            return new File(this.getOutputDir(), "input_reads_1.fastq");
+        }
+
+        public File getInputReadsFile2() {
+            return new File(this.getOutputDir(), "input_reads_2.fastq");
         }
 
         public boolean isOuties() {
