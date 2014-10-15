@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
  * Date: 06/08/13
  * Time: 14:15
  */
-public class QuastV22Test {
+public class QuastV23Test {
 
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
@@ -59,27 +59,27 @@ public class QuastV22Test {
                 pwd + "/file1.fa " + pwd + "/file2.fa";
     }
 
-    private QuastV22 createProcess() {
+    private QuastV23 createProcess() {
 
         List<File> inputFiles = new ArrayList<>();
 
         inputFiles.add(new File("file1.fa"));
         inputFiles.add(new File("file2.fa"));
 
-        QuastV22.Args args = new QuastV22.Args();
+        QuastV23.Args args = new QuastV23.Args();
         args.setInputFiles(inputFiles);
         args.setScaffolds(true);
         args.setEstimatedGenomeSize(50000000);
         args.setThreads(16);
         args.setOutputDir(new File(testDir));
 
-        return new QuastV22(null, args);
+        return new QuastV23(null, args);
     }
 
     @Test
     public void testCommand() throws ConanParameterException {
 
-        QuastV22 process = createProcess();
+        QuastV23 process = createProcess();
 
         String command = process.getCommand();
 
@@ -92,7 +92,7 @@ public class QuastV22Test {
     @Test
     public void testQuastReport() throws IOException {
 
-        QuastV22.Report report = new QuastV22.Report(quastReportFile);
+        QuastV23.Report report = new QuastV23.Report(quastReportFile);
 
         assertTrue(report.getAssemblyStats(0).getName().equalsIgnoreCase("rampart-5pc-k61-scaffolds"));
         assertTrue(report.getAssemblyStats(7).getName().equalsIgnoreCase("rampart-100pc-k71-scaffolds"));
@@ -101,7 +101,7 @@ public class QuastV22Test {
     @Test
     public void testQuastScaffoldsReport() throws IOException {
 
-        QuastV22.Report report = new QuastV22.Report(quastReportScaffoldsFile);
+        QuastV23.Report report = new QuastV23.Report(quastReportScaffoldsFile);
 
         assertTrue(report.getAssemblyStats(0).getName().equalsIgnoreCase("abyss-raw-kmer-cvg-all_k-61-scaffolds_broken"));
         assertTrue(report.getAssemblyStats(7).getName().equalsIgnoreCase("abyss-raw-kmer-cvg-all_k-75-scaffolds"));
