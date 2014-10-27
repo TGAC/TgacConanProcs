@@ -24,6 +24,7 @@ import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
+import uk.ac.ebi.fgpt.conan.model.context.ExecutionResult;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
@@ -68,7 +69,7 @@ public class ReaprV1 extends AbstractAssemblyEnhancer {
     }
 
     @Override
-    public boolean execute(ExecutionContext executionContext)
+    public ExecutionResult execute(ExecutionContext executionContext)
             throws ProcessExecutionException, InterruptedException {
 
         Args args = this.getArgs();

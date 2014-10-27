@@ -24,10 +24,13 @@ import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
+import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
+import uk.ac.ebi.fgpt.conan.model.context.ExecutionResult;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
+import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
 import uk.ac.tgac.conan.process.asm.*;
@@ -103,10 +106,33 @@ public class SpadesV31 extends AbstractAssembler {
     }
 
     @Override
+    public File getBestAssembly() {
+        return this.getScaffoldsFile();
+    }
+
+    @Override
     public Assembler.Type getType() {
         return Assembler.Type.DE_BRUIJN_OPTIMISER;
     }
 
+    @Override
+    public ExecutionResult execute(ExecutionContext executionContext)
+            throws InterruptedException, ProcessExecutionException {
+
+        // SPAdes will not run with even kmer values, so first check to see if a single even kmer value was requested
+        // then increment it by one
+        Args args = this.getArgs();
+
+        if (args.getKmerRange().size() == 1) {
+            int kVal = args.getKmerRange().get(0).intValue();
+
+            if (kVal % 2 == 0) {
+                args.getKmerRange().set(0, new Integer(kVal+1));
+            }
+        }
+
+        return super.execute(executionContext);
+    }
 
     protected String createLibString(Library lib, boolean additionalLib) {
 

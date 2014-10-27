@@ -4,6 +4,7 @@ import org.apache.commons.io.FilenameUtils;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.model.context.ExecutionResult;
 import uk.ac.ebi.fgpt.conan.model.context.ExitStatus;
+import uk.ac.ebi.fgpt.conan.model.context.MultiWaitResult;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
@@ -40,12 +41,12 @@ public class DefaultLibraryChunking extends AbstractConanProcess implements Libr
 
             // Wait for chunking to finish if running in parallel
             if (this.conanExecutorService.usingScheduler() && runParallel) {
-                List<Integer> jobIds = new ArrayList<>();
-                jobIds.add(result1.getJobId());
-                jobIds.add(result2.getJobId());
+                List<ExecutionResult> results = new ArrayList<>();
+                results.add(result1);
+                results.add(result2);
 
-                this.conanExecutorService.executeScheduledWait(
-                        jobIds,
+                MultiWaitResult mwResults = this.conanExecutorService.executeScheduledWait(
+                        results,
                         jobPrefix + "-chunk*",
                         ExitStatus.Type.COMPLETED_ANY,
                         jobPrefix + "-wait-chunk",

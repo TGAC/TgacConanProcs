@@ -69,6 +69,13 @@ public interface Assembler extends ConanProcess {
     File getBubbleFile();
 
     /**
+     * Returns the most contiguous assembly produced by the assembler.  Typically, this is done using the precedence:
+     * Scaffolds > Contigs > Unitigs.
+     * @return
+     */
+    File getBestAssembly();
+
+    /**
      * Some assemblers use openmpi, this method returns true if this assembler uses openmpi
      * @return
      */

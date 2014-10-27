@@ -145,6 +145,11 @@ public class AllpathsLgV50 extends AbstractAssembler implements Subsampler {
         return null;
     }
 
+    @Override
+    public File getBestAssembly() {
+        return this.getScaffoldsFile();
+    }
+
 
     @Override
     public boolean doesSubsampling() {

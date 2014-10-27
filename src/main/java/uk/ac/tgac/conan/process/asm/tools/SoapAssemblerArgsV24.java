@@ -117,6 +117,11 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
     }
 
     @Override
+    public File getBestAssembly() {
+        return this.getContigsFile();
+    }
+
+    @Override
     public void setLibraries(List<Library> libraries) {
         this.getArgs().setLibs(libraries);
     }

@@ -105,6 +105,11 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
     }
 
     @Override
+    public File getBestAssembly() {
+        return this.getContigsFile();
+    }
+
+    @Override
     public Assembler.Type getType() {
         return Assembler.Type.DE_BRUIJN_OPTIMISER;
     }

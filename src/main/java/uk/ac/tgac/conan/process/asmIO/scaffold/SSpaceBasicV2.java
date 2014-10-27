@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fgpt.conan.core.param.*;
 import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
+import uk.ac.ebi.fgpt.conan.model.context.ExecutionResult;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
@@ -75,7 +76,7 @@ public class SSpaceBasicV2 extends AbstractAssemblyEnhancer {
     }
 
     @Override
-    public boolean execute(ExecutionContext executionContext) throws ProcessExecutionException, InterruptedException {
+    public ExecutionResult execute(ExecutionContext executionContext) throws ProcessExecutionException, InterruptedException {
 
         Args args = (Args)this.getProcessArgs();
 

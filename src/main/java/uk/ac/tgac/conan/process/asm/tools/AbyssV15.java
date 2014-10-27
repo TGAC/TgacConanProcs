@@ -158,6 +158,11 @@ public class AbyssV15 extends AbstractAssembler {
     }
 
     @Override
+    public File getBestAssembly() {
+        return this.getScaffoldsFile();
+    }
+
+    @Override
     public boolean usesOpenMpi() {
         return true;
     }

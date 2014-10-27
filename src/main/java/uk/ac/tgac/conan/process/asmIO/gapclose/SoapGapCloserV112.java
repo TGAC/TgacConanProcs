@@ -22,10 +22,12 @@ import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.ebi.fgpt.conan.core.context.DefaultExecutionResult;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
 import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
 import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
+import uk.ac.ebi.fgpt.conan.model.context.ExecutionResult;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
@@ -73,7 +75,7 @@ public class SoapGapCloserV112 extends AbstractAssemblyEnhancer {
     }
 
     @Override
-    public boolean execute(ExecutionContext executionContext) throws ProcessExecutionException, InterruptedException {
+    public ExecutionResult execute(ExecutionContext executionContext) throws ProcessExecutionException, InterruptedException {
 
         Args args = this.getArgs();
 
@@ -101,7 +103,7 @@ public class SoapGapCloserV112 extends AbstractAssemblyEnhancer {
             log.warn("Gap Closer threw an error.  This is probably not a problem, gap closer always finishes with an error condition but please check output.");
         }
 
-        return true;
+        return new DefaultExecutionResult(args.getName(), 0);
     }
 
     @MetaInfServices(AssemblyEnhancerArgs.class)
