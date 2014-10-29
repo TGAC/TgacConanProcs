@@ -116,22 +116,18 @@ public class SpadesV31 extends AbstractAssembler {
     }
 
     @Override
-    public ExecutionResult execute(ExecutionContext executionContext)
-            throws InterruptedException, ProcessExecutionException {
-
+    public void setup() throws IOException {
         // SPAdes will not run with even kmer values, so first check to see if a single even kmer value was requested
-        // then increment it by one
+        // then decrement it by one
         Args args = this.getArgs();
 
         if (args.getKmerRange().size() == 1) {
             int kVal = args.getKmerRange().get(0).intValue();
 
             if (kVal % 2 == 0) {
-                args.getKmerRange().set(0, new Integer(kVal+1));
+                args.getKmerRange().set(0, new Integer(kVal-1));
             }
         }
-
-        return super.execute(executionContext);
     }
 
     protected String createLibString(Library lib, boolean additionalLib) {
