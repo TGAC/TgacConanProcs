@@ -17,17 +17,20 @@
  **/
 package uk.ac.tgac.conan.process.asm.tools;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
+import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
+import uk.ac.ebi.fgpt.conan.model.context.ExecutionResult;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
+import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.data.SeqFile;
 import uk.ac.tgac.conan.process.asm.*;
@@ -103,10 +106,29 @@ public class SpadesV31 extends AbstractAssembler {
     }
 
     @Override
+    public File getBestAssembly() {
+        return this.getScaffoldsFile();
+    }
+
+    @Override
     public Assembler.Type getType() {
         return Assembler.Type.DE_BRUIJN_OPTIMISER;
     }
 
+    @Override
+    public void setup() throws IOException {
+        // SPAdes will not run with even kmer values, so first check to see if a single even kmer value was requested
+        // then decrement it by one
+        Args args = this.getArgs();
+
+        if (args.getKmerRange().size() == 1) {
+            int kVal = args.getKmerRange().get(0).intValue();
+
+            if (kVal % 2 == 0) {
+                args.getKmerRange().set(0, new Integer(kVal-1));
+            }
+        }
+    }
 
     protected String createLibString(Library lib, boolean additionalLib) {
 

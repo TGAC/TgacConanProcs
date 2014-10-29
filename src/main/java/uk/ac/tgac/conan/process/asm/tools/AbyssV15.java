@@ -17,7 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asm.tools;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.*;
@@ -155,6 +155,11 @@ public class AbyssV15 extends AbstractAssembler {
     @Override
     public File getBubbleFile() {
         return new File(this.getArgs().getOutputDir(), this.getArgs().getName() + "-bubbles.fa");
+    }
+
+    @Override
+    public File getBestAssembly() {
+        return this.getScaffoldsFile();
     }
 
     @Override

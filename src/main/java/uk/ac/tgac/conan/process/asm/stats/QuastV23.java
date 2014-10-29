@@ -42,20 +42,20 @@ import java.util.List;
  * Date: 22/04/13
  * Time: 18:30
  */
-public class QuastV22 extends AbstractConanProcess {
+public class QuastV23 extends AbstractConanProcess {
 
     public static final String EXE = "quast.py";
-    public static final String NAME = "Quast_V2.2";
+    public static final String NAME = "Quast_V2.3";
 
-    public QuastV22() {
+    public QuastV23() {
         this(null);
     }
 
-    public QuastV22(ConanExecutorService ces) {
+    public QuastV23(ConanExecutorService ces) {
         this(ces, new Args());
     }
 
-    public QuastV22(ConanExecutorService ces, Args args) {
+    public QuastV23(ConanExecutorService ces, Args args) {
         super(EXE, args, new Params(), ces);
     }
 
@@ -99,6 +99,8 @@ public class QuastV22 extends AbstractConanProcess {
         private int threads;
         private long estimatedGenomeSize;
         private boolean scaffolds;
+        private boolean findGenes;
+        private boolean eukaryote;
 
         public Args() {
 
@@ -110,6 +112,8 @@ public class QuastV22 extends AbstractConanProcess {
             this.threads = 1;
             this.estimatedGenomeSize = -1;
             this.scaffolds = false;
+            this.findGenes = false;
+            this.eukaryote = false;
         }
 
         public List<File> getInputFiles() {
@@ -160,6 +164,22 @@ public class QuastV22 extends AbstractConanProcess {
             this.scaffolds = scaffolds;
         }
 
+        public boolean isFindGenes() {
+            return findGenes;
+        }
+
+        public void setFindGenes(boolean findGenes) {
+            this.findGenes = findGenes;
+        }
+
+        public boolean isEukaryote() {
+            return eukaryote;
+        }
+
+        public void setEukaryote(boolean eukaryote) {
+            this.eukaryote = eukaryote;
+        }
+
         @Override
         public void parseCommandLine(CommandLine cmdLine) {
 
@@ -190,6 +210,14 @@ public class QuastV22 extends AbstractConanProcess {
 
             if (this.scaffolds) {
                 pvp.put(params.getScaffolds(), Boolean.toString(this.scaffolds));
+            }
+
+            if (this.findGenes) {
+                pvp.put(params.getFindGenes(), Boolean.toString(this.findGenes));
+            }
+
+            if (this.eukaryote) {
+                pvp.put(params.getEukaryote(), Boolean.toString(this.eukaryote));
             }
 
             return pvp;
@@ -227,6 +255,12 @@ public class QuastV22 extends AbstractConanProcess {
             else if (param.equals(this.params.getScaffolds())) {
                 this.scaffolds = Boolean.parseBoolean(value);
             }
+            else if (param.equals(this.params.getFindGenes())) {
+                this.findGenes = Boolean.parseBoolean(value);
+            }
+            else if (param.equals(this.params.getEukaryote())) {
+                this.eukaryote = Boolean.parseBoolean(value);
+            }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
             }
@@ -251,6 +285,8 @@ public class QuastV22 extends AbstractConanProcess {
         private ConanParameter threads;
         private ConanParameter estimatedGenomeSize;
         private ConanParameter scaffolds;
+        private ConanParameter findGenes;
+        private ConanParameter eukaryote;
 
         public Params() {
 
@@ -297,6 +333,25 @@ public class QuastV22 extends AbstractConanProcess {
                     .isOptional(true)
                     .argValidator(ArgValidator.OFF)
                     .create();
+
+            this.findGenes = new ParameterBuilder()
+                    .shortName("f")
+                    .longName("gene-finding")
+                    .description("Predict genes (with GeneMark.hmm for prokaryotes (default), GlimmerHMM for eukaryotes " +
+                            "(--eukaryote), or MetaGeneMark for metagenomes (--meta)")
+                    .isFlag(true)
+                    .isOptional(true)
+                    .argValidator(ArgValidator.OFF)
+                    .create();
+
+            this.eukaryote = new ParameterBuilder()
+                    .shortName("e")
+                    .longName("eukaryote")
+                    .description("Genome is eukaryotic")
+                    .isFlag(true)
+                    .isOptional(true)
+                    .argValidator(ArgValidator.OFF)
+                    .create();
         }
 
         public ConanParameter getInputFiles() {
@@ -323,6 +378,14 @@ public class QuastV22 extends AbstractConanProcess {
             return scaffolds;
         }
 
+        public ConanParameter getFindGenes() {
+            return findGenes;
+        }
+
+        public ConanParameter getEukaryote() {
+            return eukaryote;
+        }
+
         @Override
         public ConanParameter[] getConanParametersAsArray() {
             return new ConanParameter[] {
@@ -331,7 +394,9 @@ public class QuastV22 extends AbstractConanProcess {
                     this.outputDir,
                     this.threads,
                     this.estimatedGenomeSize,
-                    this.scaffolds
+                    this.scaffolds,
+                    this.findGenes,
+                    this.eukaryote
             };
         }
     }
@@ -341,7 +406,7 @@ public class QuastV22 extends AbstractConanProcess {
         private List<AssemblyStats> statList;
 
         public Report() {
-            statList = new ArrayList<AssemblyStats>();
+            statList = new ArrayList<>();
         }
 
         public Report(File reportFile) throws IOException {
@@ -350,7 +415,7 @@ public class QuastV22 extends AbstractConanProcess {
 
         private void parse(File reportFile) throws IOException {
 
-            statList = new ArrayList<AssemblyStats>();
+            statList = new ArrayList<>();
 
             List<String> lines = FileUtils.readLines(reportFile);
 
@@ -467,6 +532,13 @@ public class QuastV22 extends AbstractConanProcess {
                     for (int i = 5; i < parts.length; i++) {
                         statList.get(i - 5).setNsPer100k(Double.parseDouble(parts[i]));
                     }
+                } else if (tLine.startsWith("# predicted genes (unique)")) {
+
+                    String[] parts = tLine.split("\\s+");
+
+                    for (int i = 4; i < parts.length; i++) {
+                        statList.get(i - 4).setNbGenes(Integer.parseInt(parts[i]));
+                    }
                 }
             }
 
@@ -507,6 +579,7 @@ public class QuastV22 extends AbstractConanProcess {
         private int l50;
         private int l75;
         private double nsPer100k;
+        private int nbGenes;
 
         public String getName() {
             return name;
@@ -618,6 +691,14 @@ public class QuastV22 extends AbstractConanProcess {
 
         public void setNsPer100k(double nsPer100k) {
             this.nsPer100k = nsPer100k;
+        }
+
+        public int getNbGenes() {
+            return nbGenes;
+        }
+
+        public void setNbGenes(int nbGenes) {
+            this.nbGenes = nbGenes;
         }
     }
 }

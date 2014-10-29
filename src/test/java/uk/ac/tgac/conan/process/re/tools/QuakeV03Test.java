@@ -26,7 +26,6 @@ import uk.ac.ebi.fgpt.conan.service.DefaultExecutorService;
 import uk.ac.ebi.fgpt.conan.service.DefaultProcessService;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.re.tools.QuakeV03;
 
 import java.io.File;
 import java.io.IOException;

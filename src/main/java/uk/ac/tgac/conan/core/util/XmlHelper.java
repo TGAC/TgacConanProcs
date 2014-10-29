@@ -18,7 +18,6 @@
 package uk.ac.tgac.conan.core.util;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -87,33 +86,100 @@ public class XmlHelper {
         return Boolean.parseBoolean(getTextValue(ele,tagName));
     }
 
-    public static boolean validate(Element ele, String[] validContents) {
+    public static boolean validate(Element ele, String[] requiredAttributes, String[] optionalAttributes, String[] requiredElements, String[] optionalElements) {
 
-        // Return true if there is nothing to check
-        if (ele.getAttributes().getLength() == 0 && ele.getChildNodes().getLength() == 0) {
-            return true;
+        boolean[] foundAttributes = new boolean[requiredAttributes.length];
+
+        for(int i = 0; i < foundAttributes.length; i++) {
+            foundAttributes[i] = false;
         }
 
         for(int i = 0; i < ele.getAttributes().getLength(); i++) {
             Node n = ele.getAttributes().item(i);
 
-            for(String c : validContents) {
-                 if (n.getNodeName().equalsIgnoreCase(c)) {
-                     return true;
-                 }
+            boolean found = false;
+
+            for(int j = 0; j < requiredAttributes.length; j++) {
+                if (requiredAttributes[j].equalsIgnoreCase(n.getNodeName())) {
+                    foundAttributes[j] = true;
+                    found = true;
+                    break;
+                }
             }
+
+            if (!found) {
+                for (String c : optionalAttributes) {
+                    if (n.getNodeName().equalsIgnoreCase(c)) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            // If we've got this far and nothings been found then there must have been an unexpected attribute
+            if (!found) {
+                throw new IllegalArgumentException("Error validating XML Element: " + ele.getNodeName() +
+                        "; Found unexpected attribute: " + n.getNodeName());
+            }
+        }
+
+        // Check all required attributes were found
+        for(int i = 0; i < foundAttributes.length; i++) {
+            if (foundAttributes[i] == false) {
+                throw new IllegalArgumentException("Error validating XML Element: " + ele.getNodeName() +
+                        "; Failed to find expected attribute or child element named: " + requiredAttributes[i]);
+            }
+        }
+
+        boolean[] foundElements = new boolean[requiredElements.length];
+
+        for(int i = 0; i < foundElements.length; i++) {
+            foundElements[i] = false;
         }
 
         for(int i = 0; i < ele.getChildNodes().getLength(); i++) {
             Node n = ele.getChildNodes().item(i);
 
-            for(String c : validContents) {
-                if (n.getNodeName().equalsIgnoreCase(c)) {
-                    return true;
+            boolean found = false;
+
+            for(int j = 0; j < requiredElements.length; j++) {
+                if (requiredElements[j].equalsIgnoreCase(n.getNodeName())) {
+                    foundElements[j] = true;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                for (String c : optionalElements) {
+                    if (n.getNodeName().equalsIgnoreCase(c)) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            // If we've got this far and nothings been found then there must have been an unexpected element
+            if (!found) {
+
+                if (n.getNodeName().startsWith("#") || n.getNodeName().startsWith("<!--")) {
+                    // Then we just ignore these elements
+                }
+                else {
+                    throw new IllegalArgumentException("Error validating XML Element: " + ele.getNodeName() +
+                            "; Found unexpected child node: " + n.getNodeName());
                 }
             }
         }
 
-        return false;
+        // Check all required child elements were found
+        for(int i = 0; i < foundElements.length; i++) {
+            if (foundElements[i] == false) {
+                throw new IllegalArgumentException("Error validating XML Element: " + ele.getNodeName() +
+                        "; Failed to find expected attribute or child element named: " + requiredElements[i]);
+            }
+        }
+
+        return true;
     }
 }

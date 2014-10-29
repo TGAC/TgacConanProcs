@@ -19,7 +19,6 @@ package uk.ac.tgac.conan.process.asmIO.gapclose;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.tgac.conan.process.asmIO.gapclose.SoapGapCloserV112;
 
 import java.io.File;
 

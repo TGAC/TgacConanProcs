@@ -22,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
-import uk.ac.tgac.conan.process.asmIO.scaffold.SSpaceBasicV2;
 
 import java.io.File;
 import java.io.IOException;

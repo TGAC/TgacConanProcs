@@ -2,16 +2,16 @@ package uk.ac.tgac.conan.process.rnaasm;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import uk.ac.ebi.fgpt.conan.core.context.DefaultExecutionContext;
+import uk.ac.ebi.fgpt.conan.core.context.DefaultExecutionResult;
 import uk.ac.ebi.fgpt.conan.core.context.locality.Local;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
-import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
-import uk.ac.ebi.fgpt.conan.model.context.ExecutionResult;
-import uk.ac.ebi.fgpt.conan.model.context.ExitStatus;
+import uk.ac.ebi.fgpt.conan.model.context.*;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.CommandLineFormat;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
@@ -119,7 +119,13 @@ public class TrinityV20130814 extends AbstractConanProcess {
     }
 
     @Override
-    public boolean execute(ExecutionContext executionContext) throws InterruptedException, ProcessExecutionException {
+    public ExecutionResult execute(ExecutionContext executionContext) throws InterruptedException, ProcessExecutionException {
+
+        int maxMemUsage = 0;
+        int cpuTime = 0;
+
+        StopWatch runtime = new StopWatch();
+        runtime.start();
 
         try {
 
@@ -157,13 +163,16 @@ public class TrinityV20130814 extends AbstractConanProcess {
                         " --output " + normalizedReadsDir.getAbsolutePath() +
                         " 2>&1";
 
-                this.conanExecutorService.executeProcess(
+                ExecutionResult normResult = this.conanExecutorService.executeProcess(
                         normCommand,
                         this.getLogDir(),
                         jobPrefix + "-norm",
                         args.cpu,
                         args.jellyfishMemory * 1000,
                         false);
+
+                maxMemUsage = Math.max(maxMemUsage, normResult.getResourceUsage().getMaxMem());
+                cpuTime += normResult.getResourceUsage().getCpuTime();
             }
 
             File left = args.normalise && args.leftInput != null ? this.getNormalizedFile(args.leftInput) : args.leftInput;
@@ -202,13 +211,16 @@ public class TrinityV20130814 extends AbstractConanProcess {
 
                     String command = sb.toString().trim();
 
-                    this.conanExecutorService.executeProcess(
+                    ExecutionResult ggTrinityResult = this.conanExecutorService.executeProcess(
                             this.loadTrinity(executionContext) + command,
                             this.getLogDir(),
                             jobPrefix + "-denovo",
                             args.cpu,
                             args.jellyfishMemory,
                             false);
+
+                    maxMemUsage = Math.max(maxMemUsage, ggTrinityResult.getResourceUsage().getMaxMem());
+                    cpuTime += ggTrinityResult.getResourceUsage().getCpuTime();
 
                 } catch (ConanParameterException cpe) {
                     throw new ProcessExecutionException(-1, cpe);
@@ -225,7 +237,9 @@ public class TrinityV20130814 extends AbstractConanProcess {
             throw new ProcessExecutionException(1, ioe);
         }
 
-        return true;
+        runtime.stop();
+
+        return new DefaultExecutionResult(this.getName(), 0, new String[]{}, null, -1, new ResourceUsage(maxMemUsage, runtime.getTime() / 1000, cpuTime));
     }
 
     private void localExecute(String command) throws ProcessExecutionException, InterruptedException {
@@ -421,7 +435,7 @@ public class TrinityV20130814 extends AbstractConanProcess {
 
         // Execute each chunk using python script
         int i = 1;
-        List<Integer> jobIds = new ArrayList<>();
+        List<ExecutionResult> chunkResults = new ArrayList<>();
         for(File chunk : chunkFiles) {
 
             String command = GG_CHUNK_EXECUTOR + " -i " + chunk.getAbsolutePath() +
@@ -435,12 +449,12 @@ public class TrinityV20130814 extends AbstractConanProcess {
                     2048,
                     true);
 
-            jobIds.add(result.getJobId());
+            chunkResults.add(result);
         }
 
         // Wait for chunks to finish
-        this.conanExecutorService.executeScheduledWait(
-                jobIds,
+        MultiWaitResult result = this.conanExecutorService.executeScheduledWait(
+                chunkResults,
                 jobPrefix + "-5-assemble-*",
                 ExitStatus.Type.COMPLETED_ANY,
                 jobPrefix + "_chunk_assembly_wait",

@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.re.tools.MusketV10;
 
 import java.io.File;
 

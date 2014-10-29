@@ -12,7 +12,6 @@ import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.tgac.conan.core.util.PathUtils;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by maplesod on 17/02/14.

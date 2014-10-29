@@ -13,7 +13,6 @@ import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.util.PathUtils;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Aligns RNA reads against a genome to identify exon-exon splice junctions.  Built on top of bowtie.

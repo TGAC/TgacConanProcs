@@ -18,11 +18,13 @@
 package uk.ac.tgac.conan.process.latex;
 
 import org.apache.commons.cli.CommandLine;
+import uk.ac.ebi.fgpt.conan.core.context.DefaultExecutionResult;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
+import uk.ac.ebi.fgpt.conan.model.context.ExecutionResult;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
@@ -72,7 +74,7 @@ public class PdfLatex2012 extends AbstractConanProcess {
     }
 
     @Override
-    public boolean execute(ExecutionContext executionContext) throws InterruptedException, ProcessExecutionException {
+    public ExecutionResult execute(ExecutionContext executionContext) throws InterruptedException, ProcessExecutionException {
 
        // We have to run PDF Latex 3 times to ensure the document is fully compiled.
         for(int i = 1; i <= 3; i++) {
@@ -80,7 +82,7 @@ public class PdfLatex2012 extends AbstractConanProcess {
             super.execute(executionContext);
         }
 
-        return true;
+        return new DefaultExecutionResult(this.getName(), 0);
     }
 
     public static class Args extends AbstractProcessArgs {

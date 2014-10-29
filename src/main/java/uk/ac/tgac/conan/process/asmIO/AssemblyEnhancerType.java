@@ -7,5 +7,6 @@ public enum AssemblyEnhancerType {
 
     SCAFFOLDER,
     GAP_CLOSER,
-    CLIPPER
+    CLIPPER,
+    CORRECTOR
 }

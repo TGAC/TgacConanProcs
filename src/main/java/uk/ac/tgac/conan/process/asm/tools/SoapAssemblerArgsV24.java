@@ -17,7 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asm.tools;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
@@ -114,6 +114,11 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
     @Override
     public File getBubbleFile() {
         return null;
+    }
+
+    @Override
+    public File getBestAssembly() {
+        return this.getContigsFile();
     }
 
     @Override

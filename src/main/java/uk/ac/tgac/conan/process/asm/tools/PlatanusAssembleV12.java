@@ -17,7 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asm.tools;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
@@ -102,6 +102,11 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
     @Override
     public File getBubbleFile() {
         return new File(this.getArgs().getOutputDir(), this.getArgs().getOutputPrefix() + "_contigBubble.fa");
+    }
+
+    @Override
+    public File getBestAssembly() {
+        return this.getContigsFile();
     }
 
     @Override

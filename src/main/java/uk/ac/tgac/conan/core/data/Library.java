@@ -129,10 +129,34 @@ public class Library {
         // Set defaults
         this();
 
+        // Check there's nothing
+        if (!XmlHelper.validate(ele,
+                new String[] {
+                        KEY_ATTR_NAME,
+                        KEY_ATTR_READ_LENGTH,
+                        KEY_ATTR_TYPE,
+                        KEY_ATTR_SEQ_ORIENTATION,
+                        KEY_ATTR_PHRED
+                },
+                new String[]{
+                        KEY_ATTR_AVG_INSERT_SIZE,
+                        KEY_ATTR_INSERT_ERROR_TOLERANCE,
+                        KEY_ATTR_UNIFORM,
+                        KEY_ATTR_STRANDEDNESS
+                },
+                new String[]{
+                        KEY_ELEM_FILES
+                },
+                new String[0])) {
+            throw new IllegalArgumentException("Found unrecognised element or attribute in Library");
+        }
+
         // Required values
         this.name = XmlHelper.getTextValue(ele, KEY_ATTR_NAME);
         this.readLength = XmlHelper.getIntValue(ele, KEY_ATTR_READ_LENGTH);
         this.type = Type.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_TYPE).toUpperCase());
+        this.seqOrientation = SeqOrientation.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_SEQ_ORIENTATION).toUpperCase());
+        this.phred = Phred.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_PHRED).toUpperCase());
 
         // Optional
         this.averageInsertSize = ele.hasAttribute(KEY_ATTR_AVG_INSERT_SIZE) ?
@@ -142,14 +166,6 @@ public class Library {
         this.insertErrorTolerance = ele.hasAttribute(KEY_ATTR_INSERT_ERROR_TOLERANCE) ?
                 XmlHelper.getDoubleValue(ele, KEY_ATTR_INSERT_ERROR_TOLERANCE) :
                 DEFAULT_INS_ERR_TOLERANCE;
-
-        this.seqOrientation = ele.hasAttribute(KEY_ATTR_SEQ_ORIENTATION) ?
-                SeqOrientation.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_SEQ_ORIENTATION).toUpperCase()) :
-                DEFAULT_SEQ_ORIENTATION;
-
-        this.phred = ele.hasAttribute(KEY_ATTR_PHRED) ?
-                Phred.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_PHRED).toUpperCase()) :
-                DEFAULT_PHRED;
 
         this.uniform = ele.hasAttribute(KEY_ATTR_UNIFORM) ?
                 XmlHelper.getBooleanValue(ele, KEY_ATTR_UNIFORM) :

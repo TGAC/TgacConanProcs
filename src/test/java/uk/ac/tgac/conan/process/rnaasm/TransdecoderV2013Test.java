@@ -1,17 +1,14 @@
 package uk.ac.tgac.conan.process.rnaasm;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
-import uk.ac.tgac.conan.core.data.Library;
-import uk.ac.tgac.conan.process.re.tools.MusketV10;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class TransdecoderV2013Test {
 

@@ -19,10 +19,12 @@ package uk.ac.tgac.conan.process.asmIO.clip;
 
 import org.apache.commons.cli.CommandLine;
 import org.kohsuke.MetaInfServices;
+import uk.ac.ebi.fgpt.conan.core.context.DefaultExecutionResult;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.NumericParameter;
 import uk.ac.ebi.fgpt.conan.core.param.PathParameter;
 import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
+import uk.ac.ebi.fgpt.conan.model.context.ExecutionResult;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
@@ -60,7 +62,7 @@ public class SimpleClipper extends AbstractAssemblyEnhancer {
     }
 
     @Override
-    public boolean execute(ExecutionContext executionContext) throws ProcessExecutionException, InterruptedException {
+    public ExecutionResult execute(ExecutionContext executionContext) throws ProcessExecutionException, InterruptedException {
 
         try {
             clip();
@@ -69,7 +71,7 @@ public class SimpleClipper extends AbstractAssemblyEnhancer {
             throw new ProcessExecutionException(-1, ioe);
         }
 
-        return true;
+        return new DefaultExecutionResult(this.getAssemblyEnhancerArgs().getName(), 0);
     }
 
 

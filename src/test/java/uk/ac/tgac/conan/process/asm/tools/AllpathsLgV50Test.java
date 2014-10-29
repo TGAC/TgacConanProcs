@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
  * To change this template use File | Settings | File Templates.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class AllpathsLgV44837Test {
+public class AllpathsLgV50Test {
 
     private String pwd;
 
@@ -98,23 +98,23 @@ public class AllpathsLgV44837Test {
         return libs;
     }
 
-    private AllpathsLgV44837 createProcess() {
+    private AllpathsLgV50 createProcess() {
         List<Library> libs = this.createLocalPETestLibrary();
 
-        AllpathsLgV44837.Args args = new AllpathsLgV44837.Args();
+        AllpathsLgV50.Args args = new AllpathsLgV50.Args();
         args.setLibs(libs);
         args.setDesiredCoverage(75);
         args.setThreads(16);
         args.setOutputDir(temp.getRoot());
         args.setOrganism(new Organism("Unknown", 2, 500000, 43.0));
 
-        return new AllpathsLgV44837(null, args);
+        return new AllpathsLgV50(null, args);
     }
 
     @Test
     public void testAllpathsCommand() throws InterruptedException, ProcessExecutionException, IOException, CommandExecutionException {
 
-        AllpathsLgV44837 allpaths = createProcess();
+        AllpathsLgV50 allpaths = createProcess();
         allpaths.setup();
 
         String command = allpaths.getCommand();
@@ -129,7 +129,7 @@ public class AllpathsLgV44837Test {
     @Test
     public void testGlobPattern() throws IOException {
 
-        String globPattern = new AllpathsLgV44837().createGlobPattern(new File("/test/test1.fa"), new File("/test/test2.fa"));
+        String globPattern = new AllpathsLgV50().createGlobPattern(new File("/test/test1.fa"), new File("/test/test2.fa"));
 
         assertTrue(globPattern.equals("/test/test?.fa"));
     }

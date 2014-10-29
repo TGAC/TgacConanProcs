@@ -17,7 +17,7 @@
  **/
 package uk.ac.tgac.conan.process.asm.tools;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
 import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
@@ -98,6 +98,11 @@ public class VelvetV12 extends AbstractAssembler {
     @Override
     public File getBubbleFile() {
         return null;
+    }
+
+    @Override
+    public File getBestAssembly() {
+        return this.getContigsFile();
     }
 
     @Override
