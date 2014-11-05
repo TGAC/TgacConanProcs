@@ -249,40 +249,32 @@ public class AllpathsLgV50 extends AbstractAssembler implements Subsampler {
             String insertDev = "";
             String readOrientation = "";
 
-            if (lib.getType() == Library.Type.OPE ||
-                    (lib.getType() == Library.Type.SE && lib.getReadLength() < 500)) {
-                type = "fragment";
-
-                if (lib.getType() == Library.Type.OPE) {
+            switch (lib.getType()) {
+                case OPE:
+                    type = "fragment";
                     paired = "1";
                     fragSize = Integer.toString(lib.getAverageInsertSize());
                     fragDev = Integer.toString((int)(lib.getAverageInsertSize() * lib.getInsertErrorTolerance()));
                     readOrientation = lib.getSeqOrientation() == Library.SeqOrientation.FR ? "inward" : "outward";
-                }
-                else {
+                    break;
+                case PE:
+                    type = "jumping";
+                    paired = "1";
+                    insertSize = Integer.toString(lib.getAverageInsertSize());
+                    insertDev = Integer.toString((int)(lib.getAverageInsertSize() * lib.getInsertErrorTolerance()));
+                    readOrientation = lib.getSeqOrientation() == Library.SeqOrientation.FR ? "inward" : "outward";
+                    break;
+                case MP:
+                    type = "long_jump";
+                    paired = "1";
+                    insertSize = Integer.toString(lib.getAverageInsertSize());
+                    insertDev = Integer.toString((int)(lib.getAverageInsertSize() * lib.getInsertErrorTolerance()));
+                    readOrientation = lib.getSeqOrientation() == Library.SeqOrientation.FR ? "inward" : "outward";
+                    break;
+                case SE:
+                    type = "long";
                     paired = "0";
-                    fragSize = Integer.toString(lib.getReadLength());
-                }
-            }
-            else if (lib.getType() == Library.Type.PE ||
-                    (lib.getType() == Library.Type.MP && lib.getAverageInsertSize() < 20000)) {
-                type = "jumping";
-                paired = "1";
-                insertSize = Integer.toString(lib.getAverageInsertSize());
-                insertDev = Integer.toString((int)(lib.getAverageInsertSize() * lib.getInsertErrorTolerance()));
-                readOrientation = lib.getSeqOrientation() == Library.SeqOrientation.FR ? "inward" : "outward";
-            }
-            else if (lib.getType() == Library.Type.MP && lib.getAverageInsertSize() >= 20000) {
-                type = "long_jump";
-                paired = "1";
-                insertSize = Integer.toString(lib.getAverageInsertSize());
-                insertDev = Integer.toString((int)(lib.getAverageInsertSize() * lib.getInsertErrorTolerance()));
-                readOrientation = lib.getSeqOrientation() == Library.SeqOrientation.FR ? "inward" : "outward";
-                break;
-            }
-            else if (lib.getType() == Library.Type.SE && lib.getReadLength() >= 500) {
-               type = "long";
-               paired = "0";
+                    break;
             }
 
 
