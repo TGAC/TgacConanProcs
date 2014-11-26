@@ -135,10 +135,10 @@ public class Library {
                         KEY_ATTR_NAME,
                         KEY_ATTR_READ_LENGTH,
                         KEY_ATTR_TYPE,
-                        KEY_ATTR_SEQ_ORIENTATION,
                         KEY_ATTR_PHRED
                 },
                 new String[]{
+                        KEY_ATTR_SEQ_ORIENTATION,
                         KEY_ATTR_AVG_INSERT_SIZE,
                         KEY_ATTR_INSERT_ERROR_TOLERANCE,
                         KEY_ATTR_UNIFORM,
@@ -155,8 +155,12 @@ public class Library {
         this.name = XmlHelper.getTextValue(ele, KEY_ATTR_NAME);
         this.readLength = XmlHelper.getIntValue(ele, KEY_ATTR_READ_LENGTH);
         this.type = Type.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_TYPE).toUpperCase());
-        this.seqOrientation = SeqOrientation.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_SEQ_ORIENTATION).toUpperCase());
         this.phred = Phred.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_PHRED).toUpperCase());
+
+        // Seq orientation is only required if type is not single end
+        this.seqOrientation = this.type != Type.SINGLE_END ?
+                SeqOrientation.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_SEQ_ORIENTATION).toUpperCase()) :
+                null;
 
         // Optional
         this.averageInsertSize = ele.hasAttribute(KEY_ATTR_AVG_INSERT_SIZE) ?
