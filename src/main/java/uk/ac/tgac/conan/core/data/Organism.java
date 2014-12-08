@@ -20,6 +20,8 @@ package uk.ac.tgac.conan.core.data;
 import org.w3c.dom.Element;
 import uk.ac.tgac.conan.core.util.XmlHelper;
 
+import java.io.File;
+
 /**
  * User: maplesod
  * Date: 14/08/13
@@ -33,6 +35,7 @@ public class Organism {
     private static final String KEY_ATTR_EST_GC_PERC = "est_gc_percentage";
     private static final String KEY_ATTR_MIN_INTRON_SIZE = "min_intron_size";
     private static final String KEY_ATTR_MAX_INTRON_SIZE = "max_intron_size";
+    private static final String KEY_ELEM_REFERENCE = "reference";
 
     public static final int DEFAULT_PLOIDY = 1; // Haploid
     public static final int DEFAULT_MIN_INTRON_SIZE = 0;
@@ -45,18 +48,20 @@ public class Organism {
     private double estGcPercentage;
     private int minIntronSize;
     private int maxIntronSize;
+    private Reference reference;
 
     public Organism() {
-        this("Something", DEFAULT_PLOIDY, 0, 0.0);
+        this("Something", DEFAULT_PLOIDY, 0, 0.0, null);
     }
 
-    public Organism(String name, int ploidy, long estGenomeSize, double estGcPercentage) {
+    public Organism(String name, int ploidy, long estGenomeSize, double estGcPercentage, Reference reference) {
         this.name = name;
         this.ploidy = ploidy;
         this.estGenomeSize = estGenomeSize;
         this.estGcPercentage = estGcPercentage;
         this.minIntronSize = DEFAULT_MIN_INTRON_SIZE;
         this.maxIntronSize = DEFAULT_MAX_INTRON_SIZE;
+        this.reference = reference;
     }
 
     public Organism(Element ele) {
@@ -74,7 +79,9 @@ public class Organism {
                         KEY_ATTR_MAX_INTRON_SIZE
                 },
                 new String[0],
-                new String[0])) {
+                new String[] {
+                        KEY_ELEM_REFERENCE
+                })) {
             throw new IllegalArgumentException("Found unrecognised element or attribute in Organism");
         }
 
@@ -95,6 +102,13 @@ public class Organism {
 
         this.maxIntronSize = ele.hasAttribute(KEY_ATTR_MAX_INTRON_SIZE) ?
                 XmlHelper.getIntValue(ele, KEY_ATTR_MAX_INTRON_SIZE) : DEFAULT_MAX_INTRON_SIZE;
+
+        if (ele.hasChildNodes()) {
+            Element refEl = XmlHelper.getDistinctElementByName(ele, KEY_ELEM_REFERENCE);
+            if (refEl != null) {
+                this.reference = new Reference(refEl);
+            }
+        }
     }
 
     public String getName() {
@@ -143,5 +157,52 @@ public class Organism {
 
     public void setMaxIntronSize(int maxIntronSize) {
         this.maxIntronSize = maxIntronSize;
+    }
+
+    public static class Reference {
+
+        private static final String KEY_ATTR_REF_NAME = "name";
+        private static final String KEY_ATTR_REF_PATH = "path";
+
+        private String name;
+        private File path;
+
+        public Reference() {
+            this.name = "";
+            this.path = null;
+        }
+
+        public Reference(Element ele) {
+
+            this();
+
+            // Check there's nothing
+            if (!XmlHelper.validate(ele,
+                    new String[] {
+                            KEY_ATTR_REF_NAME,
+                            KEY_ATTR_REF_PATH
+                    },
+                    new String[0],
+                    new String[0],
+                    new String[0])) {
+                throw new IllegalArgumentException("Found unrecognised element or attribute in Organism.Reference");
+            }
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public File getPath() {
+            return path;
+        }
+
+        public void setPath(File path) {
+            this.path = path;
+        }
     }
 }

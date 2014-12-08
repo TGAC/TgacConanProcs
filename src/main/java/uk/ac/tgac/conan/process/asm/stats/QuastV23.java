@@ -101,6 +101,7 @@ public class QuastV23 extends AbstractConanProcess {
         private boolean scaffolds;
         private boolean findGenes;
         private boolean eukaryote;
+        private File reference;
 
         public Args() {
 
@@ -114,6 +115,7 @@ public class QuastV23 extends AbstractConanProcess {
             this.scaffolds = false;
             this.findGenes = false;
             this.eukaryote = false;
+            this.reference = null;
         }
 
         public List<File> getInputFiles() {
@@ -180,6 +182,14 @@ public class QuastV23 extends AbstractConanProcess {
             this.eukaryote = eukaryote;
         }
 
+        public File getReference() {
+            return reference;
+        }
+
+        public void setReference(File reference) {
+            this.reference = reference;
+        }
+
         @Override
         public void parseCommandLine(CommandLine cmdLine) {
 
@@ -218,6 +228,10 @@ public class QuastV23 extends AbstractConanProcess {
 
             if (this.eukaryote) {
                 pvp.put(params.getEukaryote(), Boolean.toString(this.eukaryote));
+            }
+
+            if (this.reference != null) {
+                pvp.put(params.getReference(), this.reference.getAbsolutePath());
             }
 
             return pvp;
@@ -261,6 +275,9 @@ public class QuastV23 extends AbstractConanProcess {
             else if (param.equals(this.params.getEukaryote())) {
                 this.eukaryote = Boolean.parseBoolean(value);
             }
+            else if (param.equals(this.params.getReference())) {
+                this.reference = new File(value);
+            }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
             }
@@ -287,6 +304,7 @@ public class QuastV23 extends AbstractConanProcess {
         private ConanParameter scaffolds;
         private ConanParameter findGenes;
         private ConanParameter eukaryote;
+        private ConanParameter reference;
 
         public Params() {
 
@@ -352,6 +370,13 @@ public class QuastV23 extends AbstractConanProcess {
                     .isOptional(true)
                     .argValidator(ArgValidator.OFF)
                     .create();
+
+            this.reference = new ParameterBuilder()
+                    .shortName("R")
+                    .description("Reference genome file")
+                    .argValidator(ArgValidator.PATH)
+                    .isOptional(true)
+                    .create();
         }
 
         public ConanParameter getInputFiles() {
@@ -386,6 +411,10 @@ public class QuastV23 extends AbstractConanProcess {
             return eukaryote;
         }
 
+        public ConanParameter getReference() {
+            return reference;
+        }
+
         @Override
         public ConanParameter[] getConanParametersAsArray() {
             return new ConanParameter[] {
@@ -396,7 +425,8 @@ public class QuastV23 extends AbstractConanProcess {
                     this.estimatedGenomeSize,
                     this.scaffolds,
                     this.findGenes,
-                    this.eukaryote
+                    this.eukaryote,
+                    this.reference
             };
         }
     }
@@ -539,6 +569,13 @@ public class QuastV23 extends AbstractConanProcess {
                     for (int i = 4; i < parts.length; i++) {
                         statList.get(i - 4).setNbGenes(Integer.parseInt(parts[i]));
                     }
+                } else if (tLine.startsWith("# misassemblies")) {
+
+                    String[] parts = tLine.split("\\s+");
+
+                    for (int i = 2; i < parts.length; i++) {
+                        statList.get(i - 2).setNbMisassemblies(Integer.parseInt(parts[i]));
+                    }
                 }
             }
 
@@ -580,6 +617,7 @@ public class QuastV23 extends AbstractConanProcess {
         private int l75;
         private double nsPer100k;
         private int nbGenes;
+        private int nbMisassemblies;
 
         public String getName() {
             return name;
@@ -699,6 +737,14 @@ public class QuastV23 extends AbstractConanProcess {
 
         public void setNbGenes(int nbGenes) {
             this.nbGenes = nbGenes;
+        }
+
+        public int getNbMisassemblies() {
+            return nbMisassemblies;
+        }
+
+        public void setNbMisassemblies(int nbMisassemblies) {
+            this.nbMisassemblies = nbMisassemblies;
         }
     }
 }

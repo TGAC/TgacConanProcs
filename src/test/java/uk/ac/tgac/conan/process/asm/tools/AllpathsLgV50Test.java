@@ -106,7 +106,7 @@ public class AllpathsLgV50Test {
         args.setDesiredCoverage(75);
         args.setThreads(16);
         args.setOutputDir(temp.getRoot());
-        args.setOrganism(new Organism("Unknown", 2, 500000, 43.0));
+        args.setOrganism(new Organism("Unknown", 2, 500000, 43.0, null));
 
         return new AllpathsLgV50(null, args);
     }
