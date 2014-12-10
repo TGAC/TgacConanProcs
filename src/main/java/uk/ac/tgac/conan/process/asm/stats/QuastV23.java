@@ -576,6 +576,13 @@ public class QuastV23 extends AbstractConanProcess {
                     for (int i = 2; i < parts.length; i++) {
                         statList.get(i - 2).setNbMisassemblies(Integer.parseInt(parts[i]));
                     }
+                } else if (tLine.startsWith("NA50")) {
+
+                    String[] parts = tLine.split("\\s+");
+
+                    for (int i = 1; i < parts.length; i++) {
+                        statList.get(i - 1).setNA50(Integer.parseInt(parts[i]));
+                    }
                 }
             }
 
@@ -612,6 +619,7 @@ public class QuastV23 extends AbstractConanProcess {
         private int largestContig;
         private double gcPc;
         private int n50;
+        private int na50;
         private int n75;
         private int l50;
         private int l75;
@@ -697,6 +705,14 @@ public class QuastV23 extends AbstractConanProcess {
 
         public void setN50(int n50) {
             this.n50 = n50;
+        }
+
+        public int getNA50() {
+            return na50;
+        }
+
+        public void setNA50(int na50) {
+            this.na50 = na50;
         }
 
         public int getN75() {

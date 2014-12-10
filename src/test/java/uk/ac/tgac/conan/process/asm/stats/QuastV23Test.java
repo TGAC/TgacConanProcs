@@ -114,6 +114,7 @@ public class QuastV23Test {
         QuastV23.Report report = new QuastV23.Report(quastReportReferenceFile);
 
         assertTrue(report.getAssemblyStats(0).getNbMisassemblies() == 195);
+        assertTrue(report.getAssemblyStats(0).getNA50() == 28387);
         assertTrue(report.getAssemblyStats(0).getNbGenes() == 4824);
     }
 }
