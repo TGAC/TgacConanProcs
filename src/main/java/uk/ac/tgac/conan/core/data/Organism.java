@@ -159,6 +159,14 @@ public class Organism {
         this.maxIntronSize = maxIntronSize;
     }
 
+    public Reference getReference() {
+        return reference;
+    }
+
+    public void setReference(Reference reference) {
+        this.reference = reference;
+    }
+
     public static class Reference {
 
         private static final String KEY_ATTR_REF_NAME = "name";
@@ -187,6 +195,10 @@ public class Organism {
                     new String[0])) {
                 throw new IllegalArgumentException("Found unrecognised element or attribute in Organism.Reference");
             }
+
+            // Required
+            this.name = XmlHelper.getTextValue(ele, KEY_ATTR_REF_NAME);
+            this.path = new File(XmlHelper.getTextValue(ele, KEY_ATTR_REF_PATH));
         }
 
         public String getName() {
