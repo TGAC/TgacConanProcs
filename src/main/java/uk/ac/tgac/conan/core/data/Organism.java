@@ -33,6 +33,7 @@ public class Organism {
     private static final String KEY_ATTR_PLOIDY = "ploidy";
     private static final String KEY_ATTR_EST_GENOME_SIZE = "est_genome_size";
     private static final String KEY_ATTR_EST_GC_PERC = "est_gc_percentage";
+    private static final String KEY_ATTR_EST_NB_GENES = "est_nb_genes";
     private static final String KEY_ATTR_MIN_INTRON_SIZE = "min_intron_size";
     private static final String KEY_ATTR_MAX_INTRON_SIZE = "max_intron_size";
     private static final String KEY_ELEM_REFERENCE = "reference";
@@ -46,19 +47,21 @@ public class Organism {
     private int ploidy;
     private long estGenomeSize;
     private double estGcPercentage;
+    private int estNbGenes;
     private int minIntronSize;
     private int maxIntronSize;
     private Reference reference;
 
     public Organism() {
-        this("Something", DEFAULT_PLOIDY, 0, 0.0, null);
+        this("Something", DEFAULT_PLOIDY, 0, 0.0, 0, null);
     }
 
-    public Organism(String name, int ploidy, long estGenomeSize, double estGcPercentage, Reference reference) {
+    public Organism(String name, int ploidy, long estGenomeSize, double estGcPercentage, int estNbGenes, Reference reference) {
         this.name = name;
         this.ploidy = ploidy;
         this.estGenomeSize = estGenomeSize;
         this.estGcPercentage = estGcPercentage;
+        this.estNbGenes = estNbGenes;
         this.minIntronSize = DEFAULT_MIN_INTRON_SIZE;
         this.maxIntronSize = DEFAULT_MAX_INTRON_SIZE;
         this.reference = reference;
@@ -75,6 +78,7 @@ public class Organism {
                         KEY_ATTR_PLOIDY,
                         KEY_ATTR_EST_GENOME_SIZE,
                         KEY_ATTR_EST_GC_PERC,
+                        KEY_ATTR_EST_NB_GENES,
                         KEY_ATTR_MIN_INTRON_SIZE,
                         KEY_ATTR_MAX_INTRON_SIZE
                 },
@@ -96,6 +100,9 @@ public class Organism {
 
         this.estGcPercentage = ele.hasAttribute(KEY_ATTR_EST_GC_PERC) ?
                 XmlHelper.getDoubleValue(ele, KEY_ATTR_EST_GC_PERC) : 0.0;
+
+        this.estNbGenes = ele.hasAttribute(KEY_ATTR_EST_NB_GENES) ?
+                XmlHelper.getIntValue(ele, KEY_ATTR_EST_NB_GENES) : 0;
 
         this.minIntronSize = ele.hasAttribute(KEY_ATTR_MIN_INTRON_SIZE) ?
                 XmlHelper.getIntValue(ele, KEY_ATTR_MIN_INTRON_SIZE) : DEFAULT_MIN_INTRON_SIZE;
@@ -141,6 +148,14 @@ public class Organism {
 
     public void setEstGcPercentage(double estGcPercentage) {
         this.estGcPercentage = estGcPercentage;
+    }
+
+    public int getEstNbGenes() {
+        return estNbGenes;
+    }
+
+    public void setEstNbGenes(int estNbGenes) {
+        this.estNbGenes = estNbGenes;
     }
 
     public int getMinIntronSize() {
