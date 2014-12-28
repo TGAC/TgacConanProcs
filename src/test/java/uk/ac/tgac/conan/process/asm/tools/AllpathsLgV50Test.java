@@ -63,8 +63,8 @@ public class AllpathsLgV50Test {
                                     correctTempDirCommand + " ACTION=Add PHRED_64=False OVERWRITE=True; " +
                 "CacheGroups.pl " + correctCacheDirCommand + " IN_GROUPS_CSV=" + testDir + "/in_groups_phred64.csv " +
                                     correctTempDirCommand + " ACTION=Add PHRED_64=True OVERWRITE=True; " +
-                "CacheToAllPathsInputs.pl " + correctCacheDirCommand + " DATA_DIR=" + testDir + "/Unknown/data GENOME_SIZE=500000 " +
-                                    "GROUPS='{PE1,OPE1}' COVERAGES='{75,75}' PLOIDY=2; " +
+                "CacheToAllPathsInputs.pl " + correctCacheDirCommand + " DATA_DIR=" + testDir + "/Unknown/data " +
+                                    "GROUPS='{PE1,OPE1}' GENOME_SIZE=500000 COVERAGES='{75,75}' PLOIDY=2; " +
                 "RunAllPathsLG PRE=" + testDir + " REFERENCE_NAME=Unknown DATA_SUBDIR=data RUN=rampart THREADS=16 " +
                                     "OVERWRITE=True TARGETS=full_eval";
     }
@@ -91,7 +91,7 @@ public class AllpathsLgV50Test {
         opeLib.setType(Library.Type.OPE);
         opeLib.setFiles(pwd + "/tools/mass/Test2_OPE_R1.r95.fastq", pwd + "/tools/mass/Test2_OPE_R2.r95.fastq");
 
-        List<Library> libs = new ArrayList<Library>();
+        List<Library> libs = new ArrayList<>();
         libs.add(peLib);
         libs.add(opeLib);
 
@@ -106,7 +106,7 @@ public class AllpathsLgV50Test {
         args.setDesiredCoverage(75);
         args.setThreads(16);
         args.setOutputDir(temp.getRoot());
-        args.setOrganism(new Organism("Unknown", 2, 500000, 43.0, 20000, null));
+        args.setOrganism(new Organism("Unknown", 2, new Organism.Estimated(500000, 43.0, 20000), null));
 
         return new AllpathsLgV50(null, args);
     }
