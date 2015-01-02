@@ -195,9 +195,10 @@ public class Organism {
 
                 // Ignore everything but the sequences
                 // While loop handles multi-line sequences
-                while (firstChar != '>') {
+                while (firstChar != '>' && line != null) {
                     // Get the next line (should be the sequence line)
-                    baseCount += reader.readLine().length();
+                    baseCount += line.length();
+                    line = reader.readLine();
                 }
             }
         }
@@ -216,6 +217,7 @@ public class Organism {
 
             log.info("Acquiring genome size from fasta file: " + this.reference.getPath());
             this.genomeSize = this.getGenomeSizeFromFile(this.reference.getPath());
+            log.info("Genome size is (b): " + this.genomeSize);
             return this.genomeSize;
         }
         else if (this.estimated != null) {
