@@ -88,6 +88,7 @@ public class QuastV23Test {
 
     private File quastReportFile = FileUtils.toFile(this.getClass().getResource("/stats/quast-report.txt"));
     private File quastReportScaffoldsFile = FileUtils.toFile(this.getClass().getResource("/stats/quast-report-scaffolds.txt"));
+    private File quastReportReferenceFile = FileUtils.toFile(this.getClass().getResource("/stats/quast-report-reference.txt"));
 
     @Test
     public void testQuastReport() throws IOException {
@@ -105,5 +106,15 @@ public class QuastV23Test {
 
         assertTrue(report.getAssemblyStats(0).getName().equalsIgnoreCase("abyss-raw-kmer-cvg-all_k-61-scaffolds_broken"));
         assertTrue(report.getAssemblyStats(7).getName().equalsIgnoreCase("abyss-raw-kmer-cvg-all_k-75-scaffolds"));
+    }
+
+    @Test
+    public void testQuastReferenceReport() throws IOException {
+
+        QuastV23.Report report = new QuastV23.Report(quastReportReferenceFile);
+
+        assertTrue(report.getAssemblyStats(0).getNbMisassemblies() == 195);
+        assertTrue(report.getAssemblyStats(0).getNA50() == 28387);
+        assertTrue(report.getAssemblyStats(0).getNbGenes() == 4824);
     }
 }

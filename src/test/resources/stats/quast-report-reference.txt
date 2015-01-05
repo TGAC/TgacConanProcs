@@ -1,0 +1,44 @@
+All statistics are based on contigs of size >= 500 bp, unless otherwise noted (e.g., "# contigs (>= 0 bp)" and "Total length (>= 0 bp)" include all contigs).
+
+Assembly                        ecoli_cft073
+# contigs (>= 0 bp)             1           
+# contigs (>= 1000 bp)          1           
+Total length (>= 0 bp)          5231428     
+Total length (>= 1000 bp)       5231428     
+# contigs                       1           
+Largest contig                  5231428     
+Total length                    5231428     
+Reference length                4639675     
+GC (%)                          50.48       
+Reference GC (%)                50.79       
+N50                             5231428     
+NG50                            5231428     
+N75                             5231428     
+NG75                            5231428     
+L50                             1           
+LG50                            1           
+L75                             1           
+LG75                            1           
+# misassemblies                 195         
+# misassembled contigs          1           
+Misassembled contigs length     5231428     
+# local misassemblies           189         
+# unaligned contigs             0 + 0 part  
+Unaligned length                0           
+Genome fraction (%)             81.988      
+Duplication ratio               1.376       
+# N's per 100 kbp               5.35        
+# mismatches per 100 kbp        2517.72     
+# indels per 100 kbp            39.64       
+# predicted genes (unique)      4824        
+# predicted genes (>= 0 bp)     4869        
+# predicted genes (>= 300 bp)   4271        
+# predicted genes (>= 1500 bp)  656         
+# predicted genes (>= 3000 bp)  75          
+Largest alignment               126322      
+NA50                            28387       
+NGA50                           30969       
+NGA75                           9105        
+LA50                            51          
+LGA50                           41          
+LGA75                           103         

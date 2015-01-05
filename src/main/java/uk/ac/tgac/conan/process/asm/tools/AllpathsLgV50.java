@@ -88,6 +88,7 @@ public class AllpathsLgV50 extends AbstractAssembler implements Subsampler {
 
     private File inLibs;
     private GroupInfo groupInfo;
+    private long genomeSize;
 
     public AllpathsLgV50() {
         this(null);
@@ -99,6 +100,8 @@ public class AllpathsLgV50 extends AbstractAssembler implements Subsampler {
 
     public AllpathsLgV50(ConanExecutorService conanExecutorService, Args args) {
         super(NAME, EXE, args, new Params(), conanExecutorService);
+
+        this.genomeSize = 0;
     }
 
     public Args getArgs() {
@@ -220,6 +223,9 @@ public class AllpathsLgV50 extends AbstractAssembler implements Subsampler {
                 throw new IOException("Could not create cache directory for ALLPATHS-LG: " + this.cacheDir.getAbsolutePath());
             }
         }
+
+        // Get genome size (may take a while if acquiring from fasta)
+        this.genomeSize = args.getOrganism().getGenomeSize();
 
         // Create ploidy file
         this.createPloidyFile(args.getOrganism().getPloidy(), new File(dataDir, "ploidy"));
@@ -474,9 +480,10 @@ public class AllpathsLgV50 extends AbstractAssembler implements Subsampler {
         return  "CacheToAllPathsInputs.pl " +
                 "CACHE_DIR=" + this.cacheDir.getAbsolutePath() + " " +
                 "DATA_DIR=" + this.dataDir.getAbsolutePath() + " " +
-                "GENOME_SIZE=" + args.getOrganism().getEstGenomeSize() + " " +
                 "GROUPS=" + groupsString + " " +
-                "COVERAGES=" + coverageString + " " +
+                (this.genomeSize > 0 ?
+                    "GENOME_SIZE=" + this.genomeSize + " " +
+                    "COVERAGES=" + coverageString + " " : "") +
                 "PLOIDY=" + args.getOrganism().getPloidy();
     }
 
