@@ -52,8 +52,8 @@ public class MusketV10Test {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "musket -k 15 53687091 -omulti output -p 32 -maxtrim 30 -inorder " + pwd + "/file1.fastq " + pwd + "/file2.fastq";
-        correctFullCommand = "cd " + pwd + "/musket" + "; " + correctCommand + " 2>&1; cd " + pwd;
+        correctCommand = "musket -k 15 53687091 -omulti output -p 32 -maxtrim 30 -inorder " + pwd + "/file1.fastq " + pwd + "/file2.fastq 2>&1";
+        correctFullCommand = "cd " + pwd + "/musket" + "; " + correctCommand + "; cd " + pwd;
     }
 
     @Test

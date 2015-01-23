@@ -47,23 +47,23 @@ import java.util.List;
  * Time: 15:57
  */
 @MetaInfServices(uk.ac.tgac.conan.process.asm.Assembler.class)
-public class SoapAssemblerArgsV24 extends AbstractAssembler {
+public class SoapAssemblerV24 extends AbstractAssembler {
 
-    private static Logger log = LoggerFactory.getLogger(SoapAssemblerArgsV24.class);
+    private static Logger log = LoggerFactory.getLogger(SoapAssemblerV24.class);
 
 
     public static final String EXE = "SOAPdenovo-127mer";
     public static final String NAME = "SOAP_Assemble_V2.4";
 
-    public SoapAssemblerArgsV24() {
+    public SoapAssemblerV24() {
         this(null);
     }
 
-    public SoapAssemblerArgsV24(ConanExecutorService ces) {
+    public SoapAssemblerV24(ConanExecutorService ces) {
         this(ces, new Args());
     }
 
-    public SoapAssemblerArgsV24(ConanExecutorService ces, Args args) {
+    public SoapAssemblerV24(ConanExecutorService ces, Args args) {
         super(NAME, EXE, args, new Params(), ces);
     }
 
@@ -165,7 +165,7 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
         commands.add(this.createContigCommand());
 
         // Join commands
-        return StringUtils.join(commands, "; ");
+        return StringUtils.join(commands, "; ") + " 2>&1";
     }
 
 
@@ -200,7 +200,7 @@ public class SoapAssemblerArgsV24 extends AbstractAssembler {
     @MetaInfServices(DeBruijnArgs.class)
     public static class Args extends AbstractAssemblerArgs implements DeBruijnArgs {
 
-        private static Logger log = LoggerFactory.getLogger(SoapAssemblerArgsV24.class);
+        private static Logger log = LoggerFactory.getLogger(SoapAssemblerV24.class);
 
         public static final int DEFAULT_K = 61;
         public static final int DEFAULT_COVERAGE_CUTOFF = 0;

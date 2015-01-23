@@ -26,9 +26,9 @@ public class TransdecoderV2013Test {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "TransDecoder -t " + pwd + "/transdecoder/transcripts.fasta --CPU 32 -m 50";
+        correctCommand = "TransDecoder -t " + pwd + "/transdecoder/transcripts.fasta --CPU 32 -m 50 2>&1";
         correctFullCommand = "cd " + pwd + "/transdecoder" + "; ln -s -f " + pwd + "/transcripts.fasta " +
-                pwd + "/transdecoder/transcripts.fasta; " + correctCommand + " 2>&1; cd " + pwd;
+                pwd + "/transdecoder/transcripts.fasta; " + correctCommand + "; cd " + pwd;
     }
 
     @Test

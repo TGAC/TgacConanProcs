@@ -76,6 +76,7 @@ public class GMapV20131015 extends AbstractConanProcess {
         private String genomeDB;
         private File query;
         private File output;
+        private File log;
         private boolean showAlignments;
         private OutputFormat outputFormat;
         private int threads;
@@ -94,6 +95,7 @@ public class GMapV20131015 extends AbstractConanProcess {
             this.genomeDB = "";
             this.query = null;
             this.output = null;
+            this.log = null;
             this.showAlignments = false;
             this.outputFormat = null;
             this.threads = DEFAULT_THREADS;
@@ -139,6 +141,14 @@ public class GMapV20131015 extends AbstractConanProcess {
 
         public void setOutput(File output) {
             this.output = output;
+        }
+
+        public File getLog() {
+            return log;
+        }
+
+        public void setLog(File log) {
+            this.log = log;
         }
 
         public boolean isShowAlignments() {
@@ -273,12 +283,25 @@ public class GMapV20131015 extends AbstractConanProcess {
         }
 
         @Override
-        protected void setRedirectFromMapEntry(ConanParameter param, String value) {
+        protected void setStdOutRedirectFromMapEntry(ConanParameter param, String value) {
 
             Params params = this.getParams();
 
             if (param.equals(params.getOutput())) {
                 this.output = new File(value);
+            }
+            else {
+                throw new IllegalArgumentException("Unknown param found: " + param);
+            }
+        }
+
+        @Override
+        protected void setStdErrRedirectFromMapEntry(ConanParameter param, String value) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getLog())) {
+                this.log = new File(value);
             }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
@@ -312,6 +335,10 @@ public class GMapV20131015 extends AbstractConanProcess {
 
             if (this.output != null) {
                 pvp.put(params.getOutput(), this.output.getAbsolutePath());
+            }
+
+            if (this.log != null) {
+                pvp.put(params.getLog(), this.log.getAbsolutePath());
             }
 
             if (this.showAlignments) {
@@ -360,6 +387,7 @@ public class GMapV20131015 extends AbstractConanProcess {
         private ConanParameter genomeDB;
         private ConanParameter query;
         private ConanParameter output;
+        private ConanParameter log;
         private ConanParameter showAlignments;
         private ConanParameter outputFormat;
         private ConanParameter threads;
@@ -399,8 +427,15 @@ public class GMapV20131015 extends AbstractConanProcess {
 
             this.output = new ParameterBuilder()
                     .isOptional(false)
-                    .type(DefaultConanParameter.ParamType.REDIRECTION)
+                    .type(DefaultConanParameter.ParamType.STDOUT_REDIRECTION)
                     .description("Standard output redirected to file")
+                    .argValidator(ArgValidator.PATH)
+                    .create();
+
+            this.log = new ParameterBuilder()
+                    .isOptional(false)
+                    .type(DefaultConanParameter.ParamType.STDERR_REDIRECTION)
+                    .description("Standard error redirected to file")
                     .argValidator(ArgValidator.PATH)
                     .create();
 
@@ -487,6 +522,10 @@ public class GMapV20131015 extends AbstractConanProcess {
             return output;
         }
 
+        public ConanParameter getLog() {
+            return log;
+        }
+
         public ConanParameter getShowAlignments() {
             return showAlignments;
         }
@@ -530,6 +569,7 @@ public class GMapV20131015 extends AbstractConanProcess {
                     this.genomeDB,
                     this.query,
                     this.output,
+                    this.log,
                     this.showAlignments,
                     this.outputFormat,
                     this.threads,

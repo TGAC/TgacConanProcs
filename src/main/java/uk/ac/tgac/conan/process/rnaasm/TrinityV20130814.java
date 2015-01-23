@@ -19,7 +19,7 @@ import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
-import uk.ac.tgac.conan.process.align.SamtoolsViewV0_1;
+import uk.ac.tgac.conan.process.align.SamtoolsViewV1;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -283,11 +283,11 @@ public class TrinityV20130814 extends AbstractConanProcess {
                     false);
 
             // Run samtools (convert bam to sam)
-            SamtoolsViewV0_1.Args samtoolsViewArgs = new SamtoolsViewV0_1.Args();
+            SamtoolsViewV1.Args samtoolsViewArgs = new SamtoolsViewV1.Args();
             samtoolsViewArgs.setInput(new File(alignmentDir, "gsnap.coordSorted.bam"));
             samtoolsViewArgs.setOutput(samFile);
 
-            SamtoolsViewV0_1 samtoolsView = new SamtoolsViewV0_1(this.conanExecutorService, samtoolsViewArgs);
+            SamtoolsViewV1 samtoolsView = new SamtoolsViewV1(this.conanExecutorService, samtoolsViewArgs);
 
             this.conanExecutorService.executeProcess(
                     samtoolsView,
@@ -482,7 +482,7 @@ public class TrinityV20130814 extends AbstractConanProcess {
 
 
             return super.isOperational(executionContext) &&
-                    new SamtoolsViewV0_1(this.conanExecutorService).isOperational(executionContext) &&
+                    new SamtoolsViewV1(this.conanExecutorService).isOperational(executionContext) &&
                     this.getConanProcessService().executableOnPath(GG_ALIGN_READS, loadCommand, executionContext) &&
                     this.getConanProcessService().executableOnPath(GG_PREP_ALNS, loadCommand, executionContext) &&
                     this.getConanProcessService().executableOnPath(GG_WRITE_CMDS, loadCommand, executionContext) &&

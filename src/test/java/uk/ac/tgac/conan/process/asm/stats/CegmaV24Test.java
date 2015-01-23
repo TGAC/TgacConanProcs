@@ -54,11 +54,11 @@ public class CegmaV24Test {
 
         this.testDir = temp.getRoot().getAbsolutePath();
 
-        correctCommand = "cegma --genome " + pwd + "/assembly.fa --output " + testDir + "/cegma-output --threads 16";
+        correctCommand = "cegma --genome " + pwd + "/assembly.fa --output " + testDir + "/cegma-output --threads 16 2>&1";
         correctFullCommand = "cd " + testDir + "; CEGMATMP=" + testDir + "/temp; " +
                 "sed 's/>/>seq_/g' " + pwd + "/assembly.fa > " + testDir + "/assembly.fa.mod.fa; " +
-                "cegma --genome " + testDir + "/assembly.fa.mod.fa --output " + testDir + "/cegma-output --threads 16" +
-                " 2>&1; cd " + pwd;
+                "cegma --genome " + testDir + "/assembly.fa.mod.fa --output " + testDir + "/cegma-output --threads 16 2>&1" +
+                "; cd " + pwd;
     }
 
     private CegmaV24 createProcess() {

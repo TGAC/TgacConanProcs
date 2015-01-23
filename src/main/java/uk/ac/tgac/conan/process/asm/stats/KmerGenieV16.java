@@ -106,6 +106,7 @@ public class KmerGenieV16 extends AbstractConanProcess {
         private int interval;
         private int samplingVal;
         private File outputFile;
+        private File logFile;
 
         public Args() {
 
@@ -123,6 +124,7 @@ public class KmerGenieV16 extends AbstractConanProcess {
             this.interval = DEFAULT_INTERVAL;
             this.samplingVal = 0;
             this.outputFile = null;
+            this.logFile = null;
         }
 
         public Params getParams() {
@@ -255,6 +257,14 @@ public class KmerGenieV16 extends AbstractConanProcess {
             this.outputFile = outputFile;
         }
 
+        public File getLogFile() {
+            return logFile;
+        }
+
+        public void setLogFile(File logFile) {
+            this.logFile = logFile;
+        }
+
         @Override
         public void parseCommandLine(CommandLine cmdLine) {
 
@@ -305,6 +315,10 @@ public class KmerGenieV16 extends AbstractConanProcess {
 
             if (this.outputFile != null) {
                 pvp.put(params.getOutputFile(), this.outputFile.getAbsolutePath());
+            }
+
+            if (this.logFile != null) {
+                pvp.put(params.getLogFile(), this.logFile.getAbsolutePath());
             }
 
             return pvp;
@@ -362,12 +376,25 @@ public class KmerGenieV16 extends AbstractConanProcess {
         }
 
         @Override
-        protected void setRedirectFromMapEntry(ConanParameter param, String value) {
+        protected void setStdOutRedirectFromMapEntry(ConanParameter param, String value) {
 
             Params params = this.getParams();
 
             if (param.equals(params.getOutputFile())) {
                 this.outputFile = new File(value);
+            }
+            else {
+                throw new IllegalArgumentException("Unknown param found: " + param);
+            }
+        }
+
+        @Override
+        protected void setStdErrRedirectFromMapEntry(ConanParameter param, String value) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getLogFile())) {
+                this.logFile = new File(value);
             }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
@@ -388,6 +415,7 @@ public class KmerGenieV16 extends AbstractConanProcess {
         private ConanParameter interval;
         private ConanParameter samplingVal;
         private ConanParameter outputFile;
+        private ConanParameter logFile;
 
         public Params() {
 
@@ -452,8 +480,15 @@ public class KmerGenieV16 extends AbstractConanProcess {
 
             this.outputFile = new ParameterBuilder()
                     .isOptional(false)
-                    .type(DefaultConanParameter.ParamType.REDIRECTION)
+                    .type(DefaultConanParameter.ParamType.STDOUT_REDIRECTION)
                     .description("The standard output")
+                    .argValidator(ArgValidator.PATH)
+                    .create();
+
+            this.logFile = new ParameterBuilder()
+                    .isOptional(false)
+                    .type(DefaultConanParameter.ParamType.STDERR_REDIRECTION)
+                    .description("The standard error")
                     .argValidator(ArgValidator.PATH)
                     .create();
 
@@ -499,6 +534,10 @@ public class KmerGenieV16 extends AbstractConanProcess {
             return outputFile;
         }
 
+        public ConanParameter getLogFile() {
+            return logFile;
+        }
+
         @Override
         public ConanParameter[] getConanParametersAsArray() {
             return new ConanParameter[]{
@@ -511,7 +550,8 @@ public class KmerGenieV16 extends AbstractConanProcess {
                     this.smallestK,
                     this.interval,
                     this.samplingVal,
-                    this.outputFile
+                    this.outputFile,
+                    this.logFile
             };
         }
     }

@@ -132,7 +132,7 @@ public class CegmaV24 extends AbstractConanProcess {
             }
         }
 
-        return sb.toString().trim();
+        return sb.toString().trim() + " 2>&1";
     }
 
     @Override

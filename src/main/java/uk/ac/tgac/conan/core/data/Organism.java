@@ -46,12 +46,13 @@ public class Organism {
     public static final int DEFAULT_PLOIDY = 1; // Haploid
     public static final int DEFAULT_MIN_INTRON_SIZE = 0;
     public static final int DEFAULT_MAX_INTRON_SIZE = 1000000;
-
+    public static final boolean DEFAULT_COMPACT_GENOME = false;
 
     private String name;
     private int ploidy;
     private int minIntronSize;
     private int maxIntronSize;
+    private boolean compactGenome;
     private Reference reference;
     private Estimated estimated;
 
@@ -66,6 +67,7 @@ public class Organism {
         this.ploidy = ploidy;
         this.minIntronSize = DEFAULT_MIN_INTRON_SIZE;
         this.maxIntronSize = DEFAULT_MAX_INTRON_SIZE;
+        this.compactGenome = false;
         this.estimated = estimated;
         this.reference = reference;
 
@@ -147,6 +149,14 @@ public class Organism {
 
     public void setMaxIntronSize(int maxIntronSize) {
         this.maxIntronSize = maxIntronSize;
+    }
+
+    public boolean isCompactGenome() {
+        return compactGenome;
+    }
+
+    public void setCompactGenome(boolean compactGenome) {
+        this.compactGenome = compactGenome;
     }
 
     public Reference getReference() {
