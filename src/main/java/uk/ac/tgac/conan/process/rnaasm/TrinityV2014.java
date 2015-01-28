@@ -19,7 +19,7 @@ import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 import uk.ac.ebi.fgpt.conan.service.exception.ProcessExecutionException;
-import uk.ac.tgac.conan.process.align.SamtoolsViewV0_1;
+import uk.ac.tgac.conan.process.align.SamtoolsViewV1;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -42,7 +42,7 @@ import java.util.List;
  * 2. When normalizing we assume you want max coverage at 30
  * 3... probably we assume more... fill in later
  */
-public class TrinityV20130814 extends AbstractConanProcess {
+public class TrinityV2014 extends AbstractConanProcess {
 
     public static final String EXE = "Trinity.pl";
     public static final String NORMALIZE = "normalize_by_kmer_coverage.pl";
@@ -52,11 +52,11 @@ public class TrinityV20130814 extends AbstractConanProcess {
     public static final String GG_ALIGN_READS = "alignReads.pl";
     public static final String GG_ACC_INC = "GG_trinity_accession_incrementer.pl";
 
-    public TrinityV20130814(ConanExecutorService conanExecutorService) throws IOException {
+    public TrinityV2014(ConanExecutorService conanExecutorService) {
         this(conanExecutorService, new Args());
     }
 
-    public TrinityV20130814(ConanExecutorService conanExecutorService, Args args) {
+    public TrinityV2014(ConanExecutorService conanExecutorService, Args args) {
         super(EXE, args, new Params(), conanExecutorService);
         this.initialise();
     }
@@ -75,7 +75,7 @@ public class TrinityV20130814 extends AbstractConanProcess {
 
     @Override
     public String getName() {
-        return "Trinity_V2013_08_14";
+        return "Trinity_V2014";
     }
 
     public void initialise() {
@@ -283,11 +283,11 @@ public class TrinityV20130814 extends AbstractConanProcess {
                     false);
 
             // Run samtools (convert bam to sam)
-            SamtoolsViewV0_1.Args samtoolsViewArgs = new SamtoolsViewV0_1.Args();
+            SamtoolsViewV1.Args samtoolsViewArgs = new SamtoolsViewV1.Args();
             samtoolsViewArgs.setInput(new File(alignmentDir, "gsnap.coordSorted.bam"));
             samtoolsViewArgs.setOutput(samFile);
 
-            SamtoolsViewV0_1 samtoolsView = new SamtoolsViewV0_1(this.conanExecutorService, samtoolsViewArgs);
+            SamtoolsViewV1 samtoolsView = new SamtoolsViewV1(this.conanExecutorService, samtoolsViewArgs);
 
             this.conanExecutorService.executeProcess(
                     samtoolsView,
@@ -482,7 +482,7 @@ public class TrinityV20130814 extends AbstractConanProcess {
 
 
             return super.isOperational(executionContext) &&
-                    new SamtoolsViewV0_1(this.conanExecutorService).isOperational(executionContext) &&
+                    new SamtoolsViewV1(this.conanExecutorService).isOperational(executionContext) &&
                     this.getConanProcessService().executableOnPath(GG_ALIGN_READS, loadCommand, executionContext) &&
                     this.getConanProcessService().executableOnPath(GG_PREP_ALNS, loadCommand, executionContext) &&
                     this.getConanProcessService().executableOnPath(GG_WRITE_CMDS, loadCommand, executionContext) &&

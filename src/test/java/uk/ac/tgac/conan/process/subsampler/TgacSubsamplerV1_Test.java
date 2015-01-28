@@ -37,7 +37,7 @@ public class TgacSubsamplerV1_Test {
         this.testDir = temp.getRoot().getAbsolutePath();
 
         correctCommand = "subsampler -i " + pwd + "/file1.fq" + " -o " + testDir + "/file1.sub.fq -L " + testDir +
-                "/file1.sub.log -p 0.01 -s 12345678";
+                "/file1.sub.log -p 0.01 -s 12345678 2>&1";
     }
 
     private TgacSubsamplerV1 createProcess() {

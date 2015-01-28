@@ -9,6 +9,7 @@ import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 import uk.ac.tgac.conan.core.data.Library;
 import uk.ac.tgac.conan.core.util.PathUtils;
 
@@ -21,12 +22,12 @@ public class TophatV2_0 extends AbstractConanProcess {
 
     public static final String EXE = "tophat2";
 
-    public TophatV2_0() {
-        this(new Args());
+    public TophatV2_0(ConanExecutorService conanExecutorService) {
+        this(conanExecutorService, new Args());
     }
 
-    public TophatV2_0(Args args) {
-        super(EXE, args, new Params());
+    public TophatV2_0(ConanExecutorService conanExecutorService, Args args) {
+        super(EXE, args, new Params(), conanExecutorService);
     }
 
     public Args getArgs() {
@@ -53,34 +54,34 @@ public class TophatV2_0 extends AbstractConanProcess {
             UNSTRANDED {
                 @Override
                 public Library.Strandedness toStrandedness() {
-                    return Library.Strandedness.UNSTRANDED;
+                    return Library.Strandedness.FR_UNSTRANDED;
                 }
 
                 @Override
                 public boolean acceptsStrandedness(Library.Strandedness strandedness) {
-                    return strandedness == Library.Strandedness.UNSTRANDED;
+                    return strandedness == Library.Strandedness.FR_UNSTRANDED;
                 }
             },
             FIRSTSTRAND {
                 @Override
                 public Library.Strandedness toStrandedness() {
-                    return Library.Strandedness.FIRST_STRAND;
+                    return Library.Strandedness.FR_FIRST_STRAND;
                 }
 
                 @Override
                 public boolean acceptsStrandedness(Library.Strandedness strandedness) {
-                    return strandedness == Library.Strandedness.FIRST_STRAND;
+                    return strandedness == Library.Strandedness.FR_FIRST_STRAND;
                 }
             },
             SECONDSTRAND {
                 @Override
                 public Library.Strandedness toStrandedness() {
-                    return Library.Strandedness.SECOND_STRAND;
+                    return Library.Strandedness.FR_SECOND_STRAND;
                 }
 
                 @Override
                 public boolean acceptsStrandedness(Library.Strandedness strandedness) {
-                    return strandedness == Library.Strandedness.SECOND_STRAND;
+                    return strandedness == Library.Strandedness.FR_SECOND_STRAND;
                 }
             };
 
@@ -361,6 +362,10 @@ public class TophatV2_0 extends AbstractConanProcess {
                 pvp.put(params.getGenomeIndexBase(), this.genomeIndexBase.getAbsolutePath());
             }
 
+            if (this.outputDir != null) {
+                pvp.put(params.getOutputDir(), this.outputDir.getAbsolutePath());
+            }
+
             if (this.leftReads != null && this.leftReads.length > 0) {
                 pvp.put(params.getLeftReads(), PathUtils.joinAbsolutePaths(this.leftReads, ","));
             }
@@ -446,6 +451,7 @@ public class TophatV2_0 extends AbstractConanProcess {
                                     "being indexed be present in the same directory with the Bowtie index files and having the name " +
                                     "<genome_index_base>.fa. If not present, TopHat will automatically rebuild this FASTA file from " +
                                     "the Bowtie index files.")
+                    .argValidator(ArgValidator.PATH)
                     .create();
 
             this.gtf = new ParameterBuilder()

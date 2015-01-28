@@ -45,17 +45,14 @@ public class GTSV0 extends AbstractConanProcess {
     public static class Args extends AbstractProcessArgs {
 
         public static double DEFAULT_CDS_LEN_RATIO = 0.4;
-        public static double DEFAULT_CDNA_LEN_RATIO = 0.5;
         public static int DEFAULT_WINDOW_SIZE = 1000;
 
         private File genomicGff;
-        private File transcriptGff;
         private File gtf;
         private File flnDir;
         private File output;
-        private boolean includePutative;
+        private boolean includeNewCoding;
         private double cdsLenRatio;
-        private double cdnaLenRatio;
         private int windowSize;
         private boolean all;
 
@@ -63,13 +60,11 @@ public class GTSV0 extends AbstractConanProcess {
             super(new Params());
 
             this.genomicGff = null;
-            this.transcriptGff = null;
             this.gtf = null;
             this.flnDir = null;
             this.output = null;
-            this.includePutative = false;
+            this.includeNewCoding = false;
             this.cdsLenRatio = DEFAULT_CDS_LEN_RATIO;
-            this.cdnaLenRatio = DEFAULT_CDNA_LEN_RATIO;
             this.windowSize = DEFAULT_WINDOW_SIZE;
             this.all = false;
         }
@@ -92,14 +87,6 @@ public class GTSV0 extends AbstractConanProcess {
 
         public void setGenomicGff(File genomicGff) {
             this.genomicGff = genomicGff;
-        }
-
-        public File getTranscriptGff() {
-            return transcriptGff;
-        }
-
-        public void setTranscriptGff(File transcriptGff) {
-            this.transcriptGff = transcriptGff;
         }
 
         public File getGtf() {
@@ -126,12 +113,12 @@ public class GTSV0 extends AbstractConanProcess {
             this.output = output;
         }
 
-        public boolean isIncludePutative() {
-            return includePutative;
+        public boolean isIncludeNewCoding() {
+            return includeNewCoding;
         }
 
-        public void setIncludePutative(boolean includePutative) {
-            this.includePutative = includePutative;
+        public void setIncludeNewCoding(boolean includeNewCoding) {
+            this.includeNewCoding = includeNewCoding;
         }
 
         public double getCdsLenRatio() {
@@ -140,14 +127,6 @@ public class GTSV0 extends AbstractConanProcess {
 
         public void setCdsLenRatio(double cdsLenRatio) {
             this.cdsLenRatio = cdsLenRatio;
-        }
-
-        public double getCdnaLenRatio() {
-            return cdnaLenRatio;
-        }
-
-        public void setCdnaLenRatio(double cdnaLenRatio) {
-            this.cdnaLenRatio = cdnaLenRatio;
         }
 
         public int getWindowSize() {
@@ -174,9 +153,6 @@ public class GTSV0 extends AbstractConanProcess {
             if (param.equals(params.getGenomicGff())) {
                 this.genomicGff = new File(value);
             }
-            else if (param.equals(params.getTranscriptGff())) {
-                this.transcriptGff = new File(value);
-            }
             else if (param.equals(params.getGtf())) {
                 this.gtf = new File(value);
             }
@@ -186,14 +162,11 @@ public class GTSV0 extends AbstractConanProcess {
             else if (param.equals(params.getOutput())) {
                 this.output = new File(value);
             }
-            else if (param.equals(params.getIncludePutative())) {
-                this.includePutative = Boolean.parseBoolean(value);
+            else if (param.equals(params.getIncludeNewCoding())) {
+                this.includeNewCoding = Boolean.parseBoolean(value);
             }
             else if (param.equals(params.getCdsLenRatio())) {
                 this.cdsLenRatio = Double.parseDouble(value);
-            }
-            else if (param.equals(params.getCdnaLenRatio())) {
-                this.cdnaLenRatio = Double.parseDouble(value);
             }
             else if (param.equals(params.getWindowSize())) {
                 this.windowSize = Integer.parseInt(value);
@@ -227,10 +200,6 @@ public class GTSV0 extends AbstractConanProcess {
                 pvp.put(params.getGenomicGff(), this.genomicGff.getAbsolutePath());
             }
 
-            if (this.transcriptGff != null) {
-                pvp.put(params.getTranscriptGff(), this.transcriptGff.getAbsolutePath());
-            }
-
             if (this.gtf != null) {
                 pvp.put(params.getGtf(), this.gtf.getAbsolutePath());
             }
@@ -243,16 +212,12 @@ public class GTSV0 extends AbstractConanProcess {
                 pvp.put(params.getOutput(), this.output.getAbsolutePath());
             }
 
-            if (this.includePutative) {
-                pvp.put(params.getIncludePutative(), Boolean.toString(this.includePutative));
+            if (this.includeNewCoding) {
+                pvp.put(params.getIncludeNewCoding(), Boolean.toString(this.includeNewCoding));
             }
 
             if (this.cdsLenRatio != DEFAULT_CDS_LEN_RATIO) {
                 pvp.put(params.getCdsLenRatio(), Double.toString(this.cdsLenRatio));
-            }
-
-            if (this.cdnaLenRatio != DEFAULT_CDNA_LEN_RATIO) {
-                pvp.put(params.getCdnaLenRatio(), Double.toString(this.cdnaLenRatio));
             }
 
             if (this.windowSize != DEFAULT_WINDOW_SIZE) {
@@ -270,13 +235,11 @@ public class GTSV0 extends AbstractConanProcess {
     public static class Params extends AbstractProcessParams {
 
         private ConanParameter genomicGff;
-        private ConanParameter transcriptGff;
         private ConanParameter gtf;
         private ConanParameter flnDir;
         private ConanParameter output;
-        private ConanParameter includePutative;
+        private ConanParameter includeNewCoding;
         private ConanParameter cdsLenRatio;
-        private ConanParameter cdnaLenRatio;
         private ConanParameter windowSize;
         private ConanParameter all;
 
@@ -289,14 +252,8 @@ public class GTSV0 extends AbstractConanProcess {
                     .argValidator(ArgValidator.PATH)
                     .create();
 
-            this.transcriptGff = new ParameterBuilder()
-                    .shortName("t")
-                    .longName("transcript_gff")
-                    .description("GFF3 file containing the transcript coordinates for the transcript features.")
-                    .argValidator(ArgValidator.PATH)
-                    .create();
-
             this.gtf = new ParameterBuilder()
+                    .shortName("t")
                     .longName("gtf")
                     .description("GTF file containing transcripts.")
                     .argValidator(ArgValidator.PATH)
@@ -316,22 +273,18 @@ public class GTSV0 extends AbstractConanProcess {
                     .argValidator(ArgValidator.PATH)
                     .create();
 
-            this.includePutative = new ParameterBuilder()
-                    .longName("include_putative")
+            this.includeNewCoding = new ParameterBuilder()
+                    .shortName("i")
+                    .longName("include_newcoding")
                     .description("Include transcripts with no full lengther homology hit, providing it has a full lengther new_coding hit.")
                     .isFlag(true)
                     .argValidator(ArgValidator.OFF)
                     .create();
 
             this.cdsLenRatio = new ParameterBuilder()
+                    .shortName("c")
                     .longName("cds_ratio")
-                    .description("Min percentage length of CDS content relative to full length transcripts for hits with homology.  0.0 -> 1.0.  Default: 0.4")
-                    .argValidator(ArgValidator.FLOAT)
-                    .create();
-
-            this.cdnaLenRatio = new ParameterBuilder()
-                    .longName("cdna_ratio")
-                    .description("Min percentage length of cDNA (exon) content relative to full length transcripts for hits with homology.  0.0 -> 1.0.  Default: 0.5")
+                    .description("Ratio of CDS length to cDNA length.  0.0 -> 1.0.  Default: 0.4")
                     .argValidator(ArgValidator.FLOAT)
                     .create();
 
@@ -355,10 +308,6 @@ public class GTSV0 extends AbstractConanProcess {
             return genomicGff;
         }
 
-        public ConanParameter getTranscriptGff() {
-            return transcriptGff;
-        }
-
         public ConanParameter getGtf() {
             return gtf;
         }
@@ -371,16 +320,12 @@ public class GTSV0 extends AbstractConanProcess {
             return output;
         }
 
-        public ConanParameter getIncludePutative() {
-            return includePutative;
+        public ConanParameter getIncludeNewCoding() {
+            return includeNewCoding;
         }
 
         public ConanParameter getCdsLenRatio() {
             return cdsLenRatio;
-        }
-
-        public ConanParameter getCdnaLenRatio() {
-            return cdnaLenRatio;
         }
 
         public ConanParameter getWindowSize() {
@@ -395,13 +340,11 @@ public class GTSV0 extends AbstractConanProcess {
         public ConanParameter[] getConanParametersAsArray() {
             return new ConanParameter[] {
                     this.genomicGff,
-                    this.transcriptGff,
                     this.gtf,
                     this.flnDir,
                     this.output,
-                    this.includePutative,
+                    this.includeNewCoding,
                     this.cdsLenRatio,
-                    this.cdnaLenRatio,
                     this.windowSize,
                     this.all
             };

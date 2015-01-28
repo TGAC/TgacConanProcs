@@ -57,7 +57,7 @@ public class SoapGapCloserV112Test {
                 "-a " + pwd + "input.fa " +
                 "-b " + pwd + "libFile.cfg " +
                 "-o " + pwd + "output.fa " +
-                "-p 29 -t 8";
+                "-p 29 -t 8 2>&1";
 
         assertTrue(command != null && !command.isEmpty());
         assertTrue(correct != null && !correct.isEmpty());

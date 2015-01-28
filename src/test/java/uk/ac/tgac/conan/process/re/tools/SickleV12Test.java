@@ -45,9 +45,9 @@ public class SickleV12Test {
         this.pwd = pwdFull.substring(0, pwdFull.length() - 1);
 
         correctPeCommand = "sickle pe --qual-threshold=50 --length-threshold=50 --discard-n --qual-type=illumina -f " + pwd + "1.fq -r " + pwd + "2.fq " +
-                "-o " + pwd + "1.out.fq -p " + pwd + "2.out.fq -s " + pwd + "se.out.fq";
+                "-o " + pwd + "1.out.fq -p " + pwd + "2.out.fq -s " + pwd + "se.out.fq 2>&1";
 
-        correctSeCommand = "sickle se --qual-threshold=50 --length-threshold=50 --discard-n --qual-type=sanger -f " + pwd + "file.fastq -o " + pwd + "se.out.fq";
+        correctSeCommand = "sickle se --qual-threshold=50 --length-threshold=50 --discard-n --qual-type=sanger -f " + pwd + "file.fastq -o " + pwd + "se.out.fq 2>&1";
     }
 
     @Test

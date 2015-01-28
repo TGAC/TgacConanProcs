@@ -69,9 +69,9 @@ public class AbyssV15Test {
                 "peLib1='" + pwd + "/tools/mass/LIB1896_R1.r95.fastq " + pwd + "/tools/mass/LIB1896_R2.r95.fastq'";*/
 
         correctCommand = "abyss-pe name=abyss-out k=61 np=16 lib='peLib1' " +
-                "peLib1='" + pwd + "/tools/mass/LIB1896_R1.r95.fastq " + pwd + "/tools/mass/LIB1896_R2.r95.fastq'";
+                "peLib1='" + pwd + "/tools/mass/LIB1896_R1.r95.fastq " + pwd + "/tools/mass/LIB1896_R2.r95.fastq' 2>&1";
 
-        correctFullCommand = "cd " + testDir + "; " + correctCommand + " 2>&1; cd " + pwd;
+        correctFullCommand = "cd " + testDir + "; " + correctCommand + "; cd " + pwd;
 
         correctLsfScheduledCommand = "bsub -aopenmpi \"" + correctFullCommand + "\"";
     }

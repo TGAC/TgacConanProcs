@@ -56,9 +56,9 @@ public class QuakeV03Test {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "quake.py -f " + readsListFile.getAbsolutePath() + " -k 18 -p 32 -l 50";
+        correctCommand = "quake.py -f " + readsListFile.getAbsolutePath() + " -k 18 -p 32 -l 50 2>&1";
 
-        correctFullCommand = "cd " + pwd + "/quake" + "; " + correctCommand + " 2>&1; cd " + pwd;
+        correctFullCommand = "cd " + pwd + "/quake" + "; " + correctCommand + "; cd " + pwd;
     }
 
     @Test

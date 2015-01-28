@@ -27,13 +27,13 @@ public class FullLengtherNextV2013Test {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "full_lengther_next --fasta " + pwd + "/transcripts.fasta --taxon_group plants --workers 32 --server 0.0.0";
-        correctFullCommand = "cd " + pwd + "/fln" + "; " + correctCommand + " 2>&1; cd " + pwd;
-        correctBlastDBCommand = "cd " + pwd + "/fln" + "; export BLASTDB=/path/tp/blastdb; " + correctCommand + " 2>&1; cd " + pwd;
+        correctCommand = "full_lengther_next --fasta " + pwd + "/transcripts.fasta --taxon_group plants --workers 32 --server 0.0.0 2>&1";
+        correctFullCommand = "cd " + pwd + "/fln" + "; " + correctCommand + "; cd " + pwd;
+        correctBlastDBCommand = "cd " + pwd + "/fln" + "; export BLASTDB=/path/tp/blastdb; " + correctCommand + "; cd " + pwd;
     }
 
     @Test
-    public void testTransdecoderCommand() throws ConanParameterException {
+    public void testFLNCommand() throws ConanParameterException {
 
         FullLengtherNextV2013 trn = new FullLengtherNextV2013(null, createFlnArgs());
 
@@ -43,7 +43,7 @@ public class FullLengtherNextV2013Test {
     }
 
     @Test
-    public void testTransdecoderFullCommand() throws ConanParameterException {
+    public void testFLNFullCommand() throws ConanParameterException {
 
         FullLengtherNextV2013 trn = new FullLengtherNextV2013(null, createFlnArgs());
         trn.setup();

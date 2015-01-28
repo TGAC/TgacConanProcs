@@ -87,6 +87,7 @@ public class ExonerateV2_2 extends AbstractConanProcess {
         private File query;
         private File target;
         private File output;
+        private File log;
         private Model model;
         private int score;
         private double percent;
@@ -106,6 +107,7 @@ public class ExonerateV2_2 extends AbstractConanProcess {
             this.query = null;
             this.target = null;
             this.output = null;
+            this.log = null;
             this.model = null;
             this.score = DEFAULT_SCORE;
             this.percent = DEFAULT_PERCENT;
@@ -145,6 +147,14 @@ public class ExonerateV2_2 extends AbstractConanProcess {
 
         public void setOutput(File output) {
             this.output = output;
+        }
+
+        public File getLog() {
+            return log;
+        }
+
+        public void setLog(File log) {
+            this.log = log;
         }
 
         public Model getModel() {
@@ -290,12 +300,25 @@ public class ExonerateV2_2 extends AbstractConanProcess {
         }
 
         @Override
-        protected void setRedirectFromMapEntry(ConanParameter param, String value) {
+        protected void setStdOutRedirectFromMapEntry(ConanParameter param, String value) {
 
             Params params = this.getParams();
 
             if (param.equals(params.getOutput())) {
                 this.output = new File(value);
+            }
+            else {
+                throw new IllegalArgumentException("Unknown param found: " + param);
+            }
+        }
+
+        @Override
+        protected void setStdErrRedirectFromMapEntry(ConanParameter param, String value) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getLog())) {
+                this.log = new File(value);
             }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
@@ -325,6 +348,10 @@ public class ExonerateV2_2 extends AbstractConanProcess {
 
             if (this.output != null) {
                 pvp.put(params.getOutput(), this.output.getAbsolutePath());
+            }
+
+            if (this.log != null) {
+                pvp.put(params.getLog(), this.log.getAbsolutePath());
             }
 
             if (this.model != null) {
@@ -380,6 +407,7 @@ public class ExonerateV2_2 extends AbstractConanProcess {
         private ConanParameter query;
         private ConanParameter target;
         private ConanParameter output;
+        private ConanParameter log;
         private ConanParameter model;
         private ConanParameter score;
         private ConanParameter percent;
@@ -414,9 +442,16 @@ public class ExonerateV2_2 extends AbstractConanProcess {
                     .create();
 
             this.output = new ParameterBuilder()
-                    .type(DefaultConanParameter.ParamType.REDIRECTION)
+                    .type(DefaultConanParameter.ParamType.STDOUT_REDIRECTION)
                     .isOptional(false)
                     .description("Redirected output to file")
+                    .argValidator(ArgValidator.PATH)
+                    .create();
+
+            this.log = new ParameterBuilder()
+                    .type(DefaultConanParameter.ParamType.STDERR_REDIRECTION)
+                    .isOptional(false)
+                    .description("Redirected error message (logging) to file")
                     .argValidator(ArgValidator.PATH)
                     .create();
 
@@ -514,6 +549,10 @@ public class ExonerateV2_2 extends AbstractConanProcess {
             return output;
         }
 
+        public ConanParameter getLog() {
+            return log;
+        }
+
         public ConanParameter getModel() {
             return model;
         }
@@ -564,6 +603,7 @@ public class ExonerateV2_2 extends AbstractConanProcess {
                     this.query,
                     this.target,
                     this.output,
+                    this.log,
                     this.model,
                     this.score,
                     this.percent,

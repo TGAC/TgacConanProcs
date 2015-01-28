@@ -52,6 +52,7 @@ public class BedtoolsWindowV2_17 extends AbstractConanProcess {
         private File inputA;
         private File inputB;
         private File output;
+        private File log;
         private int windowSize;
         private boolean reportNbOverlaps;
 
@@ -61,6 +62,7 @@ public class BedtoolsWindowV2_17 extends AbstractConanProcess {
             this.inputA = null;
             this.inputB = null;
             this.output = null;
+            this.log = null;
             this.windowSize = DEFAULT_WINDOW_SIZE;
             this.reportNbOverlaps = false;
         }
@@ -93,6 +95,14 @@ public class BedtoolsWindowV2_17 extends AbstractConanProcess {
             this.output = output;
         }
 
+        public File getLog() {
+            return log;
+        }
+
+        public void setLog(File log) {
+            this.log = log;
+        }
+
         public int getWindowSize() {
             return windowSize;
         }
@@ -119,9 +129,6 @@ public class BedtoolsWindowV2_17 extends AbstractConanProcess {
             else if (param.equals(params.getInputB())) {
                 this.inputB = new File(value);
             }
-            else if (param.equals(params.getOutput())) {
-                this.output = new File(value);
-            }
             else if (param.equals(params.getWindowSize())) {
                 this.windowSize = Integer.parseInt(value);
             }
@@ -136,6 +143,32 @@ public class BedtoolsWindowV2_17 extends AbstractConanProcess {
         @Override
         protected void setArgFromMapEntry(ConanParameter param, String value) {
             //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        protected void setStdOutRedirectFromMapEntry(ConanParameter param, String value) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getOutput())) {
+                this.output = new File(value);
+            }
+            else {
+                throw new IllegalArgumentException("Unknown param found: " + param);
+            }
+        }
+
+        @Override
+        protected void setStdErrRedirectFromMapEntry(ConanParameter param, String value) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getLog())) {
+                this.log = new File(value);
+            }
+            else {
+                throw new IllegalArgumentException("Unknown param found: " + param);
+            }
         }
 
         @Override
@@ -162,6 +195,10 @@ public class BedtoolsWindowV2_17 extends AbstractConanProcess {
                 pvp.put(params.getOutput(), this.output.getAbsolutePath());
             }
 
+            if (this.log != null) {
+                pvp.put(params.getLog(), this.log.getAbsolutePath());
+            }
+
             if (this.windowSize >= 0 && this.windowSize != DEFAULT_WINDOW_SIZE) {
                 pvp.put(params.getWindowSize(), Integer.toString(this.windowSize));
             }
@@ -179,6 +216,7 @@ public class BedtoolsWindowV2_17 extends AbstractConanProcess {
         private ConanParameter inputA;
         private ConanParameter inputB;
         private ConanParameter output;
+        private ConanParameter log;
         private ConanParameter windowSize;
         private ConanParameter reportNbOverlaps;
 
@@ -202,7 +240,14 @@ public class BedtoolsWindowV2_17 extends AbstractConanProcess {
                     .isOptional(false)
                     .description("Output bed/gff/vcf file")
                     .argValidator(ArgValidator.PATH)
-                    .type(DefaultConanParameter.ParamType.REDIRECTION)
+                    .type(DefaultConanParameter.ParamType.STDOUT_REDIRECTION)
+                    .create();
+
+            this.log = new ParameterBuilder()
+                    .isOptional(false)
+                    .description("Standed error log")
+                    .argValidator(ArgValidator.PATH)
+                    .type(DefaultConanParameter.ParamType.STDERR_REDIRECTION)
                     .create();
 
             this.windowSize = new ParameterBuilder()
@@ -231,6 +276,10 @@ public class BedtoolsWindowV2_17 extends AbstractConanProcess {
             return output;
         }
 
+        public ConanParameter getLog() {
+            return log;
+        }
+
         public ConanParameter getWindowSize() {
             return windowSize;
         }
@@ -245,6 +294,7 @@ public class BedtoolsWindowV2_17 extends AbstractConanProcess {
                     this.inputA,
                     this.inputB,
                     this.output,
+                    this.log,
                     this.windowSize,
                     this.reportNbOverlaps
             };

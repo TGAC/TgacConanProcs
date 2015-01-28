@@ -9,6 +9,7 @@ import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
 
 import java.io.File;
 
@@ -19,12 +20,12 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
 
     public static final String EXE = "bowtie2-build";
 
-    public BowtieBuildV2_1() {
-        this(new Args());
+    public BowtieBuildV2_1(ConanExecutorService conanExecutorService) {
+        this(conanExecutorService, new Args());
     }
 
-    public BowtieBuildV2_1(Args args) {
-        super(EXE, args, new Params());
+    public BowtieBuildV2_1(ConanExecutorService conanExecutorService, Args args) {
+        super(EXE, args, new Params(), conanExecutorService);
     }
 
     public Args getArgs() {
@@ -44,8 +45,6 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
 
         private File[] referenceIn;
         private String baseName;
-        private int threads;
-
 
         public Args() {
 
@@ -53,7 +52,6 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
 
             this.referenceIn = null;
             this.baseName = "";
-            this.threads = 1;
         }
 
         public Params getParams() {
@@ -95,14 +93,6 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
             this.baseName = baseName;
         }
 
-        public int getThreads() {
-            return threads;
-        }
-
-        public void setThreads(int threads) {
-            this.threads = threads;
-        }
-
         @Override
         public void parseCommandLine(CommandLine cmdLine) {
 
@@ -124,24 +114,12 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
                 pvp.put(params.getBaseName(), this.baseName);
             }
 
-            if (this.threads > 1) {
-                pvp.put(params.getThreads(), Integer.toString(this.getThreads()));
-            }
-
             return pvp;
         }
 
         @Override
         protected void setOptionFromMapEntry(ConanParameter param, String value) {
 
-            Params params = this.getParams();
-
-            if (param.equals(params.getThreads())) {
-                this.threads = Integer.parseInt(value);
-            }
-            else {
-                throw new IllegalArgumentException("Unknown param found: " + param);
-            }
         }
 
         @Override
@@ -176,7 +154,6 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
 
         private ConanParameter referenceIn;
         private ConanParameter baseName;
-        private ConanParameter threads;
 
         public Params() {
 
@@ -186,6 +163,7 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
                     .description("A comma-separated list of FASTA files containing the reference sequences to be aligned to.  " +
                             "E.g., <reference_in> might be chr1.fa,chr2.fa,chrX.fa,chrY.fa.")
                     .argIndex(0)
+                    .argValidator(ArgValidator.OFF)
                     .create();
 
             this.baseName = new ParameterBuilder()
@@ -194,19 +172,7 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
                     .description("The basename of the index files to write. By default, bowtie2-build writes files named NAME.1.bt2, " +
                             "NAME.2.bt2, NAME.3.bt2, NAME.4.bt2, NAME.rev.1.bt2, and NAME.rev.2.bt2, where NAME is <bt2_base>.")
                     .argIndex(1)
-                    .create();
-
-            this.threads = new ParameterBuilder()
-                    .shortName("p")
-                    .longName("threads")
-                    .description(
-                            "Launch NTHREADS parallel search threads (default: 1). Threads will run on separate processors/cores " +
-                                    "and synchronize when parsing reads and outputting alignments. Searching for alignments is highly " +
-                                    "parallel, and speedup is close to linear. Increasing -p increases Bowtie 2's memory footprint. E.g. " +
-                                    "when aligning to a human genome index, increasing -p from 1 to 8 increases the memory footprint by a " +
-                                    "few hundred megabytes. This option is only available if bowtie is linked with the pthreads library " +
-                                    "(i.e. if BOWTIE_PTHREADS=0 is not specified at build time).")
-                    .argValidator(ArgValidator.DIGITS)
+                    .argValidator(ArgValidator.PATH)
                     .create();
         }
 
@@ -219,17 +185,11 @@ public class BowtieBuildV2_1 extends AbstractConanProcess {
             return baseName;
         }
 
-        public ConanParameter getThreads() {
-            return threads;
-        }
-
-
         @Override
         public ConanParameter[] getConanParametersAsArray() {
             return new ConanParameter[]{
                     this.referenceIn,
-                    this.baseName,
-                    this.threads
+                    this.baseName
             };
         }
 

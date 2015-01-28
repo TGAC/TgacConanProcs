@@ -17,7 +17,9 @@
  **/
 package uk.ac.tgac.conan.process.r;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import uk.ac.ebi.fgpt.conan.service.exception.ConanParameterException;
 
 import java.io.File;
@@ -33,8 +35,13 @@ import static org.junit.Assert.assertTrue;
  */
 public class RV2122Test {
 
+    @Rule
+    public TemporaryFolder temp = new TemporaryFolder();
+
     @Test
     public void testRV2122() throws ConanParameterException {
+
+        String testDir = temp.getRoot().getAbsolutePath();
 
         List<String> rArgs = new ArrayList<String>();
         rArgs.add("arg1");
@@ -42,13 +49,14 @@ public class RV2122Test {
 
         RV2122.Args args = new RV2122.Args();
         args.setArgs(rArgs);
-        args.setOutput(new File("output.txt"));
+        args.setOutput(new File(testDir, "output.txt"));
+        args.setLog(new File(testDir, "log.txt"));
         args.setScript(new File("script.R"));
 
         RV2122 task = new RV2122(args);
 
         String command = task.getCommand();
-        String correct = "Rscript script.R arg1 arg2 > output.txt";
+        String correct = "Rscript script.R arg1 arg2 > " + testDir + "/output.txt 2> " + testDir + "/log.txt";
 
         assertTrue(command != null && !command.isEmpty());
         assertTrue(correct != null && !correct.isEmpty());

@@ -60,9 +60,12 @@ public class Library {
     }
 
     public enum Strandedness {
-        UNSTRANDED,
-        FIRST_STRAND,
-        SECOND_STRAND
+        FF_UNSTRANDED,
+        FF_FIRST_STRAND,
+        FF_SECOND_STRAND,
+        FR_UNSTRANDED,
+        FR_FIRST_STRAND,
+        FR_SECOND_STRAND
     }
 	
 
@@ -86,7 +89,7 @@ public class Library {
     private static final double DEFAULT_INS_ERR_TOLERANCE        = 0.3;
     private static final SeqOrientation DEFAULT_SEQ_ORIENTATION  = SeqOrientation.FR;
     private static final Phred  DEFAULT_PHRED                    = Phred.PHRED_64;
-    private static final Strandedness DEFAULT_STRANDEDNESS       = Strandedness.UNSTRANDED;
+    private static final Strandedness DEFAULT_STRANDEDNESS       = Strandedness.FR_UNSTRANDED;
 
 
 

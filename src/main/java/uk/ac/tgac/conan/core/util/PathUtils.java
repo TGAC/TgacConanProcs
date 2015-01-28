@@ -42,4 +42,11 @@ public class PathUtils {
 
         return files;
     }
+
+    public static void cleanDirectory(File dir) {
+        if (dir.exists()) {
+            dir.delete();
+        }
+        dir.mkdirs();
+    }
 }

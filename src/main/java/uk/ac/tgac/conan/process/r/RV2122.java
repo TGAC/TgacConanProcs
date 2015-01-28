@@ -20,6 +20,7 @@ package uk.ac.tgac.conan.process.r;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
+import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
@@ -60,6 +61,7 @@ public class RV2122 extends AbstractConanProcess {
         private List<String> args;
         private File script;
         private File output;
+        private File log;
 
         public Args() {
             super(new Params());
@@ -67,7 +69,13 @@ public class RV2122 extends AbstractConanProcess {
             this.args = null;
             this.script = null;
             this.output = null;
+            this.log = null;
         }
+
+        public Params getParams() {
+            return (Params)this.params;
+        }
+
 
         public List<String> getArgs() {
             return args;
@@ -93,6 +101,14 @@ public class RV2122 extends AbstractConanProcess {
             this.output = output;
         }
 
+        public File getLog() {
+            return log;
+        }
+
+        public void setLog(File log) {
+            this.log = log;
+        }
+
         @Override
         public void parseCommandLine(CommandLine cmdLine) {
 
@@ -113,7 +129,11 @@ public class RV2122 extends AbstractConanProcess {
             }
 
             if (this.output != null) {
-                pvp.put(params.getOutput(), "> " + this.output.getPath());
+                pvp.put(params.getOutput(), this.output.getAbsolutePath());
+            }
+
+            if (this.log != null) {
+                pvp.put(params.getLog(), this.log.getAbsolutePath());
             }
 
             return pvp;
@@ -128,9 +148,33 @@ public class RV2122 extends AbstractConanProcess {
                 this.args = Arrays.asList(value.split(" "));
             } else if (param.equals(params.getScript())) {
                 this.script = new File(value);
-            } else if (param.equals(params.getOutput())) {
-                this.output = new File(value);
             } else {
+                throw new IllegalArgumentException("Unknown param found: " + param);
+            }
+        }
+
+        @Override
+        protected void setStdOutRedirectFromMapEntry(ConanParameter param, String value) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getOutput())) {
+                this.output = new File(value);
+            }
+            else {
+                throw new IllegalArgumentException("Unknown param found: " + param);
+            }
+        }
+
+        @Override
+        protected void setStdErrRedirectFromMapEntry(ConanParameter param, String value) {
+
+            Params params = this.getParams();
+
+            if (param.equals(params.getLog())) {
+                this.log = new File(value);
+            }
+            else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
             }
         }
@@ -147,6 +191,7 @@ public class RV2122 extends AbstractConanProcess {
         private ConanParameter args;
         private ConanParameter script;
         private ConanParameter output;
+        private ConanParameter log;
 
         public Params() {
 
@@ -169,11 +214,16 @@ public class RV2122 extends AbstractConanProcess {
                     .create();
 
             this.output = new ParameterBuilder()
-                    .longName("output")
                     .description("The location to store output from R")
-                    .argIndex(2)
+                    .type(DefaultConanParameter.ParamType.STDOUT_REDIRECTION)
                     .argValidator(ArgValidator.PATH)
-                    .isOption(false)
+                    .isOptional(false)
+                    .create();
+
+            this.log = new ParameterBuilder()
+                    .description("The location to store stderr from R")
+                    .type(DefaultConanParameter.ParamType.STDERR_REDIRECTION)
+                    .argValidator(ArgValidator.PATH)
                     .isOptional(false)
                     .create();
         }
@@ -183,7 +233,8 @@ public class RV2122 extends AbstractConanProcess {
             return new ConanParameter[] {
                     this.args,
                     this.script,
-                    this.output
+                    this.output,
+                    this.log
             };
         }
 
@@ -199,5 +250,8 @@ public class RV2122 extends AbstractConanProcess {
             return output;
         }
 
+        public ConanParameter getLog() {
+            return log;
+        }
     }
 }

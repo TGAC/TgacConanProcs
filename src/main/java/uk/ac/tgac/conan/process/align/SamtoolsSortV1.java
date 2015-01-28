@@ -2,7 +2,6 @@ package uk.ac.tgac.conan.process.align;
 
 import org.apache.commons.cli.CommandLine;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
-import uk.ac.ebi.fgpt.conan.core.param.DefaultConanParameter;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractConanProcess;
@@ -23,17 +22,17 @@ import java.io.File;
  * Time: 11:28
  * To change this template use File | Settings | File Templates.
  */
-public class SamtoolsViewV0_1 extends AbstractConanProcess {
+public class SamtoolsSortV1 extends AbstractConanProcess {
 
     public static final String EXE = "samtools";
 
-    public SamtoolsViewV0_1(ConanExecutorService conanExecutorService) {
+    public SamtoolsSortV1(ConanExecutorService conanExecutorService) {
         this(conanExecutorService, new Args());
     }
 
-    public SamtoolsViewV0_1(ConanExecutorService conanExecutorService, Args args) {
+    public SamtoolsSortV1(ConanExecutorService conanExecutorService, Args args) {
         super(EXE, args, new Params(), conanExecutorService);
-        this.setMode("view");
+        this.setMode("sort");
     }
 
     public Args getArgs() {
@@ -48,7 +47,13 @@ public class SamtoolsViewV0_1 extends AbstractConanProcess {
 
     @Override
     public String getName() {
-        return "Samtools_View_V0.1.X";
+        return "Samtools_Sort_V1.X";
+    }
+
+    public static enum Format {
+        SAM,
+        BAM,
+        CRAM
     }
 
     public static class Args extends AbstractProcessArgs {
@@ -56,8 +61,10 @@ public class SamtoolsViewV0_1 extends AbstractConanProcess {
         private File input;
         private File output;
 
-        private boolean outputBam;
-        private boolean inputSam;
+        private File tempFilePrefix;
+        private boolean sortByName;
+        private Format format;
+        private int threads;
 
         public Args() {
 
@@ -65,8 +72,10 @@ public class SamtoolsViewV0_1 extends AbstractConanProcess {
 
             this.input = null;
             this.output = null;
-            this.outputBam = false;
-            this.inputSam = false;
+            this.tempFilePrefix = null;
+            this.sortByName = false;
+            this.format = Format.BAM;
+            this.threads = 1;
         }
 
         public Params getParams() {
@@ -89,20 +98,36 @@ public class SamtoolsViewV0_1 extends AbstractConanProcess {
             this.output = output;
         }
 
-        public boolean isOutputBam() {
-            return outputBam;
+        public boolean isSortByName() {
+            return sortByName;
         }
 
-        public void setOutputBam(boolean outputBam) {
-            this.outputBam = outputBam;
+        public void setSortByName(boolean sortByName) {
+            this.sortByName = sortByName;
         }
 
-        public boolean isInputSam() {
-            return inputSam;
+        public Format getFormat() {
+            return format;
         }
 
-        public void setInputSam(boolean inputSam) {
-            this.inputSam = inputSam;
+        public void setFormat(Format format) {
+            this.format = format;
+        }
+
+        public int getThreads() {
+            return threads;
+        }
+
+        public void setThreads(int threads) {
+            this.threads = threads;
+        }
+
+        public File getTempFilePrefix() {
+            return tempFilePrefix;
+        }
+
+        public void setTempFilePrefix(File tempFilePrefix) {
+            this.tempFilePrefix = tempFilePrefix;
         }
 
         @Override
@@ -110,11 +135,20 @@ public class SamtoolsViewV0_1 extends AbstractConanProcess {
 
             Params params = this.getParams();
 
-            if (param.equals(params.getOutputBam())) {
-                this.outputBam = Boolean.parseBoolean(value);
+            if (param.equals(params.getSortByName())) {
+                this.sortByName = Boolean.parseBoolean(value);
             }
-            else if (param.equals(params.getInputSam())) {
-                this.inputSam = Boolean.parseBoolean(value);
+            else if (param.equals(params.getOutput())) {
+                this.output = new File(value);
+            }
+            else if (param.equals(params.getFormat())) {
+                this.format = Format.valueOf(value.trim().toUpperCase());
+            }
+            else if (param.equals(params.getThreads())) {
+                this.threads = Integer.parseInt(value);
+            }
+            else if (param.equals(params.getTempFilePrefix())) {
+                this.tempFilePrefix = new File(value);
             }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
@@ -134,18 +168,6 @@ public class SamtoolsViewV0_1 extends AbstractConanProcess {
             }
         }
 
-        @Override
-        protected void setRedirectFromMapEntry(ConanParameter param, String value) {
-
-            Params params = this.getParams();
-
-            if (param.equals(params.getOutput())) {
-                this.output = new File(value);
-            }
-            else {
-                throw new IllegalArgumentException("Unknown param found: " + param);
-            }
-        }
 
         @Override
         public void parseCommandLine(CommandLine cmdLine) {
@@ -168,12 +190,20 @@ public class SamtoolsViewV0_1 extends AbstractConanProcess {
                 pvp.put(params.getOutput(), this.output.getAbsolutePath());
             }
 
-            if (this.inputSam) {
-                pvp.put(params.getInputSam(), Boolean.toString(this.inputSam));
+            if (this.sortByName) {
+                pvp.put(params.getSortByName(), Boolean.toString(this.sortByName));
             }
 
-            if (this.outputBam) {
-                pvp.put(params.getOutputBam(), Boolean.toString(this.outputBam));
+            if (this.format != null) {
+                pvp.put(params.getFormat(), this.format.toString().toLowerCase());
+            }
+
+            if (this.threads > 1) {
+                pvp.put(params.getThreads(), Integer.toString(this.threads));
+            }
+
+            if (this.tempFilePrefix != null) {
+                pvp.put(params.getTempFilePrefix(), this.tempFilePrefix.getAbsolutePath());
             }
 
             return pvp;
@@ -185,8 +215,10 @@ public class SamtoolsViewV0_1 extends AbstractConanProcess {
 
         private ConanParameter input;
         private ConanParameter output;
-        private ConanParameter inputSam;
-        private ConanParameter outputBam;
+        private ConanParameter sortByName;
+        private ConanParameter threads;
+        private ConanParameter format;
+        private ConanParameter tempFilePrefix;
 
         public Params() {
 
@@ -199,25 +231,36 @@ public class SamtoolsViewV0_1 extends AbstractConanProcess {
                     .create();
 
             this.output = new ParameterBuilder()
-                    .isOption(false)
+                    .shortName("o")
                     .isOptional(false)
-                    .type(DefaultConanParameter.ParamType.REDIRECTION)
                     .description("The output file, will be either BAM or SAM format depending on input and selected options")
                     .argValidator(ArgValidator.PATH)
                     .create();
 
-            this.inputSam = new ParameterBuilder()
+            this.sortByName = new ParameterBuilder()
                     .isFlag(true)
-                    .shortName("S")
-                    .description("input is SAM")
+                    .shortName("n")
+                    .description("Sort by read name")
                     .argValidator(ArgValidator.OFF)
                     .create();
 
-            this.outputBam = new ParameterBuilder()
-                    .isFlag(true)
-                    .shortName("b")
-                    .description("output BAM")
-                    .argValidator(ArgValidator.OFF)
+            this.threads = new ParameterBuilder()
+                    .shortName("@")
+                    .description("number of BAM compression threads [0]")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.format = new ParameterBuilder()
+                    .shortName("O")
+                    .isOptional(false)
+                    .description("Write output as FORMAT ('sam'/'bam'/'cram')")
+                    .create();
+
+            this.tempFilePrefix = new ParameterBuilder()
+                    .shortName("T")
+                    .isOptional(false)
+                    .description("Write temporary files to PREFIX.nnnn.bam")
+                    .argValidator(ArgValidator.PATH)
                     .create();
         }
 
@@ -229,21 +272,31 @@ public class SamtoolsViewV0_1 extends AbstractConanProcess {
             return output;
         }
 
-        public ConanParameter getInputSam() {
-            return inputSam;
+        public ConanParameter getThreads() {
+            return threads;
         }
 
-        public ConanParameter getOutputBam() {
-            return outputBam;
+        public ConanParameter getSortByName() {
+            return sortByName;
+        }
+
+        public ConanParameter getFormat() {
+            return format;
+        }
+
+        public ConanParameter getTempFilePrefix() {
+            return tempFilePrefix;
         }
 
         @Override
         public ConanParameter[] getConanParametersAsArray() {
             return new ConanParameter[] {
-                 input,
-                 output,
-                 inputSam,
-                 outputBam
+                    this.input,
+                    this.output,
+                    this.sortByName,
+                    this.threads,
+                    this.format,
+                    this.tempFilePrefix
             };
         }
     }
