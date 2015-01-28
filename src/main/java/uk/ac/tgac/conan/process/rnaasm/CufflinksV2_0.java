@@ -9,6 +9,8 @@ import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
+import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
+import uk.ac.tgac.conan.core.data.Library;
 
 import java.io.File;
 
@@ -23,11 +25,11 @@ public class CufflinksV2_0 extends AbstractConanProcess {
 
     public static final String EXE = "cufflinks";
 
-    public CufflinksV2_0() {
-        this(new Args());
+    public CufflinksV2_0(ConanExecutorService conanExecutorService) {
+        this(conanExecutorService, new Args());
     }
 
-    public CufflinksV2_0(Args args) {
+    public CufflinksV2_0(ConanExecutorService conanExecutorService, Args args) {
         super(EXE, args, new Params());
     }
 
@@ -47,6 +49,7 @@ public class CufflinksV2_0 extends AbstractConanProcess {
         private static final LibraryType DEFAULT_LIBRARY_TYPE = LibraryType.FR_UNSTRANDED;
         private static final int DEFAULT_MIN_INTRON_LENGTH = 50;
         private static final int DEFAULT_MAX_INTRON_LENGTH = 300000;
+        private static final String DEFAULT_LIBRARY_NORM_METHOD = "classic-fpkm";
 
 
         public static enum LibraryType {
@@ -65,9 +68,21 @@ public class CufflinksV2_0 extends AbstractConanProcess {
             public static LibraryType fromArgString(String value) {
                 return LibraryType.valueOf(value.replace('-','_').toUpperCase());
             }
+
+            public static LibraryType fromStrandedness(Library.Strandedness strandedness) {
+
+                if (strandedness == Library.Strandedness.FF_UNSTRANDED) return FF_UNSTRANDED;
+                else if (strandedness == Library.Strandedness.FF_FIRST_STRAND) return FF_FIRSTSTRAND;
+                else if (strandedness == Library.Strandedness.FF_SECOND_STRAND) return FF_SECONDSTRAND;
+                else if (strandedness == Library.Strandedness.FR_UNSTRANDED) return FR_UNSTRANDED;
+                else if (strandedness == Library.Strandedness.FR_FIRST_STRAND) return FR_FIRSTSTRAND;
+                else if (strandedness == Library.Strandedness.FR_SECOND_STRAND) return FR_SECONDSTRAND;
+
+                return null;
+            }
         }
 
-        private File inputSam;
+        private File input;
         private File outputDir;
         private int threads;
         private int seed;
@@ -75,13 +90,14 @@ public class CufflinksV2_0 extends AbstractConanProcess {
         private LibraryType libraryType;
         private int minIntronLength;
         private int maxIntronLength;
-
+        private boolean noUpdateCheck;
+        private String libraryNormMethod;
 
         public Args() {
 
             super(new Params());
 
-            this.inputSam = null;
+            this.input = null;
             this.outputDir = null;
             this.threads = DEFAULT_THREADS;
             this.seed = DEFAULT_SEED;
@@ -89,18 +105,20 @@ public class CufflinksV2_0 extends AbstractConanProcess {
             this.libraryType = DEFAULT_LIBRARY_TYPE;
             this.minIntronLength = DEFAULT_MIN_INTRON_LENGTH;
             this.maxIntronLength = DEFAULT_MAX_INTRON_LENGTH;
+            this.noUpdateCheck = true;
+            this.libraryNormMethod = DEFAULT_LIBRARY_NORM_METHOD;
         }
 
         public Params getParams() {
             return (Params)this.params;
         }
 
-        public File getInputSam() {
-            return inputSam;
+        public File getInput() {
+            return input;
         }
 
-        public void setInputSam(File inputSam) {
-            this.inputSam = inputSam;
+        public void setInput(File input) {
+            this.input = input;
         }
 
         public File getOutputDir() {
@@ -159,6 +177,22 @@ public class CufflinksV2_0 extends AbstractConanProcess {
             this.maxIntronLength = maxIntronLength;
         }
 
+        public boolean isNoUpdateCheck() {
+            return noUpdateCheck;
+        }
+
+        public void setNoUpdateCheck(boolean noUpdateCheck) {
+            this.noUpdateCheck = noUpdateCheck;
+        }
+
+        public String getLibraryNormMethod() {
+            return libraryNormMethod;
+        }
+
+        public void setLibraryNormMethod(String libraryNormMethod) {
+            this.libraryNormMethod = libraryNormMethod;
+        }
+
         @Override
         protected void setOptionFromMapEntry(ConanParameter param, String value) {
             //To change body of implemented methods use File | Settings | File Templates.
@@ -182,8 +216,8 @@ public class CufflinksV2_0 extends AbstractConanProcess {
 
             ParamMap pvp = new DefaultParamMap();
 
-            if (this.inputSam != null) {
-                pvp.put(params.getInputSam(), this.inputSam.getAbsolutePath());
+            if (this.input != null) {
+                pvp.put(params.getInput(), this.input.getAbsolutePath());
             }
 
             if (this.outputDir != null) {
@@ -214,6 +248,13 @@ public class CufflinksV2_0 extends AbstractConanProcess {
                 pvp.put(params.getMaxIntronLength(), Integer.toString(this.maxIntronLength));
             }
 
+            if (this.noUpdateCheck) {
+                pvp.put(params.getNoUpdateCheck(), Boolean.toString(this.noUpdateCheck));
+            }
+
+            if (this.libraryNormMethod != null && !this.libraryNormMethod.isEmpty()) {
+                pvp.put(params.getLibraryNormMethod(), this.libraryNormMethod);
+            }
 
 
             return pvp;
@@ -222,7 +263,7 @@ public class CufflinksV2_0 extends AbstractConanProcess {
 
     public static class Params extends AbstractProcessParams {
 
-        private ConanParameter inputSam;
+        private ConanParameter input;
         private ConanParameter outputDir;
         private ConanParameter threads;
         private ConanParameter seed;
@@ -230,14 +271,16 @@ public class CufflinksV2_0 extends AbstractConanProcess {
         private ConanParameter libraryType;
         private ConanParameter minIntronLength;
         private ConanParameter maxIntronLength;
+        private ConanParameter noUpdateCheck;
+        private ConanParameter libraryNormMethod;
 
         public Params() {
 
-            this.inputSam = new ParameterBuilder()
+            this.input = new ParameterBuilder()
                     .argIndex(0)
                     .isOption(false)
                     .isOptional(false)
-                    .description("The SAM file containing alignments for input")
+                    .description("The SAM/BAM file containing alignments for input")
                     .argValidator(ArgValidator.PATH)
                     .create();
 
@@ -287,10 +330,22 @@ public class CufflinksV2_0 extends AbstractConanProcess {
                     .description("ignore alignments with gaps longer than this")
                     .argValidator(ArgValidator.DIGITS)
                     .create();
+
+            this.noUpdateCheck = new ParameterBuilder()
+                    .longName("no-update-check")
+                    .description("do not contact server to check for update availability")
+                    .argValidator(ArgValidator.OFF)
+                    .isFlag(true)
+                    .create();
+
+            this.libraryNormMethod = new ParameterBuilder()
+                    .longName("library-norm-method")
+                    .description("Method used to normalize library sizes (classic-fpkm)")
+                    .create();
         }
 
-        public ConanParameter getInputSam() {
-            return inputSam;
+        public ConanParameter getInput() {
+            return input;
         }
 
         public ConanParameter getOutputDir() {
@@ -321,17 +376,27 @@ public class CufflinksV2_0 extends AbstractConanProcess {
             return maxIntronLength;
         }
 
+        public ConanParameter getNoUpdateCheck() {
+            return noUpdateCheck;
+        }
+
+        public ConanParameter getLibraryNormMethod() {
+            return libraryNormMethod;
+        }
+
         @Override
         public ConanParameter[] getConanParametersAsArray() {
             return new ConanParameter[] {
-                    this.inputSam,
+                    this.input,
                     this.outputDir,
                     this.threads,
                     this.seed,
                     this.maskFile,
                     this.libraryType,
                     this.minIntronLength,
-                    this.maxIntronLength
+                    this.maxIntronLength,
+                    this.noUpdateCheck,
+                    this.libraryNormMethod
             };
         }
     }

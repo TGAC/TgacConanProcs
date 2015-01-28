@@ -42,7 +42,7 @@ import java.util.List;
  * 2. When normalizing we assume you want max coverage at 30
  * 3... probably we assume more... fill in later
  */
-public class TrinityV20130814 extends AbstractConanProcess {
+public class TrinityV2014 extends AbstractConanProcess {
 
     public static final String EXE = "Trinity.pl";
     public static final String NORMALIZE = "normalize_by_kmer_coverage.pl";
@@ -52,11 +52,11 @@ public class TrinityV20130814 extends AbstractConanProcess {
     public static final String GG_ALIGN_READS = "alignReads.pl";
     public static final String GG_ACC_INC = "GG_trinity_accession_incrementer.pl";
 
-    public TrinityV20130814(ConanExecutorService conanExecutorService) throws IOException {
+    public TrinityV2014(ConanExecutorService conanExecutorService) {
         this(conanExecutorService, new Args());
     }
 
-    public TrinityV20130814(ConanExecutorService conanExecutorService, Args args) {
+    public TrinityV2014(ConanExecutorService conanExecutorService, Args args) {
         super(EXE, args, new Params(), conanExecutorService);
         this.initialise();
     }
@@ -75,7 +75,7 @@ public class TrinityV20130814 extends AbstractConanProcess {
 
     @Override
     public String getName() {
-        return "Trinity_V2013_08_14";
+        return "Trinity_V2014";
     }
 
     public void initialise() {
