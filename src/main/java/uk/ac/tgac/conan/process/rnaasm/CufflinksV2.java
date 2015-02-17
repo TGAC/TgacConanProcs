@@ -21,16 +21,16 @@ import java.io.File;
  * Time: 16:22
  * To change this template use File | Settings | File Templates.
  */
-public class CufflinksV2_0 extends AbstractConanProcess {
+public class CufflinksV2 extends AbstractConanProcess {
 
     public static final String EXE = "cufflinks";
 
-    public CufflinksV2_0(ConanExecutorService conanExecutorService) {
+    public CufflinksV2(ConanExecutorService conanExecutorService) {
         this(conanExecutorService, new Args());
     }
 
-    public CufflinksV2_0(ConanExecutorService conanExecutorService, Args args) {
-        super(EXE, args, new Params());
+    public CufflinksV2(ConanExecutorService conanExecutorService, Args args) {
+        super(EXE, args, new Params(), conanExecutorService);
     }
 
     public Args getArgs() {
@@ -39,7 +39,7 @@ public class CufflinksV2_0 extends AbstractConanProcess {
 
     @Override
     public String getName() {
-        return "Cufflinks_V2.0.X";
+        return "Cufflinks_V2";
     }
 
     public static class Args extends AbstractProcessArgs {
@@ -252,9 +252,10 @@ public class CufflinksV2_0 extends AbstractConanProcess {
                 pvp.put(params.getNoUpdateCheck(), Boolean.toString(this.noUpdateCheck));
             }
 
-            if (this.libraryNormMethod != null && !this.libraryNormMethod.isEmpty()) {
+            // Commented out for now as this seems to cause cufflinks to fail!  Debug later...
+            /*if (this.libraryNormMethod != null && !this.libraryNormMethod.isEmpty()) {
                 pvp.put(params.getLibraryNormMethod(), this.libraryNormMethod);
-            }
+            } */
 
 
             return pvp;

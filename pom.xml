@@ -6,7 +6,7 @@
 
     <groupId>uk.ac.tgac.conan</groupId>
     <artifactId>tgac-conan-process-wrappers</artifactId>
-    <version>0.11.0</version>
+    <version>0.11.1</version>
 
     <name>TGAC conan process wrappers</name>
     <description>This project contains wrappers for external tools which might be reused in many conan pipelines.</description>
