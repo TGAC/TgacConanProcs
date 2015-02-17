@@ -21,27 +21,28 @@ import java.io.File;
  * Time: 12:09
  * To change this template use File | Settings | File Templates.
  */
-public class GSnapV20131015 extends AbstractConanProcess {
+public class GSnapV2014 extends AbstractConanProcess {
 
     public static final String EXE = "gsnap";
 
-    public GSnapV20131015(ConanExecutorService conanExecutorService) {
+    public GSnapV2014(ConanExecutorService conanExecutorService) {
         this(conanExecutorService, new Args());
     }
 
-    public GSnapV20131015(ConanExecutorService conanExecutorService, Args args) {
+    public GSnapV2014(ConanExecutorService conanExecutorService, Args args) {
         super(EXE, args, new Params(), conanExecutorService);
     }
 
     @Override
     public String getName() {
-        return "GSnap_V20131015";
+        return "GSnap_V2014";
     }
 
     public static class Args extends AbstractProcessArgs {
 
         private static final int DEFAULT_LOCAL_SPLICED_DISTANCE = 200000;
         private static final int DEFAULT_NB_PATHS = 100;
+        private static final int DEFAULT_BATCH = 2;
 
         private File genomeDir;
         private String genomeDB;
@@ -54,6 +55,9 @@ public class GSnapV20131015 extends AbstractConanProcess {
         private int nbPaths;
         private File outputFile;
         private File logFile;
+        private int batch;
+        private boolean expandOffsets;
+        private int kmer;
 
         public Args() {
 
@@ -70,6 +74,9 @@ public class GSnapV20131015 extends AbstractConanProcess {
             this.nbPaths = DEFAULT_NB_PATHS;
             this.outputFile = null;
             this.logFile = null;
+            this.batch = DEFAULT_BATCH;
+            this.expandOffsets = false;
+            this.kmer = 0;
         }
 
         public Params getParams() {
@@ -164,6 +171,30 @@ public class GSnapV20131015 extends AbstractConanProcess {
             this.logFile = logFile;
         }
 
+        public int getBatch() {
+            return batch;
+        }
+
+        public void setBatch(int batch) {
+            this.batch = batch;
+        }
+
+        public boolean isExpandOffsets() {
+            return expandOffsets;
+        }
+
+        public void setExpandOffsets(boolean expandOffsets) {
+            this.expandOffsets = expandOffsets;
+        }
+
+        public int getKmer() {
+            return kmer;
+        }
+
+        public void setKmer(int kmer) {
+            this.kmer = kmer;
+        }
+
         @Override
         protected void setOptionFromMapEntry(ConanParameter param, String value) {
 
@@ -189,6 +220,15 @@ public class GSnapV20131015 extends AbstractConanProcess {
             }
             else if (param.equals(params.getNbPaths())) {
                 this.nbPaths = Integer.parseInt(value);
+            }
+            else if (param.equals(params.getBatch())) {
+                this.batch = Integer.parseInt(value);
+            }
+            else if (param.equals(params.getExpandOffsets())) {
+                this.expandOffsets = value.equalsIgnoreCase("1") ? true : false;
+            }
+            else if (param.equals(params.getKmer())) {
+                this.kmer = Integer.parseInt(value);
             }
             else {
                 throw new IllegalArgumentException("Unknown param found: " + param);
@@ -294,6 +334,18 @@ public class GSnapV20131015 extends AbstractConanProcess {
                 pvp.put(params.getNbPaths(), Integer.toString(this.nbPaths));
             }
 
+            if (this.batch != DEFAULT_BATCH) {
+                pvp.put(params.getBatch(), Integer.toString(this.batch));
+            }
+
+            if (this.expandOffsets) {
+                pvp.put(params.getExpandOffsets(), "1");
+            }
+
+            if (this.kmer > 0) {
+                pvp.put(params.getKmer(), Integer.toString(this.kmer));
+            }
+
             return pvp;
         }
     }
@@ -311,6 +363,9 @@ public class GSnapV20131015 extends AbstractConanProcess {
         private ConanParameter nbPaths;
         private ConanParameter outputFile;
         private ConanParameter logFile;
+        private ConanParameter batch;
+        private ConanParameter expandOffsets;
+        private ConanParameter kmer;
 
 
         public Params() {
@@ -398,6 +453,26 @@ public class GSnapV20131015 extends AbstractConanProcess {
                     .argValidator(ArgValidator.PATH)
                     .create();
 
+            this.batch = new ParameterBuilder()
+                    .shortName("B")
+                    .longName("batch")
+                    .description("See software")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.expandOffsets = new ParameterBuilder()
+                    .longName("expand-offsets")
+                    .description("Whether to expand the genomic offsets index.   Values: 0 (no, default), or 1 (yes).  Expansion gives faster alignment, but requires more memory")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
+            this.kmer = new ParameterBuilder()
+                    .shortName("k")
+                    .longName("kmer")
+                    .description("kmer size to use in genome database (allowed values: 16 or less). If not specified, the program will find the highest available kmer size in the genome database")
+                    .argValidator(ArgValidator.DIGITS)
+                    .create();
+
         }
 
         public ConanParameter getGenomeDir() {
@@ -444,6 +519,18 @@ public class GSnapV20131015 extends AbstractConanProcess {
             return logFile;
         }
 
+        public ConanParameter getBatch() {
+            return batch;
+        }
+
+        public ConanParameter getExpandOffsets() {
+            return expandOffsets;
+        }
+
+        public ConanParameter getKmer() {
+            return kmer;
+        }
+
         @Override
         public ConanParameter[] getConanParametersAsArray() {
             return new ConanParameter[] {
@@ -457,7 +544,10 @@ public class GSnapV20131015 extends AbstractConanProcess {
                     this.outputFormat,
                     this.nbPaths,
                     this.outputFile,
-                    this.logFile
+                    this.logFile,
+                    this.batch,
+                    this.expandOffsets,
+                    this.kmer
             };
         }
     }
