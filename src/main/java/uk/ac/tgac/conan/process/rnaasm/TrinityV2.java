@@ -117,11 +117,8 @@ public class TrinityV2 extends AbstractConanProcess {
 
             public static SSLibType fromStrandedness(Library.Strandedness strandedness) {
 
-                if (strandedness == Library.Strandedness.FF_UNSTRANDED) {
-                    return R;
-                }
-                else if (strandedness == Library.Strandedness.FR_UNSTRANDED) {
-                    return F;
+                if (strandedness == Library.Strandedness.FF_UNSTRANDED || strandedness == Library.Strandedness.FR_UNSTRANDED) {
+                    return null;
                 }
                 else if (strandedness == Library.Strandedness.FR_FIRST_STRAND) {
                     return RF;
