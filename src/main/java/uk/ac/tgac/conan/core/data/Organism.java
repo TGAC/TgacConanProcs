@@ -183,7 +183,7 @@ public class Organism {
         else if (this.reference != null && this.reference.getPath() != null) {
             return true;
         }
-        else if (this.estimated.getEstGenomeSize() > 0) {
+        else if (this.estimated != null && this.estimated.getEstGenomeSize() > 0) {
             return true;
         }
         else {

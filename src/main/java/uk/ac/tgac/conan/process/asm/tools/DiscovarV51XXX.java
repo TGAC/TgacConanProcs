@@ -60,6 +60,8 @@ public class DiscovarV51XXX extends AbstractAssembler {
 
     public DiscovarV51XXX(ConanExecutorService ces, AbstractProcessArgs args) {
         super(NAME, EXE, args, new Params(), ces);
+
+        this.setFormat(CommandLineFormat.KEY_VALUE_PAIR);
     }
 
     public Args getArgs() {
@@ -68,7 +70,7 @@ public class DiscovarV51XXX extends AbstractAssembler {
 
     @Override
     public boolean makesUnitigs() {
-        return false;
+        return true;
     }
 
 
@@ -98,7 +100,7 @@ public class DiscovarV51XXX extends AbstractAssembler {
 
     @Override
     public File getUnitigsFile() {
-        return null;
+        return new File(this.getArgs().getOutputDir(), "a.final/a.fasta");
     }
 
     @Override
@@ -108,7 +110,7 @@ public class DiscovarV51XXX extends AbstractAssembler {
 
     @Override
     public File getScaffoldsFile() {
-        return new File(this.getArgs().getOutputDir(), "discovar-scaffolds.fa");
+        return new File(this.getArgs().getOutputDir(), "a.final/a.lines.fasta");
     }
 
     @Override
@@ -148,11 +150,6 @@ public class DiscovarV51XXX extends AbstractAssembler {
         return true;
     }
 
-
-    @Override
-    public String getCommand() throws ConanParameterException {
-        return super.getCommand(CommandLineFormat.KEY_VALUE_PAIR);
-    }
 
 
     @MetaInfServices(DeBruijnAutoArgs.class)
@@ -211,11 +208,13 @@ public class DiscovarV51XXX extends AbstractAssembler {
                 for(Library l : this.libs) {
                     StringJoiner sb2 = new StringJoiner(",");
 
-                    sb.add(l.getFile1().getAbsolutePath());
+                    sb2.add(l.getFile1().getAbsolutePath());
 
                     if (l.getFile2() != null) {
-                        sb.add(l.getFile2());
+                        sb2.add(l.getFile2());
                     }
+
+                    sb.add(sb2.toString());
                 }
 
                 pvp.put(params.getReads(), sb.toString());
@@ -241,6 +240,10 @@ public class DiscovarV51XXX extends AbstractAssembler {
 
             if (this.maxMemUsageMB > 0) {
                 pvp.put(params.getMaxMemGb(), Integer.toString(this.maxMemUsageMB / 1000));
+            }
+
+            if (this.outputDir != null) {
+                pvp.put(params.getOutputDir(), this.outputDir.getAbsolutePath());
             }
 
             return pvp;
@@ -301,6 +304,7 @@ public class DiscovarV51XXX extends AbstractAssembler {
                     .longName("READS")
                     .description("Comma-separated list of input files, see manual for details")
                     .isOptional(false)
+                    .argValidator(ArgValidator.OFF)
                     .create();
 
             this.outputDir = new ParameterBuilder()
