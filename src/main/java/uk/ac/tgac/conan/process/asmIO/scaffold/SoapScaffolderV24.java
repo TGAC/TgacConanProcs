@@ -222,7 +222,7 @@ public class SoapScaffolderV24 extends AbstractAssemblyEnhancer {
             }
         }
 
-        this.getConanProcessService().executableOnPath("prepare", preCommand, executionContext);
+        this.getConanProcessService().executableOnPath("finalFusion", preCommand, executionContext);
 
         return super.isOperational(executionContext);
     }

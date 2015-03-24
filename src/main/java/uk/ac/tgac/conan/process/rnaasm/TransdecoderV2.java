@@ -17,20 +17,20 @@ import java.io.File;
 /**
  * Created by maplesod on 25/07/14.
  */
-public class TransdecoderV2013 extends AbstractConanProcess {
+public class TransdecoderV2 extends AbstractConanProcess {
 
-    protected static final String NAME = "Transdecoder_V2013";
-    protected static final String EXE = "TransDecoder";
+    protected static final String NAME = "Transdecoder_V2";
+    protected static final String EXE = "TransDecoder.LongOrfs";
 
-    public TransdecoderV2013() {
+    public TransdecoderV2() {
         this(null);
     }
 
-    public TransdecoderV2013(ConanExecutorService ces) {
+    public TransdecoderV2(ConanExecutorService ces) {
         this(ces, new Args());
     }
 
-    public TransdecoderV2013(ConanExecutorService ces, Args args) {
+    public TransdecoderV2(ConanExecutorService ces, Args args) {
         super(EXE, args, new Params(), ces);
         this.setFormat(CommandLineFormat.POSIX_SPACE);
     }
@@ -50,8 +50,11 @@ public class TransdecoderV2013 extends AbstractConanProcess {
                     this.getArgs().getTranscriptsInput().getAbsolutePath());
         }
 
+        // Just slip this in here for now for simplicity.  Maybe add ability to control other Predict options later.
+        this.addPostCommand("TransDecoder.Predict -t " + this.getArgs().getTranscriptsInput().getAbsolutePath());
         this.addPostCommand("cd " + pwd);
     }
+
 
     @Override
     public String getName() {
@@ -60,13 +63,11 @@ public class TransdecoderV2013 extends AbstractConanProcess {
 
     public static class Args extends AbstractProcessArgs {
 
-        public static final int DEFAULT_THREADS = 2;
         public static final int DEFAULT_MIN_PROTEIN_LENGTH = 100;
 
         private File outputDir;
         private File transcripts;
         private boolean strandSpecific;
-        private int threads;
         private int minProteinLength;
 
         public Args() {
@@ -75,7 +76,6 @@ public class TransdecoderV2013 extends AbstractConanProcess {
             this.outputDir = null;
             this.transcripts = null;
             this.strandSpecific = false;
-            this.threads = DEFAULT_THREADS;
             this.minProteinLength = DEFAULT_MIN_PROTEIN_LENGTH;
         }
 
@@ -107,14 +107,6 @@ public class TransdecoderV2013 extends AbstractConanProcess {
             this.strandSpecific = strandSpecific;
         }
 
-        public int getThreads() {
-            return threads;
-        }
-
-        public void setThreads(int threads) {
-            this.threads = threads;
-        }
-
         public int getMinProteinLength() {
             return minProteinLength;
         }
@@ -137,9 +129,6 @@ public class TransdecoderV2013 extends AbstractConanProcess {
             }
             else if (param.equals(params.getStrandSpecific())) {
                 this.strandSpecific = Boolean.parseBoolean(value);
-            }
-            else if (param.equals(params.getThreads())) {
-                this.threads = Integer.parseInt(value);
             }
             else if (param.equals(params.getMinProteinLength())) {
                 this.minProteinLength = Integer.parseInt(value);
@@ -174,10 +163,6 @@ public class TransdecoderV2013 extends AbstractConanProcess {
                 pvp.put(params.getStrandSpecific(), Boolean.toString(this.strandSpecific));
             }
 
-            if (this.threads > 0 && this.threads != DEFAULT_THREADS) {
-                pvp.put(params.getThreads(), Integer.toString(this.threads));
-            }
-
             if (this.minProteinLength > 0 && this.minProteinLength != DEFAULT_MIN_PROTEIN_LENGTH) {
                 pvp.put(params.getMinProteinLength(), Integer.toString(this.minProteinLength));
             }
@@ -190,7 +175,6 @@ public class TransdecoderV2013 extends AbstractConanProcess {
 
         private ConanParameter transcripts;
         private ConanParameter strandSpecific;
-        private ConanParameter threads;
         private ConanParameter minProteinLength;
 
         public Params() {
@@ -209,12 +193,6 @@ public class TransdecoderV2013 extends AbstractConanProcess {
                     .argValidator(ArgValidator.OFF)
                     .create();
 
-            this.threads = new ParameterBuilder()
-                    .longName("CPU")
-                    .description("number of threads to use; (default: 2)")
-                    .argValidator(ArgValidator.DIGITS)
-                    .create();
-
             this.minProteinLength = new ParameterBuilder()
                     .shortName("m")
                     .description("minimum protein length (default: 100)")
@@ -230,10 +208,6 @@ public class TransdecoderV2013 extends AbstractConanProcess {
             return strandSpecific;
         }
 
-        public ConanParameter getThreads() {
-            return threads;
-        }
-
         public ConanParameter getMinProteinLength() {
             return minProteinLength;
         }
@@ -243,7 +217,6 @@ public class TransdecoderV2013 extends AbstractConanProcess {
             return new ConanParameter[] {
                     this.transcripts,
                     this.strandSpecific,
-                    this.threads,
                     this.minProteinLength
             };
         }
