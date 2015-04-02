@@ -60,18 +60,21 @@ public class TrinityV2 extends AbstractConanProcess {
 
             StringBuilder sb = new StringBuilder();
 
+            int expectedWallTime = (this.getArgs().getCmdsPerJob() / this.getArgs().getGridNodeCpu()) * 2;     // Allow for approx 3mins per command
+
             sb.append("grid=").append(this.conanExecutorService.getExecutionContext().getScheduler().getName()).append("\n");
             if (this.conanExecutorService.getExecutionContext().getScheduler().getName().equalsIgnoreCase("LSF")) {
                 sb.append("cmd=bsub -q ").append(this.conanExecutorService.getExecutionContext().getScheduler().getArgs().getQueueName())
                 .append(" -n ").append(this.getArgs().getGridNodeCpu())
                 .append(" -Rrusage[mem=").append(this.getArgs().getGridNodeMaxMemory().substring(0, this.getArgs().getGridNodeMaxMemory().length() - 1) + "000").append("]")
-                .append("span[ptile=").append(this.getArgs().getGridNodeCpu()).append("]\n");
+                .append("span[ptile=").append(this.getArgs().getGridNodeCpu()).append("]")
+                .append(" -We ").append(expectedWallTime).append("\n");
             }
             else {
                 throw new UnsupportedOperationException("Need to implement handling for schedulers other than LSF!");
             }
             sb.append("max_nodes=").append(this.getArgs().getMaxGridNodes()).append("\n");
-            sb.append("cmds_per_node=").append(this.getArgs().getCmdsPerNode()).append("\n");
+            sb.append("cmds_per_node=").append(this.getArgs().getCmdsPerJob()).append("\n");
 
             String gridConf = sb.toString();
 
@@ -84,6 +87,7 @@ public class TrinityV2 extends AbstractConanProcess {
 
     public static class Args extends AbstractProcessArgs {
 
+        private static final int DEFAULT_MAX_MEMORY_GB = 20;
         private static final int DEFAULT_MIN_CONTIG_LENGTH = 200;
         private static final int DEFAULT_CPUS = 2;
         private static final int DEFAULT_KMER_SIZE = 25;
@@ -152,7 +156,7 @@ public class TrinityV2 extends AbstractConanProcess {
         private boolean jaccardClip;
         private int genomeGuidedMaxIntron;
         private int genomeGuidedMinCoverage;
-        private int cmdsPerNode;
+        private int cmdsPerJob;
         private int maxGridNodes;
         private File gridConfFile;
         private int gridNodeCpu;
@@ -192,7 +196,7 @@ public class TrinityV2 extends AbstractConanProcess {
             this.butterflyGroupPairsDistance = DEFAULT_BUTTERFLY_GROUP_PAIRS_DISTANCE;
             this.butterflyPathReinforcementDistance = DEFAULT_BUTTERFLY_PATH_REINF_DISTANCE;
             this.maxGridNodes = DEFAULT_MAX_GRID_NODES;
-            this.cmdsPerNode = DEFAULT_CMDS_PER_NODE;
+            this.cmdsPerJob = DEFAULT_CMDS_PER_NODE;
             this.gridConfFile = null;
             this.gridNodeCpu = DEFAULT_GRID_NODE_CPU;
             this.gridNodeMaxMemory = DEFAULT_GRID_NODE_MAX_MEMORY;
@@ -386,12 +390,12 @@ public class TrinityV2 extends AbstractConanProcess {
             this.genomeGuidedMinCoverage = genomeGuidedMinCoverage;
         }
 
-        public int getCmdsPerNode() {
-            return cmdsPerNode;
+        public int getCmdsPerJob() {
+            return cmdsPerJob;
         }
 
-        public void setCmdsPerNode(int cmdsPerNode) {
-            this.cmdsPerNode = cmdsPerNode;
+        public void setCmdsPerJob(int cmdsPerJob) {
+            this.cmdsPerJob = cmdsPerJob;
         }
 
         public int getMaxGridNodes() {
@@ -691,8 +695,6 @@ public class TrinityV2 extends AbstractConanProcess {
                     .description("single reads, one or more (note, if single file contains pairs, can use flag: --run_as_paired )")
                     .argValidator(ArgValidator.OFF)
                     .create();
-
-
 
             this.ssLibType = new ParameterBuilder()
                     .longName("SS_lib_type")

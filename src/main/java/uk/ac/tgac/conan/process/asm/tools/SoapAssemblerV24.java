@@ -419,6 +419,7 @@ public class SoapAssemblerV24 extends AbstractAssembler {
             args.setK(this.k);
             args.setThreads(this.threads);
             args.setMemory(this.maxMemUsageMB);
+            args.setEstimatedWalltimeMins(this.getEstimatedWalltimeMins());
             args.setLibraries(this.libs);
             args.setOutputDir(this.outputDir);
 
@@ -433,6 +434,7 @@ public class SoapAssemblerV24 extends AbstractAssembler {
             this.k = args.getK();
             this.threads = args.getThreads();
             this.maxMemUsageMB = args.getMemory();
+            this.estimatedWalltimeMins = args.getEstimatedWalltimeMins();
         }
     }
 

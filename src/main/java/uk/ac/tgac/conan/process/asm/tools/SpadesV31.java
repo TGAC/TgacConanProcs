@@ -298,6 +298,7 @@ public class SpadesV31 extends AbstractAssembler {
             args.setLibraries(this.libs);
             args.setThreads(this.threads);
             args.setMemory(this.maxMemUsageMB);
+            args.setEstimatedWalltimeMins(this.getEstimatedWalltimeMins());
             args.setKmerRange(this.kmerRange);
 
             return args;
@@ -310,6 +311,7 @@ public class SpadesV31 extends AbstractAssembler {
             this.libs = args.getLibraries();
             this.threads = args.getThreads();
             this.maxMemUsageMB = args.getMemory();
+            this.estimatedWalltimeMins = args.getEstimatedWalltimeMins();
             this.kmerRange = args.getKmerRange();
         }
     }

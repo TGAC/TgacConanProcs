@@ -275,6 +275,7 @@ public class DiscovarV51XXX extends AbstractAssembler {
             args.setLibraries(this.getLibs());
             args.setThreads(this.getThreads());
             args.setMemory(this.getMaxMemUsageMB());
+            args.setEstimatedWalltimeMins(this.getEstimatedWalltimeMins());
             //args.setOrganism(this.organism);
 
             return args;
@@ -287,6 +288,7 @@ public class DiscovarV51XXX extends AbstractAssembler {
             this.libs = args.getLibraries();
             this.threads = args.getThreads();
             this.maxMemUsageMB = args.getMemory();
+            this.estimatedWalltimeMins = args.getEstimatedWalltimeMins();
         }
     }
 

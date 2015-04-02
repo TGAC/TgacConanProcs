@@ -396,6 +396,7 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
             args.setLibraries(this.libs);
             args.setThreads(this.threads);
             args.setMemory(this.maxMemUsageMB);
+            args.setEstimatedWalltimeMins(this.getEstimatedWalltimeMins());
             args.setKmerRange(new KmerRange(this.initialK, KmerRange.getLastKmerFromLibs(this.libs), this.kStep));
 
             return args;
@@ -408,6 +409,7 @@ public class PlatanusAssembleV12 extends AbstractAssembler {
             this.libs = args.getLibraries();
             this.threads = args.getThreads();
             this.maxMemUsageMB = args.getMemory();
+            this.estimatedWalltimeMins = args.getEstimatedWalltimeMins();
             this.initialK = args.getKmerRange().getFirstKmer();
             this.kStep = args.getKmerRange().getStepSize();
         }
