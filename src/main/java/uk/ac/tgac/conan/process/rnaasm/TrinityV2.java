@@ -56,7 +56,7 @@ public class TrinityV2 extends AbstractConanProcess {
         this.addPostCommand("cd " + pwd);
 
         // Create grid config file if required
-        if (this.getArgs().getGridConfFile() == null && this.conanExecutorService.usingScheduler()) {
+        if (this.getArgs().isUseGridSupport() && this.getArgs().getGridConfFile() == null && this.conanExecutorService.usingScheduler()) {
 
             StringBuilder sb = new StringBuilder();
 
@@ -161,6 +161,7 @@ public class TrinityV2 extends AbstractConanProcess {
         private File gridConfFile;
         private int gridNodeCpu;
         private String gridNodeMaxMemory;
+        private boolean useGridSupport;
 
         // Inchworm
         private int inchwormMinKmerCoverage;
@@ -200,6 +201,7 @@ public class TrinityV2 extends AbstractConanProcess {
             this.gridConfFile = null;
             this.gridNodeCpu = DEFAULT_GRID_NODE_CPU;
             this.gridNodeMaxMemory = DEFAULT_GRID_NODE_MAX_MEMORY;
+            this.useGridSupport = false;
         }
 
         public Params getParams() {
@@ -428,6 +430,14 @@ public class TrinityV2 extends AbstractConanProcess {
 
         public void setGridNodeMaxMemory(String gridNodeMaxMemory) {
             this.gridNodeMaxMemory = gridNodeMaxMemory;
+        }
+
+        public boolean isUseGridSupport() {
+            return useGridSupport;
+        }
+
+        public void setUseGridSupport(boolean useGridSupport) {
+            this.useGridSupport = useGridSupport;
         }
 
         @Override
