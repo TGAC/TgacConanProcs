@@ -607,6 +607,7 @@ public class VelvetV12 extends AbstractAssembler {
             args.setLibraries(this.libs);
             args.setThreads(this.threads);
             args.setMemory(this.getMaxMemUsageMB());
+            args.setEstimatedWalltimeMins(this.getEstimatedWalltimeMins());
 
             args.setK(this.hashLength);
 
@@ -620,6 +621,7 @@ public class VelvetV12 extends AbstractAssembler {
             this.libs = args.getLibraries();
             this.threads = args.getThreads();
             this.maxMemUsageMB = args.getMemory();
+            this.estimatedWalltimeMins = args.getEstimatedWalltimeMins();
 
             this.hashLength = args.getK();
         }

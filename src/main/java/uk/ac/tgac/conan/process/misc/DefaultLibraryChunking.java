@@ -94,7 +94,7 @@ public class DefaultLibraryChunking extends AbstractConanProcess implements Libr
         String command = decompressCommand + "split -d --lines=" + lines + " --additional-suffix=" + outputSuffix +
                 " " + inputPath + " " + outputPrefix;
 
-        return this.conanExecutorService.executeProcess(command, chunkDir, jobPrefix + "-chunk-" + fileType, 1, 0, runParallel);
+        return this.conanExecutorService.executeProcess(command, chunkDir, jobPrefix + "-chunk-" + fileType, 1, 0, 0, runParallel);
     }
 
     @Override

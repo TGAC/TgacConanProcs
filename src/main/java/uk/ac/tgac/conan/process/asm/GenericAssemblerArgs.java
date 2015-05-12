@@ -30,6 +30,7 @@ import java.util.ServiceLoader;
 public class GenericAssemblerArgs {
 
     private int memory;
+    private int estimatedWalltimeMins;
     private int threads;
     private File outputDir;
     private List<Library> libraries;
@@ -38,6 +39,7 @@ public class GenericAssemblerArgs {
 
     public GenericAssemblerArgs() {
         this.memory = 0;
+        this.estimatedWalltimeMins = 0;
         this.threads = 1;
         this.outputDir = new File(".");
         this.libraries = new ArrayList<>();
@@ -47,6 +49,7 @@ public class GenericAssemblerArgs {
 
     public GenericAssemblerArgs(GenericAssemblerArgs args) {
         this.memory = args.getMemory();
+        this.estimatedWalltimeMins = args.getEstimatedWalltimeMins();
         this.threads = args.getThreads();
         this.outputDir = new File(args.getOutputDir().getPath());
         this.libraries = new ArrayList<>(args.getLibraries());
@@ -92,6 +95,14 @@ public class GenericAssemblerArgs {
 
     public void setMemory(int memory) {
         this.memory = memory;
+    }
+
+    public int getEstimatedWalltimeMins() {
+        return estimatedWalltimeMins;
+    }
+
+    public void setEstimatedWalltimeMins(int estimatedWalltimeMins) {
+        this.estimatedWalltimeMins = estimatedWalltimeMins;
     }
 
     public int getDesiredCoverage() {

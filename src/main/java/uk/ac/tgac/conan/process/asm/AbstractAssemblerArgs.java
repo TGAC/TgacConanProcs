@@ -18,6 +18,7 @@ public abstract class AbstractAssemblerArgs extends AbstractProcessArgs implemen
     protected List<Library> libs;
     protected int threads;
     protected int maxMemUsageMB;
+    protected int estimatedWalltimeMins;
     protected int desiredCoverage;
 
     protected AbstractAssemblerArgs(ProcessParams params, String processName) {
@@ -29,6 +30,7 @@ public abstract class AbstractAssemblerArgs extends AbstractProcessArgs implemen
         this.libs = new ArrayList<>();
         this.threads = 1;
         this.maxMemUsageMB = 0;
+        this.estimatedWalltimeMins = 0;
         this.desiredCoverage = -1;
     }
 
@@ -62,6 +64,14 @@ public abstract class AbstractAssemblerArgs extends AbstractProcessArgs implemen
 
     public void setMaxMemUsageMB(int maxMemUsageMB) {
         this.maxMemUsageMB = maxMemUsageMB;
+    }
+
+    public int getEstimatedWalltimeMins() {
+        return estimatedWalltimeMins;
+    }
+
+    public void setEstimatedWalltimeMins(int estimatedWalltimeMins) {
+        this.estimatedWalltimeMins = estimatedWalltimeMins;
     }
 
     public int getDesiredCoverage() {

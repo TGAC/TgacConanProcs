@@ -10,7 +10,7 @@ import java.io.File;
 
 import static org.junit.Assert.assertTrue;
 
-public class TransdecoderV2013Test {
+public class TransdecoderV2Test {
 
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
@@ -26,15 +26,19 @@ public class TransdecoderV2013Test {
         String pwdFull = new File(".").getAbsolutePath();
         this.pwd = pwdFull.substring(0, pwdFull.length() - 2);
 
-        correctCommand = "TransDecoder -t " + pwd + "/transdecoder/transcripts.fasta --CPU 32 -m 50 2>&1";
-        correctFullCommand = "cd " + pwd + "/transdecoder" + "; ln -s -f " + pwd + "/transcripts.fasta " +
-                pwd + "/transdecoder/transcripts.fasta; " + correctCommand + "; cd " + pwd;
+        correctCommand = "TransDecoder.LongOrfs -t " + pwd + "/transdecoder/transcripts.fasta -m 50 2>&1";
+        correctFullCommand =
+                "cd " + pwd + "/transdecoder" + "; " +
+                "ln -s -f " + pwd + "/transcripts.fasta " + pwd + "/transdecoder/transcripts.fasta; " +
+                correctCommand + "; " +
+                "TransDecoder.Predict -t " + pwd + "/transdecoder/transcripts.fasta; " +
+                "cd " + pwd;
     }
 
     @Test
     public void testTransdecoderCommand() throws ConanParameterException {
 
-        TransdecoderV2013 trn = new TransdecoderV2013(null, createTransdecoderArgs());
+        TransdecoderV2 trn = new TransdecoderV2(null, createTransdecoderArgs());
 
         String command = trn.getCommand();
 
@@ -44,7 +48,7 @@ public class TransdecoderV2013Test {
     @Test
     public void testTransdecoderFullCommand() throws ConanParameterException {
 
-        TransdecoderV2013 trn = new TransdecoderV2013(null, createTransdecoderArgs());
+        TransdecoderV2 trn = new TransdecoderV2(null, createTransdecoderArgs());
         trn.setup();
 
         String command = trn.getFullCommand();
@@ -52,11 +56,10 @@ public class TransdecoderV2013Test {
         assertTrue(command.equals(correctFullCommand));
     }
 
-    protected TransdecoderV2013.Args createTransdecoderArgs() {
+    protected TransdecoderV2.Args createTransdecoderArgs() {
 
-        TransdecoderV2013.Args args = new TransdecoderV2013.Args();
+        TransdecoderV2.Args args = new TransdecoderV2.Args();
         args.setOutputDir(new File("transdecoder"));
-        args.setThreads(32);
         args.setTranscripts(new File("transcripts.fasta"));
         args.setMinProteinLength(50);
 

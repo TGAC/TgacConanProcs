@@ -622,6 +622,7 @@ public class AbyssV15 extends AbstractAssembler {
             args.setLibraries(this.libs);
             args.setOutputDir(this.outputDir);
             args.setMemory(this.maxMemUsageMB);
+            args.setEstimatedWalltimeMins(this.getEstimatedWalltimeMins());
 
             args.setK(this.k);
 
@@ -635,6 +636,7 @@ public class AbyssV15 extends AbstractAssembler {
             this.libs = args.getLibraries();
             this.threads = args.getThreads();
             this.maxMemUsageMB = args.getMemory();
+            this.estimatedWalltimeMins = args.getEstimatedWalltimeMins();
 
             this.k = args.getK();
         }
