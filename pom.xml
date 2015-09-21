@@ -141,7 +141,7 @@
         <dependency>
             <groupId>uk.ac.ebi.fgpt.conan</groupId>
             <artifactId>conan-core-services</artifactId>
-            <version>3.3.0</version>
+            <version>3.3.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>

@@ -56,7 +56,7 @@ public class TrimGaloreV04 extends AbstractReadEnhancer {
             String f2Base = FilenameUtils.getBaseName(args.getInput().getFile2().getName());
 
             enhancedFiles.add(new File(args.getOutputDir(), f1Base + "_val_1.fq"));
-            enhancedFiles.add(new File(args.getOutputDir(), f2Base + "_val_1.fq"));
+            enhancedFiles.add(new File(args.getOutputDir(), f2Base + "_val_2.fq"));
 
             if (args.retainUnpaired) {
                 enhancedFiles.add(new File(args.getOutputDir(), f1Base + "_unpaired_1.fq"));
@@ -265,16 +265,6 @@ public class TrimGaloreV04 extends AbstractReadEnhancer {
             this.lengthThreshold = lengthThreshold;
         }
 
-        @Override
-        public File getOutputDir() {
-            return outputDir;
-        }
-
-        @Override
-        public void setOutputDir(File outputDir) {
-            this.outputDir = outputDir;
-        }
-
         public int getClipR1() {
             return clipR1;
         }
@@ -462,6 +452,10 @@ public class TrimGaloreV04 extends AbstractReadEnhancer {
 
             ParamMap pvp = new DefaultParamMap();
 
+            if (this.outputDir != null) {
+                pvp.put(params.getOutputDir(), this.outputDir.getAbsolutePath());
+            }
+
             if (this.qualityThreshold != DEFAULT_QUAL_THRESHOLD) {
                 pvp.put(params.getQualityThreshold(), Integer.toString(this.qualityThreshold));
             }
@@ -567,7 +561,9 @@ public class TrimGaloreV04 extends AbstractReadEnhancer {
 
             Params params = this.getParams();
 
-            if (param.equals(params.getQualityThreshold())) {
+            if (param.equals(params.getOutputDir())) {
+                this.outputDir = new File(value);
+            } else if (param.equals(params.getQualityThreshold())) {
                 this.qualityThreshold = Integer.parseInt(value);
             } else if (param.equals(params.getPhred33())) {
                 this.phred33 = Boolean.parseBoolean(value);
@@ -822,6 +818,7 @@ public class TrimGaloreV04 extends AbstractReadEnhancer {
                     .longName("output_dir")
                     .description("If specified all output will be written to this directory instead of the current directory.")
                     .argValidator(ArgValidator.PATH)
+                    .isOptional(false)
                     .create();
 
             this.clipR1 = new ParameterBuilder()
@@ -876,6 +873,7 @@ public class TrimGaloreV04 extends AbstractReadEnhancer {
                     .argValidator(ArgValidator.OFF)
                     .isOptional(false)
                     .isOption(true)
+                    .isFlag(true)
                     .create();
 
             this.retainUnpaired = new ParameterBuilder()
