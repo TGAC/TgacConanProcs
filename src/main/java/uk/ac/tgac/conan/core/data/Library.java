@@ -119,7 +119,7 @@ public class Library {
         this.type = Type.PE;
         this.phred = DEFAULT_PHRED;
         this.files = new ArrayList<SeqFile>();
-        this.uniform = true;
+        this.uniform = false;
         this.strandedness = DEFAULT_STRANDEDNESS;
     }
 
@@ -176,7 +176,7 @@ public class Library {
 
         this.uniform = ele.hasAttribute(KEY_ATTR_UNIFORM) ?
                 XmlHelper.getBooleanValue(ele, KEY_ATTR_UNIFORM) :
-                true;
+                false;
 
         this.strandedness = ele.hasAttribute(KEY_ATTR_STRANDEDNESS) ?
                 Strandedness.valueOf(XmlHelper.getTextValue(ele, KEY_ATTR_STRANDEDNESS).toUpperCase()) :

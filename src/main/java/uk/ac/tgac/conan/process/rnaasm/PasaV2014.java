@@ -336,9 +336,7 @@ public class PasaV2014 extends AbstractConanProcess {
                 pvp.put(params.getGenome(), this.getGenome().getAbsolutePath());
             }
 
-            if (this.getMaxIntronLength() != DEFAULT_MAX_INTRON_LENGTH) {
-                pvp.put(params.getMaxIntronLength(), Integer.toString(this.getMaxIntronLength()));
-            }
+            pvp.put(params.getMaxIntronLength(), Integer.toString(this.getMaxIntronLength()));
 
             if (this.isTransdecoder()) {
                 pvp.put(params.getTransdecoder(), Boolean.toString(this.isTransdecoder()));
