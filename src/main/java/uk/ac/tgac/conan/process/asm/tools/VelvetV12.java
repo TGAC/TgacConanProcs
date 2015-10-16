@@ -18,12 +18,15 @@
 package uk.ac.tgac.conan.process.asm.tools;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.ebi.fgpt.conan.core.param.ArgValidator;
 import uk.ac.ebi.fgpt.conan.core.param.DefaultParamMap;
 import uk.ac.ebi.fgpt.conan.core.param.ParameterBuilder;
 import uk.ac.ebi.fgpt.conan.core.process.AbstractProcessArgs;
+import uk.ac.ebi.fgpt.conan.model.context.ExecutionContext;
 import uk.ac.ebi.fgpt.conan.model.param.AbstractProcessParams;
+import uk.ac.ebi.fgpt.conan.model.param.CommandLineFormat;
 import uk.ac.ebi.fgpt.conan.model.param.ConanParameter;
 import uk.ac.ebi.fgpt.conan.model.param.ParamMap;
 import uk.ac.ebi.fgpt.conan.service.ConanExecutorService;
@@ -34,6 +37,8 @@ import uk.ac.tgac.conan.process.asm.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: maplesod
@@ -44,7 +49,10 @@ import java.io.IOException;
 public class VelvetV12 extends AbstractAssembler {
 
     public static final String NAME = "Velvet_V1.2";
-    public static final String EXE = "velvetg-127";
+    public static final String EXE_127 = "velvetg-127";
+    public static final String EXE = "velvetg";
+
+    private boolean mode127;
 
     public VelvetV12() {
         this(null);
@@ -54,6 +62,7 @@ public class VelvetV12 extends AbstractAssembler {
     }
     public VelvetV12(ConanExecutorService conanExecutorService, AbstractProcessArgs args) {
         super(NAME, EXE, args, new Params(), conanExecutorService);
+        this.mode127 = true;
     }
 
     public Args getArgs() {
@@ -169,6 +178,36 @@ public class VelvetV12 extends AbstractAssembler {
     }
 
     @Override
+    public boolean isOperational(ExecutionContext executionContext) {
+        String preCommand = "";
+
+        if (executionContext.getExternalProcessConfiguration() != null) {
+            String extPreCommand = executionContext.getExternalProcessConfiguration().getCommand(this.getName());
+
+            if (extPreCommand != null && !extPreCommand.isEmpty()) {
+                preCommand += extPreCommand + "; ";
+            }
+        }
+
+        boolean v127 = this.conanExecutorService.getConanProcessService().executableOnPath(EXE_127, preCommand, executionContext);
+
+        if (v127) {
+            this.mode127 = true;
+        }
+        else {
+            boolean v = this.conanExecutorService.getConanProcessService().executableOnPath(EXE, preCommand, executionContext);
+
+            if (v) {
+                this.mode127 = false;
+            }
+            else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public String getCommand() throws ConanParameterException {
 
         Args args = this.getArgs();
@@ -186,10 +225,16 @@ public class VelvetV12 extends AbstractAssembler {
             libString.append(this.createLibString(args.getLibs().get(i), i == 0)).append(" ");
         }
 
-        final String velvetHCmd = "velveth-127 " + args.getOutputDir().getAbsolutePath() + " " + args.getHashLength() + " -create_binary " + libString.toString();
+        final String velvetHCmd = "velveth" + (mode127 ? "-127 " : " ") + args.getOutputDir().getAbsolutePath() + " " + args.getHashLength() + " -create_binary " + libString.toString();
 
         return velvetHCmd.trim() + "; " + super.getCommand() + " " + insString.toString();
     }
+
+    @Override
+    public String getExecutable() {
+        return this.mode127 ? EXE_127 : EXE;
+    }
+
 
     @MetaInfServices(DeBruijnArgs.class)
     public static class Args extends AbstractAssemblerArgs implements DeBruijnArgs {
