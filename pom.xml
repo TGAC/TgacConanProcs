@@ -6,7 +6,7 @@
 
     <groupId>uk.ac.tgac.conan</groupId>
     <artifactId>tgac-conan-process-wrappers</artifactId>
-    <version>0.12.8</version>
+    <version>0.12.9</version>
 
     <name>TGAC conan process wrappers</name>
     <description>This project contains wrappers for external tools which might be reused in many conan pipelines.</description>
@@ -141,7 +141,7 @@
         <dependency>
             <groupId>uk.ac.ebi.fgpt.conan</groupId>
             <artifactId>conan-core-services</artifactId>
-            <version>3.3.4</version>
+            <version>3.3.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
