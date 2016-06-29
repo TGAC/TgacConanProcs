@@ -72,6 +72,9 @@ public class QuastV23 extends AbstractConanProcess {
         sb.append(EXE);
         sb.append(" ");
         sb.append(this.getProcessArgs().getArgMap().buildOptionString(CommandLineFormat.POSIX));
+        if(this.getProcessArgs().getUncheckedArgs() != null && !this.getProcessArgs().getUncheckedArgs().trim().isEmpty()) {
+            sb.append(" ").append(this.getProcessArgs().getUncheckedArgs().trim());
+        }
 
         String firstPart = sb.toString().trim();
         String files = this.getArgs().getInputFilesAsString();
